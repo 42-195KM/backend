@@ -33,12 +33,12 @@ public abstract class BaseEntity {
 
 	@CreatedBy
 	@Column(updatable = false)
-	private UUID createdBy;
+	private Long createdBy;
 
 	@LastModifiedBy
-	private UUID updatedBy;
+	private Long updatedBy;
 
-	private UUID deletedBy;
+	private Long deletedBy;
 
 	// @PreUpdate
 	// public void setDeleted() {
