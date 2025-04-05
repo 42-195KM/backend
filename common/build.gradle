@@ -33,9 +33,6 @@ dependencies {
 
     // JPA + Auditing
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-
-    // Spring Security (AuditorAware 구현 시 사용, @CreatedBy / @LastModifiedBy)
-    implementation 'org.springframework.boot:spring-boot-starter-security'
 }
 
 tasks.named('test') {
