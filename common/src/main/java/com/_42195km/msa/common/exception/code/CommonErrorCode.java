@@ -10,6 +10,11 @@ public enum CommonErrorCode implements ErrorCode {
   // board
   CREW_BOARD_CREATE_POST_SUCCESS("CREW_020", "게시글 생성 성공", HttpStatus.OK),
   CREW_BOARD_CREATE_POST_FAILED("CREW_021", "게시글 생성 실패", HttpStatus.INTERNAL_SERVER_ERROR),
+  CREW_BOARD_UPDATE_POST_SUCCESS("CREW_022", "게시글 수정 성공", HttpStatus.OK),
+  CREW_BOARD_UPDATE_POST_FAILED("CREW_023", "게시글 수정 실패", HttpStatus.INTERNAL_SERVER_ERROR),
+  CREW_BOARD_GET_POST_FAILED("CREW_024", "게시글 조회 실패", HttpStatus.INTERNAL_SERVER_ERROR),
+
+
   ;
 
   private final String code;

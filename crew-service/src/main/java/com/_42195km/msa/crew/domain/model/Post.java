@@ -3,6 +3,7 @@ package com._42195km.msa.crew.domain.model;
 import java.util.UUID;
 
 import com._42195km.msa.common.BaseEntity;
+import com._42195km.msa.crew.application.dto.request.UpdatePostCommandDto;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -32,6 +33,12 @@ public class Post extends BaseEntity {
 		this.title = title;
 		this.content = content;
 		this.hashtag = hashtag;
+	}
+
+	public void update(UpdatePostCommandDto commandDto) {
+		this.title = commandDto.getTitle();
+		this.content = commandDto.getContent();
+		this.hashtag = commandDto.getHashtag();
 	}
 
 

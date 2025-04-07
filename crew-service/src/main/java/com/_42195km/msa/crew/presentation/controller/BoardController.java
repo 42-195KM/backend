@@ -1,5 +1,7 @@
 package com._42195km.msa.crew.presentation.controller;
 
+import java.util.UUID;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,8 +17,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com._42195km.msa.common.api.ApiResponse;
 import com._42195km.msa.common.exception.code.CommonErrorCode;
 import com._42195km.msa.crew.application.dto.request.CreatePostCommandDto;
+import com._42195km.msa.crew.application.dto.request.UpdatePostCommandDto;
 import com._42195km.msa.crew.application.service.BoardService;
 import com._42195km.msa.crew.presentation.dto.request.CreatePostRequestDto;
+import com._42195km.msa.crew.presentation.dto.request.UpdatePostRequestDto;
 
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -31,8 +35,7 @@ public class BoardController {
 	@PostMapping("")
 	@Operation(summary = "게시글 생성")
 	public ResponseEntity<?> createBoard(@RequestBody CreatePostRequestDto requestDto) {
-		CreatePostCommandDto commandDto = requestDto.toCommandDto();
-		boardService.createPost(commandDto);
+		boardService.createPost(requestDto.toCommandDto());
 		return ResponseEntity.ok(new ApiResponse<>(
 			CommonErrorCode.CREW_BOARD_CREATE_POST_SUCCESS.getCode(),
 			"게시글 생성에 성공했습니다.",
@@ -40,9 +43,10 @@ public class BoardController {
 			HttpStatus.CREATED.value()));
 	}
 
-	@PutMapping("")
+	@PutMapping("/{userId}")
 	@Operation(summary = "게시글 수정")
-	public ResponseEntity<?> updateBoard() {
+	public ResponseEntity<?> updateBoard(@PathVariable("userId")UUID userId,@RequestBody UpdatePostRequestDto requestDto) {
+		boardService.updatePost(userId, requestDto.toCommandDto());
 		return ResponseEntity.ok().build();
 	}
 
