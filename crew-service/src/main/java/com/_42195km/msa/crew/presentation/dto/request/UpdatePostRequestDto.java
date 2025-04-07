@@ -1,6 +1,5 @@
 package com._42195km.msa.crew.presentation.dto.request;
 
-import com._42195km.msa.crew.application.dto.request.CreatePostCommandDto;
 import com._42195km.msa.crew.application.dto.request.UpdatePostCommandDto;
 
 import io.swagger.v3.oas.annotations.media.Schema;

@@ -16,7 +16,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "p_crew_content")
+@Table(name = "p_crew_comment")
 @Builder
 @Getter
 @AllArgsConstructor
