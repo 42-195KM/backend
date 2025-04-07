@@ -1,6 +1,7 @@
 package com._42195km.msa.crew.application.service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -13,6 +14,7 @@ import com._42195km.msa.common.exception.CustomBusinessException;
 import com._42195km.msa.common.exception.code.CommonErrorCode;
 import com._42195km.msa.crew.application.dto.request.CreateCommentCommandDto;
 import com._42195km.msa.crew.application.dto.request.CreatePostCommandDto;
+import com._42195km.msa.crew.application.dto.request.UpdateCommentCommandDto;
 import com._42195km.msa.crew.application.dto.request.UpdatePostCommandDto;
 import com._42195km.msa.crew.application.dto.response.CommentAppResponseDto;
 import com._42195km.msa.crew.application.dto.response.PostAppResponseDto;
@@ -22,6 +24,7 @@ import com._42195km.msa.crew.domain.model.Comment;
 import com._42195km.msa.crew.domain.model.Post;
 import com._42195km.msa.crew.domain.repository.CommentRepository;
 import com._42195km.msa.crew.domain.repository.PostRepository;
+import com._42195km.msa.crew.presentation.dto.request.UpdateCommentRequestDto;
 
 import lombok.RequiredArgsConstructor;
 
@@ -108,5 +111,24 @@ public class BoardService {
 			throw new RuntimeException(e);
 		}
 
+	}
+
+	@Transactional
+	public void updateComment(UUID commentId, UpdateCommentCommandDto commandDto) {
+		Comment comment = commentRepository.findByIdAndIsDeletedFalse(commentId)
+			.orElseThrow(() -> CustomBusinessException.from(CommonErrorCode.CREW_BOARD_GET_COMMENT_FAILED));
+
+		try {
+			comment.update(commandDto);
+		} catch (Exception e) {
+			throw CustomBusinessException.from(CommonErrorCode.CREW_BOARD_UPDATE_COMMENT_FAILED);
+		}
+
+
+	}
+
+	public void deleteComment(UUID commentId) {
+		Comment comment = commentRepository.findByIdAndIsDeletedFalse(commentId)
+			.orElseThrow(() -> CustomBusinessException.from(CommonErrorCode.CREW_BOARD_GET_COMMENT_FAILED));
 	}
 }

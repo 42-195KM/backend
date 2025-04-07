@@ -4,6 +4,8 @@ import java.util.UUID;
 
 import com._42195km.msa.common.BaseEntity;
 import com._42195km.msa.crew.application.dto.request.CreateCommentCommandDto;
+import com._42195km.msa.crew.application.dto.request.UpdateCommentCommandDto;
+import com._42195km.msa.crew.presentation.dto.request.UpdateCommentRequestDto;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -34,5 +36,10 @@ public class Comment extends BaseEntity {
 		return Comment.builder()
 			.postId(postId)
 			.comment(commandDto.getComment()).build();
+	}
+
+	public void update(UpdateCommentCommandDto commandDto){
+		comment = commandDto.getComment();
+
 	}
 }

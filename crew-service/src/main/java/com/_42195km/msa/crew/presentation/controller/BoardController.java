@@ -26,6 +26,7 @@ import com._42195km.msa.crew.presentation.dto.request.CreateCommentRequestDto;
 import com._42195km.msa.crew.presentation.dto.request.CreatePostRequestDto;
 import com._42195km.msa.crew.presentation.dto.request.GetBoardRequestDto;
 import com._42195km.msa.crew.presentation.dto.request.SearchBoardRequestDto;
+import com._42195km.msa.crew.presentation.dto.request.UpdateCommentRequestDto;
 import com._42195km.msa.crew.presentation.dto.request.UpdatePostRequestDto;
 import com._42195km.msa.crew.presentation.dto.response.PostResponseDto;
 import com._42195km.msa.crew.presentation.dto.response.PostWithCommentsResponseDto;
@@ -121,7 +122,6 @@ public class BoardController {
 	@PostMapping("/{postId}/comments")
 	@Operation(summary = "댓글 등록")
 	public ResponseEntity createComment(@PathVariable("postId") UUID postId, @RequestBody CreateCommentRequestDto requestDto) {
-		System.out.println("댓글 확인 : " +requestDto.getComment());
 		boardService.createComment(postId, requestDto.toCommandDto());
 		return ResponseEntity.ok(new ApiResponse<>(
 			CommonErrorCode.CREW_BOARD_CREATE_COMMENT_SUCCESS.getCode(),
@@ -130,20 +130,26 @@ public class BoardController {
 			HttpStatus.ACCEPTED.value()));
 	}
 
-	@PutMapping("/{postId}/comments")
+	@PutMapping("/{commentId}/comments")
 	@Operation(summary = "댓글 수정")
-	public ResponseEntity updateComment(@PathVariable("postId") int id) {
-		return ResponseEntity.ok().build();
+	public ResponseEntity updateComment(@PathVariable("commentId") UUID commentId, @RequestBody UpdateCommentRequestDto requestDto) {
+		boardService.updateComment(commentId,requestDto.toCommandDto());
+		return ResponseEntity.ok(new ApiResponse<>(
+			CommonErrorCode.CREW_BOARD_UPDATE_COMMENT_SUCCESS.getCode(),
+			"댓글 수정에 성공했습니다.",
+			CommonErrorCode.CREW_BOARD_UPDATE_COMMENT_SUCCESS.getMessage(),
+			HttpStatus.ACCEPTED.value()));
 	}
 
 	/**
 	 * TODO : 인증/인가 구현 후 soft delete로 구현
-	 * @param id
+	 * @param commentId
 	 * @return
 	 */
-	@PatchMapping("/{postId}/comments")
+	@PatchMapping("/{commentId}/comments")
 	@Operation(summary = "댓글 삭제")
-	public ResponseEntity deleteComment(@PathVariable("postId") int id) {
+	public ResponseEntity deleteComment(@PathVariable("commentId") UUID commentId) {
+		boardService.deleteComment(commentId);
 		return ResponseEntity.ok().build();
 	}
 
