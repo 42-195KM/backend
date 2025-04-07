@@ -1,0 +1,30 @@
+services:
+  postgres:
+    container_name: postgresdb
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    networks:
+      - app_network
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+  mongo:
+    container_name: mongodb
+    image: mongo
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=example
+    volumes:
+      - ~/mongodb:/data/db
+
+networks:
+  app_network:
+    driver: bridge
+
+
+
