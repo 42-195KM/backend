@@ -18,6 +18,8 @@ public enum CommonErrorCode implements ErrorCode {
   CREW_BOARD_SEARCH_POST_FAILED("CREW_027", "게시글 검색 실패", HttpStatus.INTERNAL_SERVER_ERROR),
   CREW_BOARD_DELETE_POST_SUCCESS("CREW_028", "게시글 삭제 성공", HttpStatus.OK),
   CREW_BOARD_DELETE_POST_FAILED("CREW_029", "게시글 삭제 실패", HttpStatus.INTERNAL_SERVER_ERROR),
+  CREW_BOARD_CREATE_COMMENT_SUCCESS("CREW_030", "댓글 생성 성공", HttpStatus.OK),
+  CREW_BOARD_CREATE_COMMENT_FAILED("CREW_031", "댓글 생성 실패", HttpStatus.INTERNAL_SERVER_ERROR),
 
 
 

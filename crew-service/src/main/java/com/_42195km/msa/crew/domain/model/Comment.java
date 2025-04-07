@@ -3,6 +3,7 @@ package com._42195km.msa.crew.domain.model;
 import java.util.UUID;
 
 import com._42195km.msa.common.BaseEntity;
+import com._42195km.msa.crew.application.dto.request.CreateCommentCommandDto;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -25,7 +26,13 @@ public class Comment extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
 	private UUID id;
-	@Column(name = "post_id")
-	private String postId ;
+	@Column(name = "post_id", columnDefinition = "uuid")
+	private UUID postId ;
 	private String comment;
+
+	public static Comment create(UUID postId, CreateCommentCommandDto commandDto) {
+		return Comment.builder()
+			.postId(postId)
+			.comment(commandDto.getComment()).build();
+	}
 }

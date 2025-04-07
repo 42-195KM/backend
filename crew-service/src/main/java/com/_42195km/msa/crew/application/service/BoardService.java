@@ -9,13 +9,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com._42195km.msa.common.exception.CustomBusinessException;
 import com._42195km.msa.common.exception.code.CommonErrorCode;
+import com._42195km.msa.crew.application.dto.request.CreateCommentCommandDto;
 import com._42195km.msa.crew.application.dto.request.CreatePostCommandDto;
 import com._42195km.msa.crew.application.dto.request.UpdatePostCommandDto;
 import com._42195km.msa.crew.application.dto.response.PostAppResponseDto;
 import com._42195km.msa.crew.application.mapper.PostMapper;
+import com._42195km.msa.crew.domain.model.Comment;
 import com._42195km.msa.crew.domain.model.Post;
+import com._42195km.msa.crew.domain.repository.CommentRepository;
 import com._42195km.msa.crew.domain.repository.PostRepository;
-import com._42195km.msa.crew.presentation.dto.request.SearchBoardRequestDto;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 public class BoardService {
 
 	private final PostRepository postRepository;
+	private final CommentRepository commentRepository;
 	private final PostMapper postMapper;
 
 	public void createPost(CreatePostCommandDto commandDto) {
@@ -80,6 +83,20 @@ public class BoardService {
 	public void deletePost(UUID postId) {
 		Post post = postRepository.findByIdAndIsDeletedFalse(postId)
 			.orElseThrow(() -> CustomBusinessException.from(CommonErrorCode.CREW_BOARD_GET_POST_FAILED));
+
+	}
+
+	public void createComment(UUID postId, CreateCommentCommandDto commandDto) {
+		// 게시글이 존재하는지 확인하는 용도
+		Post post = postRepository.findByIdAndIsDeletedFalse(postId)
+			.orElseThrow(() -> CustomBusinessException.from(CommonErrorCode.CREW_BOARD_GET_POST_FAILED));
+
+		try {
+			Comment comment = Comment.create(postId, commandDto);
+			commentRepository.save(comment);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 
 	}
 }

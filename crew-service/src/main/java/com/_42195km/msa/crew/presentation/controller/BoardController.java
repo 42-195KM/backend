@@ -21,6 +21,7 @@ import com._42195km.msa.common.exception.code.CommonErrorCode;
 import com._42195km.msa.crew.application.dto.response.PostAppResponseDto;
 import com._42195km.msa.crew.application.mapper.PostMapper;
 import com._42195km.msa.crew.application.service.BoardService;
+import com._42195km.msa.crew.presentation.dto.request.CreateCommentRequestDto;
 import com._42195km.msa.crew.presentation.dto.request.CreatePostRequestDto;
 import com._42195km.msa.crew.presentation.dto.request.GetBoardRequestDto;
 import com._42195km.msa.crew.presentation.dto.request.SearchBoardRequestDto;
@@ -117,8 +118,13 @@ public class BoardController {
 
 	@PostMapping("/{postId}/comments")
 	@Operation(summary = "댓글 등록")
-	public ResponseEntity createComment(@PathVariable("postId") UUID postId) {
-		return ResponseEntity.ok().build();
+	public ResponseEntity createComment(@PathVariable("postId") UUID postId, CreateCommentRequestDto requestDto) {
+		boardService.createComment(postId,requestDto.toCommandDto());
+		return ResponseEntity.ok(new ApiResponse<>(
+			CommonErrorCode.CREW_BOARD_CREATE_COMMENT_SUCCESS.getCode(),
+			"댓글 생성에 성공했습니다.",
+			CommonErrorCode.CREW_BOARD_CREATE_COMMENT_SUCCESS.getMessage(),
+			HttpStatus.ACCEPTED.value()));
 	}
 
 	@PutMapping("/{postId}/comments")
