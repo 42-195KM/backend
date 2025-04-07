@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com._42195km.msa.common.api.ApiResponse;
 import com._42195km.msa.common.exception.code.CommonErrorCode;
 import com._42195km.msa.crew.application.dto.response.PostAppResponseDto;
+import com._42195km.msa.crew.application.dto.response.PostWithCommentsAppResponseDto;
 import com._42195km.msa.crew.application.mapper.PostMapper;
 import com._42195km.msa.crew.application.service.BoardService;
 import com._42195km.msa.crew.presentation.dto.request.CreateCommentRequestDto;
@@ -27,6 +28,7 @@ import com._42195km.msa.crew.presentation.dto.request.GetBoardRequestDto;
 import com._42195km.msa.crew.presentation.dto.request.SearchBoardRequestDto;
 import com._42195km.msa.crew.presentation.dto.request.UpdatePostRequestDto;
 import com._42195km.msa.crew.presentation.dto.response.PostResponseDto;
+import com._42195km.msa.crew.presentation.dto.response.PostWithCommentsResponseDto;
 
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -90,8 +92,8 @@ public class BoardController {
 	@GetMapping("/{postId}")
 	@Operation(summary = "게시글 단건 조회")
 	public ResponseEntity<?> getBoard(@PathVariable("postId") UUID postId) {
-		PostAppResponseDto post = boardService.getPost(postId);
-		PostResponseDto presentationPost = postMapper.toPresentationDto(post);
+		PostWithCommentsAppResponseDto post = boardService.getPost(postId);
+		PostWithCommentsResponseDto presentationPost = PostWithCommentsResponseDto.fromApplicationDto(post);
 
 		return ResponseEntity.ok(new ApiResponse<>(
 			CommonErrorCode.CREW_BOARD_GET_POST_SUCCESS.getCode(),
@@ -118,8 +120,9 @@ public class BoardController {
 
 	@PostMapping("/{postId}/comments")
 	@Operation(summary = "댓글 등록")
-	public ResponseEntity createComment(@PathVariable("postId") UUID postId, CreateCommentRequestDto requestDto) {
-		boardService.createComment(postId,requestDto.toCommandDto());
+	public ResponseEntity createComment(@PathVariable("postId") UUID postId, @RequestBody CreateCommentRequestDto requestDto) {
+		System.out.println("댓글 확인 : " +requestDto.getComment());
+		boardService.createComment(postId, requestDto.toCommandDto());
 		return ResponseEntity.ok(new ApiResponse<>(
 			CommonErrorCode.CREW_BOARD_CREATE_COMMENT_SUCCESS.getCode(),
 			"댓글 생성에 성공했습니다.",

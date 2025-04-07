@@ -1,6 +1,8 @@
 package com._42195km.msa.crew.application.service;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,7 +14,9 @@ import com._42195km.msa.common.exception.code.CommonErrorCode;
 import com._42195km.msa.crew.application.dto.request.CreateCommentCommandDto;
 import com._42195km.msa.crew.application.dto.request.CreatePostCommandDto;
 import com._42195km.msa.crew.application.dto.request.UpdatePostCommandDto;
+import com._42195km.msa.crew.application.dto.response.CommentAppResponseDto;
 import com._42195km.msa.crew.application.dto.response.PostAppResponseDto;
+import com._42195km.msa.crew.application.dto.response.PostWithCommentsAppResponseDto;
 import com._42195km.msa.crew.application.mapper.PostMapper;
 import com._42195km.msa.crew.domain.model.Comment;
 import com._42195km.msa.crew.domain.model.Post;
@@ -74,10 +78,16 @@ public class BoardService {
 	 * @param postId
 	 * @return
 	 */
-	public PostAppResponseDto getPost(UUID postId) {
+	public PostWithCommentsAppResponseDto getPost(UUID postId) {
 		Post post = postRepository.findByIdAndIsDeletedFalse(postId)
 			.orElseThrow(() -> CustomBusinessException.from(CommonErrorCode.CREW_BOARD_GET_POST_FAILED));
-		return postMapper.toAppResponseDto(post);
+
+		List<Comment> comments = commentRepository.findByPostIdAndIsDeletedFalse(postId);
+		List<CommentAppResponseDto> commentDtos = comments.stream()
+			.map(CommentAppResponseDto::fromEntity)
+			.collect(Collectors.toList());
+
+		return postMapper.toAppResponseDtoWithComments(post, commentDtos);
 	}
 
 	public void deletePost(UUID postId) {
