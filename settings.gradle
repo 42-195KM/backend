@@ -1,5 +1,5 @@
 rootProject.name = 'root'
 include 'common'
+include 'server'
 include 'crew-service'
-
 include 'achivement-service'
