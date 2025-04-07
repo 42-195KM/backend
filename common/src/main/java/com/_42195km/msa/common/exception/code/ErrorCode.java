@@ -2,9 +2,9 @@ package com._42195km.msa.common.exception.code;
 
 public interface ErrorCode {
 
-  String getCode();
+	String getCode();
 
-  String getMessage();
+	String getMessage();
 
-  int getStatus();
+	int getStatus();
 }
