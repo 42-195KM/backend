@@ -65,4 +65,21 @@ public class BoardService {
 			throw CustomBusinessException.from(CommonErrorCode.CREW_BOARD_SEARCH_POST_FAILED);
 		}
 	}
+
+	/**
+	 * TODO : 댓글도 포함해야 함
+	 * @param postId
+	 * @return
+	 */
+	public PostAppResponseDto getPost(UUID postId) {
+		Post post = postRepository.findByIdAndIsDeletedFalse(postId)
+			.orElseThrow(() -> CustomBusinessException.from(CommonErrorCode.CREW_BOARD_GET_POST_FAILED));
+		return postMapper.toAppResponseDto(post);
+	}
+
+	public void deletePost(UUID postId) {
+		Post post = postRepository.findByIdAndIsDeletedFalse(postId)
+			.orElseThrow(() -> CustomBusinessException.from(CommonErrorCode.CREW_BOARD_GET_POST_FAILED));
+
+	}
 }

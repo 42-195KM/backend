@@ -88,24 +88,36 @@ public class BoardController {
 
 	@GetMapping("/{postId}")
 	@Operation(summary = "게시글 단건 조회")
-	public ResponseEntity<?> getBoard(@PathVariable("postId") int id) {
-		return ResponseEntity.ok().build();
+	public ResponseEntity<?> getBoard(@PathVariable("postId") UUID postId) {
+		PostAppResponseDto post = boardService.getPost(postId);
+		PostResponseDto presentationPost = postMapper.toPresentationDto(post);
+
+		return ResponseEntity.ok(new ApiResponse<>(
+			CommonErrorCode.CREW_BOARD_GET_POST_SUCCESS.getCode(),
+			presentationPost,
+			CommonErrorCode.CREW_BOARD_GET_POST_SUCCESS.getMessage(),
+			HttpStatus.ACCEPTED.value()));
 	}
 
 	/**
 	 * TODO : 인증/인가 구현 후 soft delete로 구현
-	 * @param id
+	 * @param postId
 	 * @return
 	 */
 	@PatchMapping("/{postId}")
 	@Operation(summary = "게시글 삭제")
-	public ResponseEntity deleteBoard(@PathVariable("postId") int id) {
-		return ResponseEntity.ok().build();
+	public ResponseEntity deleteBoard(@PathVariable("postId") UUID postId) {
+		boardService.deletePost(postId);
+		return ResponseEntity.ok(new ApiResponse<>(
+			CommonErrorCode.CREW_BOARD_GET_POST_SUCCESS.getCode(),
+			"게시글 삭제 성공했습니다.",
+			CommonErrorCode.CREW_BOARD_GET_POST_SUCCESS.getMessage(),
+			HttpStatus.ACCEPTED.value()));
 	}
 
 	@PostMapping("/{postId}/comments")
 	@Operation(summary = "댓글 등록")
-	public ResponseEntity createComment(@PathVariable("postId") int id) {
+	public ResponseEntity createComment(@PathVariable("postId") UUID postId) {
 		return ResponseEntity.ok().build();
 	}
 
