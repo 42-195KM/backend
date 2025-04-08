@@ -1,5 +1,7 @@
 package com._42195km.msa.user.application.service;
 
+import java.util.UUID;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -10,6 +12,7 @@ import com._42195km.msa.common.exception.CustomBusinessException;
 import com._42195km.msa.user.application.dto.request.CreateUserRequestDto;
 import com._42195km.msa.user.application.dto.response.CreateUserResponseDto;
 import com._42195km.msa.user.application.dto.response.GetAllUserResponseDto;
+import com._42195km.msa.user.application.dto.response.GetUserResponseDto;
 import com._42195km.msa.user.domain.exception.UserException;
 import com._42195km.msa.user.domain.model.User;
 import com._42195km.msa.user.infrastructure.persistence.UserRepositoryImpl;
@@ -56,5 +59,21 @@ public class UserServiceImpl implements UserService {
 		);
 
 		return getAllUserResponseDtos;
+	}
+
+	@Override
+	public GetUserResponseDto getUser(UUID userId) {
+
+		User targetUser = findUserById(userId);
+
+		return GetUserResponseDto.fromUser(targetUser);
+	}
+
+	private User findUserById(UUID userId) {
+
+		User targetUser = userRepositoryImpl.findByIdAndIsDeletedIsFalse(userId)
+			.orElseThrow(() -> CustomBusinessException.from(UserException.NOT_FOUND_USER));
+
+		return targetUser;
 	}
 }

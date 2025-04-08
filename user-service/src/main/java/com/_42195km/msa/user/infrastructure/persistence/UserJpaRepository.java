@@ -1,5 +1,6 @@
 package com._42195km.msa.user.infrastructure.persistence;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -12,4 +13,5 @@ public interface UserJpaRepository extends JpaRepository<User, UUID> {
 
 	Page<User> findAllByIsDeletedIsFalse(Pageable pageable);
 
+	Optional<User> findByIdAndIsDeletedIsFalse(UUID userId);
 }
