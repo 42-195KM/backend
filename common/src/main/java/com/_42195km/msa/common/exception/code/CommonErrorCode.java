@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 public enum CommonErrorCode implements ErrorCode {
-  SUCCESS("COM_000", "성공적으로 처리되었습니다.",HttpStatus.OK),
+
   METHOD_ARGUMENT_NOT_VALID("COM_001", "Validation 실패", HttpStatus.BAD_REQUEST);
 
   private final String code;

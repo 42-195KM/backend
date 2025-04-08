@@ -1,36 +1,37 @@
 package com._42195km.msa.chatbotservice.application.service;
 
+import com._42195km.msa.chatbotservice.application.dto.request.QuestionRequestAppDto;
+import com._42195km.msa.chatbotservice.exception.code.ChatbotCode;
+import com._42195km.msa.chatbotservice.infrastructure.sse.SseServiceImpl;
+import com._42195km.msa.common.exception.CustomBusinessException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.vertexai.gemini.VertexAiGeminiChatModel;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-
-import java.io.IOException;
 
 @Service
 @RequiredArgsConstructor
 public class GeminiService implements AiService {
 
     private final VertexAiGeminiChatModel vertexAiGeminiChatModel;
-    private final SseService sseService;
+    private final SseServiceImpl sseService;
 
     @Override
-    public void sendQuestion(Long userId, String question) {
-        Prompt prompt = new Prompt(question);
+    public void sendQuestion(QuestionRequestAppDto questionDto) {
+        Prompt prompt = new Prompt(questionDto.getQuestion());
 
         vertexAiGeminiChatModel
                 .stream(prompt)
                 .doOnNext(res -> {
                    String token = res.getResult().getOutput().getText();
 
-                   sseService.broadcast(userId, "Gemini", token);
+                   sseService.broadcast(questionDto.getUserId(), "Gemini", token);
                 })
                 .doOnComplete(()->{
-                    sseService.broadcast(userId, "Gemini end", "\n");
+                    sseService.broadcast(questionDto.getUserId(), "Gemini end", "\n");
                 })
                 .doOnError(e -> {
-                    e.printStackTrace();
+                    throw CustomBusinessException.from(ChatbotCode.AI_ERROR);
                 })
                 .subscribe();
     }

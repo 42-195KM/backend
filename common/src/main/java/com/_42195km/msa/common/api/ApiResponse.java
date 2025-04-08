@@ -31,12 +31,6 @@ public record ApiResponse<T>(
         .build();
   }
 
-  public static <T> ApiResponse<T> success(T data) {
-      return ApiResponse.<T>builder()
-              .code(CommonErrorCode.SUCCESS.getCode())
-              .message(CommonErrorCode.SUCCESS.getMessage())
-              .data(data)
-              .build();
-  }
+
 
 }
