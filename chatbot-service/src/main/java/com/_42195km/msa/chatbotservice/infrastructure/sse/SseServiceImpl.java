@@ -15,21 +15,21 @@ import java.util.concurrent.ConcurrentHashMap;
 public class SseServiceImpl implements SseService {
 
     private final Map<UUID, SseEmitter> sseEmitterMap = new ConcurrentHashMap<>();
-    private static final Long DEFAULT_TIMEOUT = 300000L;
+    private static final Long DEFAULT_TIMEOUT = 30000L;
 
     public SseEmitter subscribe(UUID userId){
-        SseEmitter sseEmitter = new SseEmitter(DEFAULT_TIMEOUT);
 
-        sseEmitterMap.put(userId, sseEmitter);
+        SseEmitter sseEmitter = new SseEmitter(DEFAULT_TIMEOUT);
+        if(!sseEmitterMap.containsKey(userId)){
+            sseEmitterMap.put(userId, sseEmitter);
+        }
 
         sseEmitter.onCompletion(() -> sseEmitterMap.remove(userId));
         sseEmitter.onTimeout(() -> {
-            sseEmitter.complete();
-            sseEmitterMap.remove(userId);
+            sseEmitterMap.get(userId).complete();
         });
         sseEmitter.onError(throwable -> {
-            sseEmitter.complete();
-            sseEmitterMap.remove(userId);
+            sseEmitterMap.get(userId).complete();
         });
         sendToClient(userId, "First subscribe",  "userId: " + userId + " sse 연결");
         return sseEmitter;
