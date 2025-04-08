@@ -1,6 +1,7 @@
 package com._42195km.msa.user.presentation.controller;
 
 import java.net.URI;
+import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -8,6 +9,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,6 +20,7 @@ import com._42195km.msa.common.api.ApiResponse;
 import com._42195km.msa.user.application.dto.request.CreateUserRequestDto;
 import com._42195km.msa.user.application.dto.response.CreateUserResponseDto;
 import com._42195km.msa.user.application.dto.response.GetAllUserResponseDto;
+import com._42195km.msa.user.application.dto.response.GetUserResponseDto;
 import com._42195km.msa.user.application.service.UserService;
 import com._42195km.msa.user.domain.success.UserSuccessCode;
 
@@ -35,6 +38,7 @@ public class UserController {
 	public ResponseEntity<ApiResponse<CreateUserResponseDto>> createUser(
 		@RequestBody @Valid CreateUserRequestDto createUserRequestDto
 	) {
+
 		CreateUserResponseDto createUserResponseDto = userService.createUser(createUserRequestDto);
 
 		URI location = ServletUriComponentsBuilder
@@ -65,12 +69,33 @@ public class UserController {
 
 		return ResponseEntity
 			.ok(
-				ApiResponse.<Page<GetAllUserResponseDto>>builder()
+				ApiResponse
+					.<Page<GetAllUserResponseDto>>builder()
 					.status(UserSuccessCode.FIND_ALL_USER_SUCCESS.getStatusCode().value())
 					.code(UserSuccessCode.FIND_ALL_USER_SUCCESS.getCode())
 					.message(UserSuccessCode.FIND_ALL_USER_SUCCESS.getMessage())
 					.data(getUserResponseDto)
 					.build()
 			);
+	}
+
+	@GetMapping("/v1/users/{userId}")
+	public ResponseEntity<ApiResponse<GetUserResponseDto>> getUser(
+		@PathVariable UUID userId
+	) {
+
+		GetUserResponseDto getUserResponseDto = userService.getUser(userId);
+
+		return ResponseEntity
+			.ok(
+				ApiResponse
+					.<GetUserResponseDto>builder()
+					.status(UserSuccessCode.FIND_ONE_USER_SUCCESS.getStatusCode().value())
+					.code(UserSuccessCode.FIND_ONE_USER_SUCCESS.getCode())
+					.message(UserSuccessCode.FIND_ONE_USER_SUCCESS.getMessage())
+					.data(getUserResponseDto)
+					.build()
+			);
+
 	}
 }

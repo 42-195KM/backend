@@ -1,5 +1,8 @@
 package com._42195km.msa.user.infrastructure.persistence;
 
+import java.util.Optional;
+import java.util.UUID;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
@@ -27,5 +30,10 @@ public class UserRepositoryImpl implements UserRepository {
 	public Page<User> findAllByIsDeletedIsFalse(Pageable pageable) {
 
 		return userJpaRepository.findAllByIsDeletedIsFalse(pageable);
+	}
+
+	@Override
+	public Optional<User> findByIdAndIsDeletedIsFalse(UUID userId) {
+		return userJpaRepository.findByIdAndIsDeletedIsFalse(userId);
 	}
 }
