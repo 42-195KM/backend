@@ -1,7 +1,6 @@
 package com._42195km.msa.crew.application.service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -22,9 +21,8 @@ import com._42195km.msa.crew.application.dto.response.PostWithCommentsAppRespons
 import com._42195km.msa.crew.application.mapper.PostMapper;
 import com._42195km.msa.crew.domain.model.Comment;
 import com._42195km.msa.crew.domain.model.Post;
-import com._42195km.msa.crew.domain.repository.CommentRepository;
-import com._42195km.msa.crew.domain.repository.PostRepository;
-import com._42195km.msa.crew.presentation.dto.request.UpdateCommentRequestDto;
+import com._42195km.msa.crew.infrastructure.persistence.CommentRepositoryImpl;
+import com._42195km.msa.crew.infrastructure.persistence.PostRepositoryImpl;
 
 import lombok.RequiredArgsConstructor;
 
@@ -32,8 +30,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class BoardService {
 
-	private final PostRepository postRepository;
-	private final CommentRepository commentRepository;
+	private final PostRepositoryImpl postRepository;
+	private final CommentRepositoryImpl commentRepository;
 	private final PostMapper postMapper;
 
 	public void createPost(CreatePostCommandDto commandDto) {
@@ -47,7 +45,7 @@ public class BoardService {
 
 	@Transactional
 	public void updatePost(UUID userId, UpdatePostCommandDto commandDto) {
-		Post post = postRepository.findByIdAndIsDeletedFalse(userId)
+		Post post = postRepository.findById(userId)
 			.orElseThrow(() -> CustomBusinessException.from(CommonErrorCode.CREW_BOARD_GET_POST_FAILED));
 
 		try {
@@ -82,10 +80,10 @@ public class BoardService {
 	 * @return
 	 */
 	public PostWithCommentsAppResponseDto getPost(UUID postId) {
-		Post post = postRepository.findByIdAndIsDeletedFalse(postId)
+		Post post = postRepository.findById(postId)
 			.orElseThrow(() -> CustomBusinessException.from(CommonErrorCode.CREW_BOARD_GET_POST_FAILED));
 
-		List<Comment> comments = commentRepository.findByPostIdAndIsDeletedFalse(postId);
+		List<Comment> comments = commentRepository.findByPostId(postId);
 		List<CommentAppResponseDto> commentDtos = comments.stream()
 			.map(CommentAppResponseDto::fromEntity)
 			.collect(Collectors.toList());
@@ -94,14 +92,14 @@ public class BoardService {
 	}
 
 	public void deletePost(UUID postId) {
-		Post post = postRepository.findByIdAndIsDeletedFalse(postId)
+		Post post = postRepository.findById(postId)
 			.orElseThrow(() -> CustomBusinessException.from(CommonErrorCode.CREW_BOARD_GET_POST_FAILED));
 
 	}
 
 	public void createComment(UUID postId, CreateCommentCommandDto commandDto) {
 		// 게시글이 존재하는지 확인하는 용도
-		Post post = postRepository.findByIdAndIsDeletedFalse(postId)
+		Post post = postRepository.findById(postId)
 			.orElseThrow(() -> CustomBusinessException.from(CommonErrorCode.CREW_BOARD_GET_POST_FAILED));
 
 		try {
@@ -115,7 +113,7 @@ public class BoardService {
 
 	@Transactional
 	public void updateComment(UUID commentId, UpdateCommentCommandDto commandDto) {
-		Comment comment = commentRepository.findByIdAndIsDeletedFalse(commentId)
+		Comment comment = commentRepository.findById(commentId)
 			.orElseThrow(() -> CustomBusinessException.from(CommonErrorCode.CREW_BOARD_GET_COMMENT_FAILED));
 
 		try {
@@ -124,11 +122,10 @@ public class BoardService {
 			throw CustomBusinessException.from(CommonErrorCode.CREW_BOARD_UPDATE_COMMENT_FAILED);
 		}
 
-
 	}
 
 	public void deleteComment(UUID commentId) {
-		Comment comment = commentRepository.findByIdAndIsDeletedFalse(commentId)
+		Comment comment = commentRepository.findById(commentId)
 			.orElseThrow(() -> CustomBusinessException.from(CommonErrorCode.CREW_BOARD_GET_COMMENT_FAILED));
 	}
 }

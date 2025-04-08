@@ -121,7 +121,8 @@ public class BoardController {
 
 	@PostMapping("/{postId}/comments")
 	@Operation(summary = "댓글 등록")
-	public ResponseEntity createComment(@PathVariable("postId") UUID postId, @RequestBody CreateCommentRequestDto requestDto) {
+	public ResponseEntity createComment(@PathVariable("postId") UUID postId,
+		@RequestBody CreateCommentRequestDto requestDto) {
 		boardService.createComment(postId, requestDto.toCommandDto());
 		return ResponseEntity.ok(new ApiResponse<>(
 			CommonErrorCode.CREW_BOARD_CREATE_COMMENT_SUCCESS.getCode(),
@@ -132,8 +133,9 @@ public class BoardController {
 
 	@PutMapping("/{commentId}/comments")
 	@Operation(summary = "댓글 수정")
-	public ResponseEntity updateComment(@PathVariable("commentId") UUID commentId, @RequestBody UpdateCommentRequestDto requestDto) {
-		boardService.updateComment(commentId,requestDto.toCommandDto());
+	public ResponseEntity updateComment(@PathVariable("commentId") UUID commentId,
+		@RequestBody UpdateCommentRequestDto requestDto) {
+		boardService.updateComment(commentId, requestDto.toCommandDto());
 		return ResponseEntity.ok(new ApiResponse<>(
 			CommonErrorCode.CREW_BOARD_UPDATE_COMMENT_SUCCESS.getCode(),
 			"댓글 수정에 성공했습니다.",
