@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -21,6 +22,7 @@ import com._42195km.msa.user.application.dto.request.CreateUserRequestDto;
 import com._42195km.msa.user.application.dto.response.CreateUserResponseDto;
 import com._42195km.msa.user.application.dto.response.GetAllUserResponseDto;
 import com._42195km.msa.user.application.dto.response.GetUserResponseDto;
+import com._42195km.msa.user.application.dto.response.SearchUserResponseDto;
 import com._42195km.msa.user.application.service.UserService;
 import com._42195km.msa.user.domain.success.UserSuccessCode;
 
@@ -96,6 +98,25 @@ public class UserController {
 					.data(getUserResponseDto)
 					.build()
 			);
+	}
 
+	@GetMapping("/v1/users/search")
+	public ResponseEntity<ApiResponse<Page<SearchUserResponseDto>>> searchUser(
+		@RequestParam String keyword,
+		@PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.ASC) Pageable pageable
+	) {
+
+		Page<SearchUserResponseDto> searchList = userService.searchUserList(keyword, pageable);
+
+		return ResponseEntity
+			.ok(
+				ApiResponse
+					.<Page<SearchUserResponseDto>>builder()
+					.status(UserSuccessCode.FIND_KEYWORD_USER_LIST_SUCCESS.getStatusCode().value())
+					.code(UserSuccessCode.FIND_KEYWORD_USER_LIST_SUCCESS.getCode())
+					.message(UserSuccessCode.FIND_KEYWORD_USER_LIST_SUCCESS.getMessage())
+					.data(searchList)
+					.build()
+			);
 	}
 }

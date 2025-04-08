@@ -36,4 +36,9 @@ public class UserRepositoryImpl implements UserRepository {
 	public Optional<User> findByIdAndIsDeletedIsFalse(UUID userId) {
 		return userJpaRepository.findByIdAndIsDeletedIsFalse(userId);
 	}
+
+	@Override
+	public Page<User> searchUser(String keyword, Pageable pageable) {
+		return userJpaRepository.searchByKeyword(keyword, pageable);
+	}
 }

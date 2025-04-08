@@ -9,6 +9,7 @@ import com._42195km.msa.user.application.dto.request.CreateUserRequestDto;
 import com._42195km.msa.user.application.dto.response.CreateUserResponseDto;
 import com._42195km.msa.user.application.dto.response.GetAllUserResponseDto;
 import com._42195km.msa.user.application.dto.response.GetUserResponseDto;
+import com._42195km.msa.user.application.dto.response.SearchUserResponseDto;
 
 public interface UserService {
 	CreateUserResponseDto createUser(CreateUserRequestDto createUserRequestDto);
@@ -16,4 +17,6 @@ public interface UserService {
 	Page<GetAllUserResponseDto> getAllUsers(Pageable pageable);
 
 	GetUserResponseDto getUser(UUID userId);
+
+	Page<SearchUserResponseDto> searchUserList(String keyword, Pageable pageable);
 }
