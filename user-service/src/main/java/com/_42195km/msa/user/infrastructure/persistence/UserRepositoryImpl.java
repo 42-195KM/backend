@@ -1,5 +1,7 @@
 package com._42195km.msa.user.infrastructure.persistence;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +19,13 @@ public class UserRepositoryImpl implements UserRepository {
 	@Override
 	@Transactional
 	public User save(User user) {
+
 		return userJpaRepository.save(user);
+	}
+
+	@Override
+	public Page<User> findAllByIsDeletedIsFalse(Pageable pageable) {
+
+		return userJpaRepository.findAllByIsDeletedIsFalse(pageable);
 	}
 }
