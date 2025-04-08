@@ -46,11 +46,16 @@ public class RunningRecordServiceImpl implements RunningRecordService {
 
 	@Override
 	public Page<RunningRecord> getAllRecords(Pageable pageable) {
-		return null;
+		try {
+			return runningRecordRepository.findAll(pageable);
+		}
+		catch (Exception e) {
+			throw CustomBusinessException.from(RunningRecordServiceCode.RUNNING_RECORD_GET_ALL_FAIL);
+		}
 	}
 
 	@Override
-	public Page<RunningRecord> searchRecords(Pageable pageable, UUID userId) {
+	public Page<RunningRecord> searchRecords(UUID userId, Pageable pageable) {
 		return null;
 	}
 

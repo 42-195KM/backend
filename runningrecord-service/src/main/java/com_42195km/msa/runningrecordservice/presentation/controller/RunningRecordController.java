@@ -2,12 +2,15 @@ package com_42195km.msa.runningrecordservice.presentation.controller;
 
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com._42195km.msa.common.api.ApiResponse;
@@ -50,7 +53,7 @@ public class RunningRecordController {
 	@GetMapping("/{recordId}")
 	public ResponseEntity<?> getRunningRecord(@PathVariable UUID runningRecordId) {
 		RunningRecord runningRecord = runningRecordService.getRecordById(runningRecordId);
-		GetRunningRecordResponseDto getRunningRecordRequestDto = new GetRunningRecordResponseDto(runningRecord);
+		GetRunningRecordResponseDto getRunningRecordResponseDto = new GetRunningRecordResponseDto(runningRecord);
 
 		RunningRecordServiceCode runningRecordGetSuccess = RunningRecordServiceCode.RUNNING_RECORD_GET_SUCCESS;
 
@@ -58,7 +61,29 @@ public class RunningRecordController {
 			.code(runningRecordGetSuccess.getCode())
 			.message(runningRecordGetSuccess.getMessage())
 			.status(runningRecordGetSuccess.getStatus())
-			.data(getRunningRecordRequestDto)
+			.data(getRunningRecordResponseDto)
+			.build();
+
+		return ResponseEntity.ok(response);
+	}
+
+	// 러닝 기록 목록 (GET api/v1/running-records)
+	@GetMapping("")
+	public ResponseEntity<?> getAllRunningRecords(
+		@RequestParam(defaultValue = "0", required = false) int page,
+		@RequestParam(defaultValue = "10", required = false) int size)
+	{
+		PageRequest pageRequest = PageRequest.of(page, size);
+		Page<GetRunningRecordResponseDto> getAllRunningRecordResponseDto = runningRecordService.getAllRecords(pageRequest)
+			.map(GetRunningRecordResponseDto::new);
+
+		RunningRecordServiceCode runningRecordGetAllSuccess = RunningRecordServiceCode.RUNNING_RECORD_GET_ALL_SUCCESS;
+
+		ApiResponse<Page<GetRunningRecordResponseDto>> response = ApiResponse.<Page<GetRunningRecordResponseDto>>builder()
+			.code(runningRecordGetAllSuccess.getCode())
+			.message(runningRecordGetAllSuccess.getMessage())
+			.status(runningRecordGetAllSuccess.getStatus())
+			.data(getAllRunningRecordResponseDto)
 			.build();
 
 		return ResponseEntity.ok(response);

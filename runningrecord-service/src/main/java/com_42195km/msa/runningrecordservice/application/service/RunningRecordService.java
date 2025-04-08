@@ -19,7 +19,8 @@ public interface RunningRecordService {
 	Page<RunningRecord> getAllRecords(Pageable pageable);
 
 	// 검색 by UserId
-	Page<RunningRecord> searchRecords(Pageable pageable, UUID userId);
+	Page<RunningRecord> searchRecords(UUID userId, Pageable pageable);
 
+	// 러닝 기록 삭제
 	void deleteRecord(UUID runningRecordId);
 }
