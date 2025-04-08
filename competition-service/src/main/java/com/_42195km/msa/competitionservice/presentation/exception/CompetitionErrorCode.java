@@ -1,4 +1,4 @@
-package com._42195km.msa.competitionservice.presentation;
+package com._42195km.msa.competitionservice.presentation.exception;
 
 import org.springframework.http.HttpStatus;
 
