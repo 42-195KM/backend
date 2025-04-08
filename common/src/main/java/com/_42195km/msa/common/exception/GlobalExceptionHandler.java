@@ -17,6 +17,7 @@ public class GlobalExceptionHandler {
 			.body(ApiResponse.builder()
 				.code(e.getCode().getCode())
 				.message(e.getCode().getMessage())
+				.status(e.getCode().getStatus())
 				.build());
 	}
 

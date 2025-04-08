@@ -9,7 +9,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum UserSuccessCode {
 
-	CREATE_USER_SUCCESS(HttpStatus.CREATED, "유저가 성공적으로 생성되었습니다.", "S_USER_CREATED");
+	CREATE_USER_SUCCESS(HttpStatus.CREATED, "유저가 성공적으로 생성되었습니다.", "S_USER_CREATED"),
+	FIND_ALL_USER_SUCCESS(HttpStatus.OK, "모든 유저가 성공적으로 조회되었습니다.", "S_USER_FIND_ALL"),
+	;
 
 	private final HttpStatus statusCode;
 	private final String message;
