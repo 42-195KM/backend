@@ -24,7 +24,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
-@Table(name = "p_ running_record")
+@Table(name = "p_running_record")
 @AllArgsConstructor
 @NoArgsConstructor
 public class RunningRecord extends BaseEntity {
