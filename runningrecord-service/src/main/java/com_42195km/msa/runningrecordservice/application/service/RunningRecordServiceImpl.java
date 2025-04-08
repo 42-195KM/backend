@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com._42195km.msa.common.BaseEntity;
 import com._42195km.msa.common.exception.CustomBusinessException;
 
 import com_42195km.msa.runningrecordservice.application.dto.request.CreateRunningRecordCommandDto;
@@ -37,7 +38,8 @@ public class RunningRecordServiceImpl implements RunningRecordService {
 	public RunningRecord getRecordById(UUID runningRecordId) {
 		try {
 			Optional<RunningRecord> runningRecord = runningRecordRepository.findById(runningRecordId);
-			return runningRecord.orElseThrow(() -> CustomBusinessException.from(RunningRecordServiceCode.RUNNING_RECORD_GET_FAIL));
+			return runningRecord.orElseThrow(() ->
+				CustomBusinessException.from(RunningRecordServiceCode.RUNNING_RECORD_GET_FAIL));
 		}
 		catch (Exception e) {
 			throw CustomBusinessException.from(RunningRecordServiceCode.RUNNING_RECORD_GET_FAIL);
@@ -58,13 +60,20 @@ public class RunningRecordServiceImpl implements RunningRecordService {
 	public Page<RunningRecord> searchRecords(UUID userId, Pageable pageable) {
 		try{
 			return runningRecordRepository.searchByUserId(userId, pageable);
-		} catch (RuntimeException e) {
+		} catch (Exception e) {
 			throw CustomBusinessException.from(RunningRecordServiceCode.RUNNING_RECORD_SEARCH_FAIL);
 		}
 	}
 
 	@Override
-	public void deleteRecord(UUID runningRecordId) {
-
+	public RunningRecord deleteRecord(UUID runningRecordId) {
+		try{
+			Optional<RunningRecord> runningRecord = runningRecordRepository.findById(runningRecordId);
+			runningRecord.ifPresent(BaseEntity::setDeleted);
+			return runningRecord.orElseThrow(() ->
+				CustomBusinessException.from(RunningRecordServiceCode.RUNNING_RECORD_DELETE_FAIL));
+		} catch (Exception e) {
+			throw CustomBusinessException.from(RunningRecordServiceCode.RUNNING_RECORD_DELETE_FAIL);
+		}
 	}
 }

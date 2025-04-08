@@ -22,5 +22,5 @@ public interface RunningRecordService {
 	Page<RunningRecord> searchRecords(UUID userId, Pageable pageable);
 
 	// 러닝 기록 삭제
-	void deleteRecord(UUID runningRecordId);
+	RunningRecord deleteRecord(UUID runningRecordId);
 }

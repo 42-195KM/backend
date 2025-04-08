@@ -23,8 +23,11 @@ public enum RunningRecordServiceCode implements ErrorCode {
 	RUNNING_RECORD_SEARCH_SUCCESS("RUNNING_RECORD_SEARCH_SUCCESS",
 		"러닝 기록을 성공적으로 검색하였습니다.", HttpStatus.OK.value()),
 	RUNNING_RECORD_SEARCH_FAIL("RUNNING_RECORD_SEARCH_FAIL",
-		"러닝 기록 검색이 실패하였습니다.", HttpStatus.INTERNAL_SERVER_ERROR.value());
-
+		"러닝 기록 검색이 실패하였습니다.", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+	RUNNING_RECORD_DELETE_SUCCESS("RUNNING_RECORD_DELETE_SUCCESS",
+		"러닝 기록을 성공적으로 삭제되었습니다.", HttpStatus.OK.value()),
+	RUNNING_RECORD_DELETE_FAIL("RUNNING_RECORD_DELETE_FAIL",
+		"러닝 기록 삭제가 실패하였습니다.", HttpStatus.INTERNAL_SERVER_ERROR.value());
 
 	private final String code;
 	private final String message;

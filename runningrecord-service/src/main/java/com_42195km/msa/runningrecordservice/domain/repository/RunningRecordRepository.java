@@ -12,6 +12,5 @@ public interface RunningRecordRepository {
 	RunningRecord save(RunningRecord runningRecord);
 	Optional<RunningRecord> findById(UUID runningRecordId);
 	Page<RunningRecord> findAll(Pageable pageable);
-	void deleteById(UUID runningRecordId);
 	Page<RunningRecord> searchByUserId(UUID userId, Pageable pageable);
 }

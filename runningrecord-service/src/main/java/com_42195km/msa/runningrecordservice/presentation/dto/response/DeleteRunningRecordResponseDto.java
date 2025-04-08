@@ -9,14 +9,14 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class CreateRunningRecordResponseDto {
+public class DeleteRunningRecordResponseDto {
 	private UUID id;
 	private UUID userId;
 	private double distance;
 	private Timestamp timer;
 	private double pace;
 
-	public CreateRunningRecordResponseDto(RunningRecord runningRecord) {
+	public DeleteRunningRecordResponseDto(RunningRecord runningRecord) {
 		this.id = runningRecord.getId();
 		this.userId = runningRecord.getUserId();
 		this.distance = runningRecord.getDistance();

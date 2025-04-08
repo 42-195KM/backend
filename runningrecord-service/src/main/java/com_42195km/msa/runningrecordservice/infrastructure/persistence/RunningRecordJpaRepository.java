@@ -27,4 +27,5 @@ public interface RunningRecordJpaRepository extends RunningRecordRepository, Jpa
 		+ "WHERE r.userId = :userId "
 		+ "AND r.isDeleted = false")
 	Page<RunningRecord> searchByUserId(@Param("userId") UUID userId, Pageable pageable);
+
 }
