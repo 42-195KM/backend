@@ -2,6 +2,8 @@ package com._42195km.msa.crew.presentation.exception;
 
 import org.springframework.http.HttpStatus;
 
+import com._42195km.msa.common.exception.code.ErrorCode;
+
 import lombok.Getter;
 
 @Getter
