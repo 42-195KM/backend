@@ -30,4 +30,13 @@ public record ApiResponse<T>(
         .status(CommonErrorCode.METHOD_ARGUMENT_NOT_VALID.getStatus())
         .build();
   }
+
+  public static <T> ApiResponse<T> success(T data) {
+      return ApiResponse.<T>builder()
+              .code(CommonErrorCode.SUCCESS.getCode())
+              .message(CommonErrorCode.SUCCESS.getMessage())
+              .data(data)
+              .build();
+  }
+
 }
