@@ -39,3 +39,4 @@ out/
 ### 환경변수 ###
 .env
 crew-service/src/main/resources/properties/env.properties
+competition-service/src/main/resources/properties/env.properties
