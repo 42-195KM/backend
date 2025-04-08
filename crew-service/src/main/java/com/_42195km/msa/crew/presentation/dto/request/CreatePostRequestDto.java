@@ -4,11 +4,12 @@ import com._42195km.msa.crew.application.dto.request.CreatePostCommandDto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CreatePostRequestDto {
 	@NotBlank
 	@Schema(example = "2025년 4월 둘째주 정규런 공지")

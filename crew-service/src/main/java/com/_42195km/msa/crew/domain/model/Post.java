@@ -11,6 +11,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,10 +19,8 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "p_crew_post")
-@Builder
 @Getter
-@AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Post extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
@@ -29,6 +28,13 @@ public class Post extends BaseEntity {
 	private String title;
 	private String content;
 	private String hashtag;
+
+	@Builder
+	public Post(String title, String content, String hashtag) {
+		this.title = title;
+		this.content = content;
+		this.hashtag = hashtag;
+	}
 
 	public static Post create(CreatePostCommandDto commandDto) {
 		return Post.builder()

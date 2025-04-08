@@ -4,11 +4,12 @@ import com._42195km.msa.crew.application.dto.request.UpdateCommentCommandDto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UpdateCommentRequestDto {
 	@NotBlank
 	@Schema(example = "저도 함께 하고 싶습니다! [수정]")
