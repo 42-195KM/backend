@@ -31,11 +31,9 @@ public class Comment extends BaseEntity {
 
 	@Builder
 	public Comment(
-		UUID id,
 		UUID postId,
 		String comment) {
 
-		this.id = id;
 		this.postId = postId;
 		this.comment = comment;
 	}
