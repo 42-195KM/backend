@@ -35,7 +35,7 @@ public class RunningRecordController {
 	public ResponseEntity<?> createRunningRecord(@RequestBody CreateRunningRecordRequestDto dto) {
 		CreateRunningRecordCommandDto createRunningRecordCommandDto = dto.toCommandDto();
 		RunningRecord runningRecord = runningRecordService.createRunningRecord(createRunningRecordCommandDto);
-		CreateRunningRecordResponseDto createRunningRecordResponseDto = new CreateRunningRecordResponseDto(runningRecord);
+		CreateRunningRecordResponseDto responseDto = new CreateRunningRecordResponseDto(runningRecord);
 
 		RunningRecordServiceCode runningRecordCreateSuccess = RunningRecordServiceCode.RUNNING_RECORD_CREATE_SUCCESS;
 
@@ -43,7 +43,7 @@ public class RunningRecordController {
 			.code(runningRecordCreateSuccess.getCode())
 			.message(runningRecordCreateSuccess.getMessage())
 			.status(runningRecordCreateSuccess.getStatus())
-			.data(createRunningRecordResponseDto)
+			.data(responseDto)
 			.build();
 
 		return ResponseEntity.ok(response);
@@ -53,7 +53,7 @@ public class RunningRecordController {
 	@GetMapping("/{recordId}")
 	public ResponseEntity<?> getRunningRecord(@PathVariable UUID runningRecordId) {
 		RunningRecord runningRecord = runningRecordService.getRecordById(runningRecordId);
-		GetRunningRecordResponseDto getRunningRecordResponseDto = new GetRunningRecordResponseDto(runningRecord);
+		GetRunningRecordResponseDto responseDto = new GetRunningRecordResponseDto(runningRecord);
 
 		RunningRecordServiceCode runningRecordGetSuccess = RunningRecordServiceCode.RUNNING_RECORD_GET_SUCCESS;
 
@@ -61,7 +61,7 @@ public class RunningRecordController {
 			.code(runningRecordGetSuccess.getCode())
 			.message(runningRecordGetSuccess.getMessage())
 			.status(runningRecordGetSuccess.getStatus())
-			.data(getRunningRecordResponseDto)
+			.data(responseDto)
 			.build();
 
 		return ResponseEntity.ok(response);
@@ -74,7 +74,7 @@ public class RunningRecordController {
 		@RequestParam(defaultValue = "10", required = false) int size)
 	{
 		PageRequest pageRequest = PageRequest.of(page, size);
-		Page<GetRunningRecordResponseDto> getAllRunningRecordResponseDto = runningRecordService.getAllRecords(pageRequest)
+		Page<GetRunningRecordResponseDto> responseDtos = runningRecordService.getAllRecords(pageRequest)
 			.map(GetRunningRecordResponseDto::new);
 
 		RunningRecordServiceCode runningRecordGetAllSuccess = RunningRecordServiceCode.RUNNING_RECORD_GET_ALL_SUCCESS;
@@ -83,7 +83,28 @@ public class RunningRecordController {
 			.code(runningRecordGetAllSuccess.getCode())
 			.message(runningRecordGetAllSuccess.getMessage())
 			.status(runningRecordGetAllSuccess.getStatus())
-			.data(getAllRunningRecordResponseDto)
+			.data(responseDtos)
+			.build();
+
+		return ResponseEntity.ok(response);
+	}
+
+	@GetMapping("/search")
+	public ResponseEntity<?> searchRecords(
+		@RequestParam(name = "userId", required = true) UUID userId,
+		@RequestParam(defaultValue = "0", required = false) int page,
+		@RequestParam(defaultValue = "10", required = false) int size
+	) {
+		PageRequest pageRequest = PageRequest.of(page, size);
+		Page<GetRunningRecordResponseDto> responseDtos = runningRecordService.searchRecords(userId, pageRequest)
+			.map(GetRunningRecordResponseDto::new);
+
+		RunningRecordServiceCode runningRecordSearchSuccess = RunningRecordServiceCode.RUNNING_RECORD_SEARCH_SUCCESS;
+		ApiResponse<Page<GetRunningRecordResponseDto>> response = ApiResponse.<Page<GetRunningRecordResponseDto>>builder()
+			.code(runningRecordSearchSuccess.getCode())
+			.message(runningRecordSearchSuccess.getMessage())
+			.status(runningRecordSearchSuccess.getStatus())
+			.data(responseDtos)
 			.build();
 
 		return ResponseEntity.ok(response);

@@ -56,7 +56,11 @@ public class RunningRecordServiceImpl implements RunningRecordService {
 
 	@Override
 	public Page<RunningRecord> searchRecords(UUID userId, Pageable pageable) {
-		return null;
+		try{
+			return runningRecordRepository.searchByUserId(userId, pageable);
+		} catch (RuntimeException e) {
+			throw CustomBusinessException.from(RunningRecordServiceCode.RUNNING_RECORD_SEARCH_FAIL);
+		}
 	}
 
 	@Override
