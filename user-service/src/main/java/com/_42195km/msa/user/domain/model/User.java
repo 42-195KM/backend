@@ -1,9 +1,11 @@
 package com._42195km.msa.user.domain.model;
 
 import java.util.Date;
+import java.util.Optional;
 import java.util.UUID;
 
 import com._42195km.msa.common.BaseEntity;
+import com._42195km.msa.user.application.dto.request.UpdateUserRequestDto;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -74,5 +76,17 @@ public class User extends BaseEntity {
 		this.role = role;
 		this.mediaId = mediaId;
 		this.phone = phone;
+	}
+
+	public void update(UpdateUserRequestDto updateUserRequestDto) {
+
+		Optional.ofNullable(updateUserRequestDto.getUsername()).ifPresent(value -> this.username = value);
+		Optional.ofNullable(updateUserRequestDto.getPassword()).ifPresent(value -> this.password = value);
+		Optional.ofNullable(updateUserRequestDto.getEmail()).ifPresent(value -> this.email = value);
+		Optional.ofNullable(updateUserRequestDto.getGender()).ifPresent(value -> this.gender = value);
+		Optional.ofNullable(updateUserRequestDto.getRole()).ifPresent(value -> this.role = value);
+		Optional.ofNullable(updateUserRequestDto.getMediaId()).ifPresent(value -> this.mediaId = value);
+		Optional.ofNullable(updateUserRequestDto.getPhone()).ifPresent(value -> this.phone = value);
+
 	}
 }
