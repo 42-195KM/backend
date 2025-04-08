@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com._42195km.msa.common.BaseEntity;
+import com._42195km.msa.competitionservice.application.dto.request.CreateCompetitionCommandDto;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -14,11 +15,17 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@Builder
 @Entity
 @Table(name = "p_competition")
+@NoArgsConstructor
+@AllArgsConstructor
 public class Competition extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
@@ -32,7 +39,7 @@ public class Competition extends BaseEntity {
 	private CompetitionType type;
 
 	@Column(name = "reception_type")
-	private String receptionType;
+	private ReceptionType receptionType;
 
 	@Column(name = "participants_num")
 	private Integer participantsNum;
@@ -41,5 +48,16 @@ public class Competition extends BaseEntity {
 
 	@OneToMany(mappedBy = "competition", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<CompetitionParticipantMapping> participantMappings = new ArrayList<>();
+
+	public static Competition create(CreateCompetitionCommandDto commandDto){
+		return Competition.builder()
+			.userId(commandDto.getUserId())
+			.title(commandDto.getTitle())
+			.type(commandDto.getType())
+			.receptionType(commandDto.getReceptionType())
+			.participantsNum(commandDto.getParticipantsNum())
+			.price(commandDto.getPrice())
+			.build();
+	}
 
 }

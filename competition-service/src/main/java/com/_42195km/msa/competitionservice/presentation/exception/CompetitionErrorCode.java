@@ -9,7 +9,10 @@ import lombok.Getter;
 @Getter
 public enum CompetitionErrorCode implements ErrorCode {
 
-	METHOD_ARGUMENT_NOT_VALID("COM_001", "Validation 실패", HttpStatus.BAD_REQUEST);
+	METHOD_ARGUMENT_NOT_VALID("COM_001", "Validation 실패", HttpStatus.BAD_REQUEST),
+	COMPETITION_CREATE_POST_SUCCESS("CPT_001","대회 생성 성공", HttpStatus.OK),
+	COMPETITION_CREATE_POST_FAIL("CPT_001","대회 생성 성공", HttpStatus.INTERNAL_SERVER_ERROR),
+	;
 
 	private final String code;
 	private final String message;

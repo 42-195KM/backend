@@ -16,12 +16,6 @@ public class CompetitionParticipantMapping {
 	@Id
 	private UUID id;
 
-	@Column(name = "participant_id")
-	private UUID participantId;
-
-	@Column(name = "competition_id")
-	private UUID competitionId;
-
 	@ManyToOne
 	@JoinColumn(name = "competition_id", nullable = false)
 	private Competition competition;
