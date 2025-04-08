@@ -5,11 +5,13 @@ import java.util.List;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import com._42195km.msa.common.exception.code.CommonErrorCode;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.Builder;
 
 public record ApiResponse<T>(
 	String code,
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	T data,
 	String message,
 	int status
