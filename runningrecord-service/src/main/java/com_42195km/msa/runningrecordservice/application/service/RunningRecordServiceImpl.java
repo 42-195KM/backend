@@ -1,5 +1,6 @@
 package com_42195km.msa.runningrecordservice.application.service;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -34,7 +35,13 @@ public class RunningRecordServiceImpl implements RunningRecordService {
 
 	@Override
 	public RunningRecord getRecordById(UUID runningRecordId) {
-		return null;
+		try {
+			Optional<RunningRecord> runningRecord = runningRecordRepository.findById(runningRecordId);
+			return runningRecord.orElseThrow(() -> CustomBusinessException.from(RunningRecordServiceCode.RUNNING_RECORD_GET_FAIL));
+		}
+		catch (Exception e) {
+			throw CustomBusinessException.from(RunningRecordServiceCode.RUNNING_RECORD_GET_FAIL);
+		}
 	}
 
 	@Override
