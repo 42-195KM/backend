@@ -4,7 +4,7 @@ plugins {
     id 'io.spring.dependency-management' version '1.1.7'
 }
 
-group = 'com._42-195KM.msa'
+group = 'com.eureka'
 version = '0.0.1-SNAPSHOT'
 
 java {
@@ -23,20 +23,24 @@ repositories {
     mavenCentral()
 }
 
+ext {
+    set('springCloudVersion', "2024.0.1")
+}
+
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-server'
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
 
-    // JPA + Auditing
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
 }
 
 tasks.named('test') {
     useJUnitPlatform()
 }
-
-bootJar { enabled = false }
