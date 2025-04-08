@@ -15,4 +15,6 @@ public interface UserRepository {
 	Page<User> findAllByIsDeletedIsFalse(Pageable pageable);
 
 	Optional<User> findByIdAndIsDeletedIsFalse(UUID userId);
+
+	Page<User> searchUser(String keyword, Pageable pageable);
 }
