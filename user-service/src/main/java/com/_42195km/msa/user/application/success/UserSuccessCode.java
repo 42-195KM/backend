@@ -1,4 +1,4 @@
-package com._42195km.msa.user.domain.success;
+package com._42195km.msa.user.application.success;
 
 import org.springframework.http.HttpStatus;
 

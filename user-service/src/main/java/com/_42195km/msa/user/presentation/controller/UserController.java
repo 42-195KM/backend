@@ -27,7 +27,7 @@ import com._42195km.msa.user.application.dto.response.GetUserResponseDto;
 import com._42195km.msa.user.application.dto.response.SearchUserResponseDto;
 import com._42195km.msa.user.application.dto.response.UpdateUserResponseDto;
 import com._42195km.msa.user.application.service.UserService;
-import com._42195km.msa.user.domain.success.UserSuccessCode;
+import com._42195km.msa.user.application.success.UserSuccessCode;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

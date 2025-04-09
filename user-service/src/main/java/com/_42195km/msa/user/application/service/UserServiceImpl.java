@@ -16,7 +16,7 @@ import com._42195km.msa.user.application.dto.response.GetAllUserResponseDto;
 import com._42195km.msa.user.application.dto.response.GetUserResponseDto;
 import com._42195km.msa.user.application.dto.response.SearchUserResponseDto;
 import com._42195km.msa.user.application.dto.response.UpdateUserResponseDto;
-import com._42195km.msa.user.domain.exception.UserException;
+import com._42195km.msa.user.application.exception.UserException;
 import com._42195km.msa.user.domain.model.User;
 import com._42195km.msa.user.infrastructure.persistence.UserRepositoryImpl;
 
