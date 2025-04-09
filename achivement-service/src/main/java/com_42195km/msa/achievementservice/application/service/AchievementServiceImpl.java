@@ -54,7 +54,7 @@ public class AchievementServiceImpl implements AchivementService{
 
 	@Override
 	public Page<Achievement> searchAchievements(String keyword, Pageable pageable) {
-		return null;
+		return achievementRepository.search(keyword, pageable);
 	}
 
 	@Override

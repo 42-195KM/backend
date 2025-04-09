@@ -95,9 +95,24 @@ public class AchivementController {
 	// 업적 검색 (GET api/v1/achivements/search?title={title})
 	@GetMapping("/achivements/search")
 	public ResponseEntity<?> searchAchivements(
-		@RequestParam("title") String title
-	){
-		return null;
+		@RequestParam("title") String title,
+		@RequestParam(defaultValue = "0", required = false) int page,
+		@RequestParam(defaultValue = "10", required = false) int size)
+	{
+		Pageable pageable = PageRequest.of(page, size);
+		Page<GetAchievementResponseDto> responseDtos = achievementService.searchAchievements(title, pageable)
+			.map(GetAchievementResponseDto::new);
+
+		AchivementServiceCode serviceCode = AchivementServiceCode.ACHIVEMENT_SEARCH_SUCCESS;
+
+		ApiResponse<Page<GetAchievementResponseDto>> response = ApiResponse.<Page<GetAchievementResponseDto>>builder()
+			.code(serviceCode.getCode())
+			.message(serviceCode.getMessage())
+			.status(serviceCode.getStatus())
+			.data(responseDtos)
+			.build();
+
+		return ResponseEntity.ok(response);
 	}
 
 	// 특정 사용자가 달성한 업적 검색 (GET api/v1/achivements/user/{userId})
