@@ -19,7 +19,6 @@ import com._42195km.msa.competitionservice.domain.model.CompetitionType;
 import com._42195km.msa.competitionservice.domain.model.ReceptionType;
 import com._42195km.msa.competitionservice.infrastructure.persistence.CompetitionRepositoryImpl;
 import com._42195km.msa.competitionservice.infrastructure.persistence.ParticipantRepositoryImpl;
-import com._42195km.msa.competitionservice.presentation.dto.request.UpdateCompetitionRequestDto;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -82,6 +81,8 @@ public class CompetitionService {
 		try {
 			Competition competition = competitionRepository.findById(competitionId);
 			return competitionMapper.toAppResponseDto(competition);
+		} catch (CustomBusinessException e) {
+			throw CustomBusinessException.from(CompetitionServiceCode.COMPETITION_GET_ID_FAIL);
 		} catch (Exception e) {
 			throw CustomBusinessException.from(CompetitionServiceCode.COMPETITION_GET_FAIL);
 		}
@@ -102,6 +103,16 @@ public class CompetitionService {
 		try {
 			Competition competition = competitionRepository.findById(competitionId);
 			competition.update(commandDto);
+		} catch (Exception e) {
+			throw CustomBusinessException.from(CompetitionServiceCode.COMPETITION_UPDATE_FAIL);
+		}
+	}
+
+	@Transactional
+	public void deleteCompetition(UUID competitionId) {
+		try {
+			Competition competition = competitionRepository.findById(competitionId);
+			competition.setDeleted();
 		} catch (Exception e) {
 			throw CustomBusinessException.from(CompetitionServiceCode.COMPETITION_UPDATE_FAIL);
 		}

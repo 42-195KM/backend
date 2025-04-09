@@ -41,7 +41,7 @@ public class CompetitionRepositoryImpl implements CompetitionRepository {
 
 	@Override
 	public Competition findById(UUID id) {
-		return jpaRepository.findById(id).orElseThrow(()-> CustomBusinessException.from(CompetitionServiceCode.COMPETITION_GET_ID_FAIL));
+		return jpaRepository.findByIdAndIsDeletedFalse(id).orElseThrow(()-> CustomBusinessException.from(CompetitionServiceCode.COMPETITION_GET_ID_FAIL));
 	}
 
 	@Override

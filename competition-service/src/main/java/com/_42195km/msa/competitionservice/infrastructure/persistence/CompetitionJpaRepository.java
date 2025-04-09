@@ -1,5 +1,6 @@
 package com._42195km.msa.competitionservice.infrastructure.persistence;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -13,6 +14,8 @@ import com._42195km.msa.competitionservice.domain.model.Competition;
 public interface CompetitionJpaRepository extends JpaRepository <Competition, UUID>{
 
 	Page<Competition> findByIsDeletedFalse(Pageable pageable);
+
+	Optional<Competition> findByIdAndIsDeletedFalse(UUID id);
 
 	@Query("SELECT c FROM Competition c WHERE c.isDeleted = false AND c.title LIKE CONCAT('%', :keyword, '%')")
 	Page<Competition> searchByTitle(@Param("keyword") String keyword, Pageable pageable);

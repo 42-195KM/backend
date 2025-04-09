@@ -109,9 +109,10 @@ public class CompetitionController {
 	@PatchMapping("/{competitionId}/delete")
 	@Operation(summary = "대회 삭제")
 	public ResponseEntity<?> deleteCompetition(@PathVariable("competitionId") UUID competitionId) {
-		return ResponseEntity.ok(new ApiResponse<>(CompetitionServiceCode.COMPETITION_CREATE_SUCCESS.getCode(),
-			"",
-			CompetitionServiceCode.COMPETITION_CREATE_SUCCESS.getMessage(),
+		competitionService.deleteCompetition(competitionId);
+		return ResponseEntity.ok(new ApiResponse<>(CompetitionServiceCode.COMPETITION_DELETE_SUCCESS.getCode(),
+			"대회 삭제가 왼료되었습니다.",
+			CompetitionServiceCode.COMPETITION_DELETE_SUCCESS.getMessage(),
 			HttpStatus.CREATED.value()));
 	}
 

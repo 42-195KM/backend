@@ -18,6 +18,8 @@ public enum CompetitionServiceCode implements ServiceCode {
 	COMPETITION_SEARCH_FAIL("CPT_007", "대회 검색 실패", HttpStatus.BAD_REQUEST),
 	COMPETITION_UPDATE_SUCCESS("CPT_008", "대회 수정 성공", HttpStatus.OK),
 	COMPETITION_UPDATE_FAIL("CPT_009", "대회 수정 실패", HttpStatus.BAD_REQUEST),
+	COMPETITION_DELETE_SUCCESS("CPT_010", "대회 삭제 성공", HttpStatus.OK),
+	COMPETITION_DELETE_FAIL("CPT_011", "대회 삭제 실패", HttpStatus.BAD_REQUEST),
 
 
 	;
