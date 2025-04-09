@@ -15,7 +15,11 @@ public enum AchivementServiceCode implements ServiceCode {
 	ACHIVEMENT_GET_SUCCESS("ACHIVEMENT_GET_SUCCESS",
 		"업적이 성공적으로 가져왔습니다.", HttpStatus.OK.value()),
 	ACHIVEMENT_GET_FAIL("ACHIVEMENT_GET_FAIL",
-		"업적 가져오기가 실패하였습니다.", HttpStatus.INTERNAL_SERVER_ERROR.value());
+		"업적 가져오기가 실패하였습니다.", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+	ACHIVEMENT_GET_ALL_SUCCESS("ACHIVEMENT_GET_ALL_SUCCESS",
+		"모든 업적을 성공적으로 가져왔습니다.", HttpStatus.OK.value()),
+	ACHIVEMENT_GET_ALL_FAIL("ACHIVEMENT_GET_ALL_FAIL",
+		"모든 업적 가져오기가 실패하였습니다.", HttpStatus.INTERNAL_SERVER_ERROR.value());
 
 	private final String code;
 	private final String message;

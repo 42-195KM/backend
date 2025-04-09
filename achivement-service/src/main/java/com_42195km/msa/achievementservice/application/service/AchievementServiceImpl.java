@@ -49,7 +49,7 @@ public class AchievementServiceImpl implements AchivementService{
 
 	@Override
 	public Page<Achievement> getAchievements(Pageable pageable) {
-		return null;
+		return achievementRepository.findAll(pageable);
 	}
 
 	@Override

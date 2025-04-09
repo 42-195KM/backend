@@ -2,6 +2,9 @@ package com_42195km.msa.achievementservice.presentation.controller;
 
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -69,8 +72,24 @@ public class AchivementController {
 
 	// 업적 목록 보기 (GET api/v1/achivements)
 	@GetMapping("/achivements")
-	public ResponseEntity<?> getAllAchievements() {
-		return null;
+	public ResponseEntity<?> getAllAchievements(
+		@RequestParam(defaultValue = "0", required = false) int page,
+		@RequestParam(defaultValue = "10", required = false) int size)
+	{
+		Pageable pageable = PageRequest.of(page, size);
+		Page<GetAchievementResponseDto> responseDtos = achievementService.getAchievements(pageable)
+			.map(GetAchievementResponseDto::new);
+
+		AchivementServiceCode serviceCode = AchivementServiceCode.ACHIVEMENT_GET_ALL_SUCCESS;
+
+		ApiResponse<Page<GetAchievementResponseDto>> response = ApiResponse.<Page<GetAchievementResponseDto>>builder()
+			.code(serviceCode.getCode())
+			.message(serviceCode.getMessage())
+			.status(serviceCode.getStatus())
+			.data(responseDtos)
+			.build();
+
+		return ResponseEntity.ok(response);
 	}
 
 	// 업적 검색 (GET api/v1/achivements/search?title={title})
