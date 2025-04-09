@@ -66,9 +66,9 @@ public class CompetitionController {
 	public ResponseEntity<?> searchCompetitions(@ParameterObject SearchCompetitionRequestDto requstDto) {
 		Page<CompetitionAppResponseDto> competition = competitionService.searchCompetition(requstDto.keyword(),requstDto.toPageable());
 		Page<CompetitionResponseDto> presentationCompetition = competitionMapper.toPresentationDtoPage(competition);
-		return ResponseEntity.ok(new ApiResponse<>(CompetitionServiceCode.COMPETITION_CREATE_SUCCESS.getCode(),
+		return ResponseEntity.ok(new ApiResponse<>(CompetitionServiceCode.COMPETITION_SEARCH_SUCCESS.getCode(),
 			presentationCompetition,
-			CompetitionServiceCode.COMPETITION_CREATE_SUCCESS.getMessage(),
+			CompetitionServiceCode.COMPETITION_SEARCH_SUCCESS.getMessage(),
 			HttpStatus.CREATED.value()));
 	}
 
@@ -77,18 +77,20 @@ public class CompetitionController {
 	public ResponseEntity<?> getCompetition(@PathVariable("competitionId") UUID competitionId) {
 		CompetitionAppResponseDto competition = competitionService.getCompetition(competitionId);
 		CompetitionResponseDto presentation = competitionMapper.toPresentationDto(competition);
-		return ResponseEntity.ok(new ApiResponse<>(CompetitionServiceCode.COMPETITION_CREATE_SUCCESS.getCode(),
+		return ResponseEntity.ok(new ApiResponse<>(CompetitionServiceCode.COMPETITION_GET_SUCCESS.getCode(),
 			presentation,
-			CompetitionServiceCode.COMPETITION_CREATE_SUCCESS.getMessage(),
+			CompetitionServiceCode.COMPETITION_GET_SUCCESS.getMessage(),
 			HttpStatus.CREATED.value()));
 	}
 
 	@GetMapping("/{competitionId}/check")
 	@Operation(summary = "주최 대회 확인")
-	public ResponseEntity<?> checkCompetition(@PathVariable("competitionId") UUID competitionId) {
-		return ResponseEntity.ok(new ApiResponse<>(CompetitionServiceCode.COMPETITION_CREATE_SUCCESS.getCode(),
-			"",
-			CompetitionServiceCode.COMPETITION_CREATE_SUCCESS.getMessage(),
+	public ResponseEntity<?> checkCompetition(@PathVariable("competitionId") UUID userId, @ParameterObject GetCompetitionRequestDto requestDto) {
+		Page<CompetitionAppResponseDto> competition = competitionService.getHostCompetition(userId,requestDto.toPageable());
+		Page<CompetitionResponseDto> presentationCompetition = competitionMapper.toPresentationDtoPage(competition);
+		return ResponseEntity.ok(new ApiResponse<>(CompetitionServiceCode.COMPETITION_GET_SUCCESS.getCode(),
+			presentationCompetition,
+			CompetitionServiceCode.COMPETITION_GET_SUCCESS.getMessage(),
 			HttpStatus.CREATED.value()));
 	}
 

@@ -20,4 +20,6 @@ public interface CompetitionJpaRepository extends JpaRepository <Competition, UU
 	@Query("SELECT c FROM Competition c WHERE c.isDeleted = false AND " +
 		"(CAST(c.type AS string) = :keyword OR CAST(c.receptionType AS string) = :keyword)")
 	Page<Competition> searchByEnumType(@Param("keyword") String keyword, Pageable pageable);
+
+	Page<Competition> findByUserIdAndIsDeletedFalse(UUID userId, Pageable pageable);
 }

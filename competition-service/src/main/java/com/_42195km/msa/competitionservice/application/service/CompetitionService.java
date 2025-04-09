@@ -65,7 +65,6 @@ public class CompetitionService {
 				// enum 타입에 맞는 검색
 				competition = competitionRepository.searchByEnumType(keyword, pageable);
 			} else {
-				// 일반 문자열 검색 (제목만)
 				competition = competitionRepository.searchByTitle(keyword, pageable);
 			}
 
@@ -81,6 +80,16 @@ public class CompetitionService {
 			Competition competition = competitionRepository.findById(competitionId);
 			return competitionMapper.toAppResponseDto(competition);
 		} catch (Exception e) {
+			throw CustomBusinessException.from(CompetitionServiceCode.COMPETITION_GET_FAIL);
+		}
+	}
+
+	public Page<CompetitionAppResponseDto> getHostCompetition(UUID userId, Pageable pageable) {
+		try {
+			Page<Competition> competitions = competitionRepository.findByHost(userId, pageable);
+			return competitionMapper.toAppResponseDtoPage(competitions);
+		} catch (Exception e) {
+			log.error("error check : {}", e.getMessage());
 			throw CustomBusinessException.from(CompetitionServiceCode.COMPETITION_GET_FAIL);
 		}
 	}

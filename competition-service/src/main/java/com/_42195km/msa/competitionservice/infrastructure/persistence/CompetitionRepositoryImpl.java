@@ -39,8 +39,13 @@ public class CompetitionRepositoryImpl implements CompetitionRepository {
 		return jpaRepository.searchByEnumType(keyword, pageable);
 	}
 
+	@Override
 	public Competition findById(UUID id) {
 		return jpaRepository.findById(id).orElseThrow(()-> CustomBusinessException.from(CompetitionServiceCode.COMPETITION_GET_ID_FAIL));
+	}
+
+	public Page<Competition> findByHost(UUID hostId,Pageable pageable){
+		return jpaRepository.findByUserIdAndIsDeletedFalse(hostId, pageable);
 	}
 
 }
