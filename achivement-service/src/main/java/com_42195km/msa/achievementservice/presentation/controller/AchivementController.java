@@ -12,10 +12,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com._42195km.msa.common.api.ApiResponse;
+
 import com_42195km.msa.achievementservice.application.dto.request.CreateAchievementCommandDto;
 import com_42195km.msa.achievementservice.application.service.AchivementService;
+import com_42195km.msa.achievementservice.domain.model.Achievement;
 import com_42195km.msa.achievementservice.domain.repository.AchievementRepository;
+import com_42195km.msa.achievementservice.infrastructure.config.AchivementServiceCode;
 import com_42195km.msa.achievementservice.presentation.dto.request.CreateAchievementRequestDto;
+import com_42195km.msa.achievementservice.presentation.dto.response.CreateAchievementResponseDto;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -27,8 +32,21 @@ public class AchivementController {
 
 	// 업적 생성 (POST api/v1/app/achivements)
 	@PostMapping("/app/achivements")
-	public ResponseEntity<?> createAchievement(@RequestBody CreateAchievementRequestDto createAchievementCommandDto) {
-		return null;
+	public ResponseEntity<?> createAchievement(@RequestBody CreateAchievementRequestDto dto) {
+		CreateAchievementCommandDto createAchievementCommandDto = dto.toCommandDto();
+		Achievement achievement = achievementService.createAchievement(createAchievementCommandDto);
+		CreateAchievementResponseDto responseDto = new CreateAchievementResponseDto(achievement);
+
+		AchivementServiceCode serviceCode = AchivementServiceCode.ACHIVEMENT_CREATE_SUCCESS;
+
+		ApiResponse<CreateAchievementResponseDto> response = ApiResponse.<CreateAchievementResponseDto>builder()
+			.code(serviceCode.getCode())
+			.message(serviceCode.getMessage())
+			.status(serviceCode.getStatus())
+			.data(responseDto)
+			.build();
+
+		return ResponseEntity.ok(response);
 	}
 
 	// 업적 조회 (GET api/vi/achivements/{achivementId})

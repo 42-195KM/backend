@@ -1,5 +1,6 @@
 package com_42195km.msa.achievementservice.domain.model;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -9,6 +10,7 @@ import org.hibernate.type.SqlTypes;
 
 import com._42195km.msa.common.BaseEntity;
 
+import com_42195km.msa.achievementservice.application.dto.request.CreateAchievementCommandDto;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -57,4 +59,15 @@ public class Achievement extends BaseEntity {
 
 	@OneToMany(mappedBy = "achievement", cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<AchievementUser> achievementUsers;
+
+	public static Achievement createAchievement(CreateAchievementCommandDto createAchievementCommandDto) {
+		return Achievement.builder()
+			.title(createAchievementCommandDto.getTitle())
+			.description(createAchievementCommandDto.getDescription())
+			.criteria(createAchievementCommandDto.getCriteria())
+			.criteriaValue(createAchievementCommandDto.getCriteriaValue())
+			.criteriaInequality(CriteriaInequality.valueOf(createAchievementCommandDto.getCriteriaType()))
+			.achievementUsers(new HashSet<>())
+			.build();
+	}
 }

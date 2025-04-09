@@ -6,10 +6,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com._42195km.msa.common.exception.CustomBusinessException;
+
 import com_42195km.msa.achievementservice.application.dto.request.CreateAchievementCommandDto;
 import com_42195km.msa.achievementservice.domain.model.Achievement;
 import com_42195km.msa.achievementservice.domain.repository.AchievementRepository;
 import com_42195km.msa.achievementservice.domain.repository.AchievementUserRepository;
+import com_42195km.msa.achievementservice.infrastructure.config.AchivementServiceCode;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -21,7 +24,14 @@ public class AchievementServiceImpl implements AchivementService{
 
 	@Override
 	public Achievement createAchievement(CreateAchievementCommandDto createAchievementCommandDto) {
-		return null;
+		try{
+			Achievement achievement = Achievement.createAchievement(createAchievementCommandDto);
+			achievement = achievementRepository.save(achievement);
+			return achievement;
+		}
+		catch (Exception e){
+			throw CustomBusinessException.from(AchivementServiceCode.ACHIVEMENT_CREATE_FAIL);
+		}
 	}
 
 	@Override
