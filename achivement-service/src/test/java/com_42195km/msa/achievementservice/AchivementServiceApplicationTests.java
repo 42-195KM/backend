@@ -1,4 +1,4 @@
-package com_42195km.msa.achivementservice;
+package com_42195km.msa.achievementservice;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

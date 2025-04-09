@@ -2,12 +2,12 @@ package com_42195km.msa.runningrecordservice.infrastructure.config;
 
 import org.springframework.http.HttpStatus;
 
-import com._42195km.msa.common.exception.code.ErrorCode;
+import com._42195km.msa.common.code.ServiceCode;
 
 import lombok.Getter;
 
 @Getter
-public enum RunningRecordServiceCode implements ErrorCode {
+public enum RunningRecordServiceCode implements ServiceCode {
 	RUNNING_RECORD_CREATE_SUCCESS("RUNNING_RECORD_CREATE_SUCCESS",
 		"러닝 기록이 성공적으로 생성되었습니다.", HttpStatus.CREATED.value()),
 	RUNNING_RECORD_CREATE_FAIL("RUNNING_RECORD_CREATE_FAIL",
