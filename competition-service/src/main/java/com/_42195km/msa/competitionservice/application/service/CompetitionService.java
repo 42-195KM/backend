@@ -15,8 +15,11 @@ import com._42195km.msa.competitionservice.application.dto.response.CompetitionA
 import com._42195km.msa.competitionservice.application.exception.CompetitionServiceCode;
 import com._42195km.msa.competitionservice.application.mapper.CompetitionMapper;
 import com._42195km.msa.competitionservice.domain.model.Competition;
+import com._42195km.msa.competitionservice.domain.model.CompetitionParticipantMapping;
 import com._42195km.msa.competitionservice.domain.model.CompetitionType;
+import com._42195km.msa.competitionservice.domain.model.Participant;
 import com._42195km.msa.competitionservice.domain.model.ReceptionType;
+import com._42195km.msa.competitionservice.infrastructure.persistence.CompetitionParticipantMappingRepositoryImpl;
 import com._42195km.msa.competitionservice.infrastructure.persistence.CompetitionRepositoryImpl;
 import com._42195km.msa.competitionservice.infrastructure.persistence.ParticipantRepositoryImpl;
 
@@ -30,6 +33,7 @@ public class CompetitionService {
 
 	private final CompetitionRepositoryImpl competitionRepository;
 	private final ParticipantRepositoryImpl participantRepository;
+	private final CompetitionParticipantMappingRepositoryImpl mappingRepository;
 	private final CompetitionMapper competitionMapper;
 
 	public void createCompetition(CreateCompetitionCommandDto command) {
@@ -63,8 +67,8 @@ public class CompetitionService {
 			boolean isReceptionType = Arrays.stream(ReceptionType.values())
 				.anyMatch(type -> type.name().equals(keyword));
 
+			// enum 타입에 맞는 검색
 			if (isCompetitionType || isReceptionType) {
-				// enum 타입에 맞는 검색
 				competition = competitionRepository.searchByEnumType(keyword, pageable);
 			} else {
 				competition = competitionRepository.searchByTitle(keyword, pageable);
@@ -115,6 +119,37 @@ public class CompetitionService {
 			competition.setDeleted();
 		} catch (Exception e) {
 			throw CustomBusinessException.from(CompetitionServiceCode.COMPETITION_UPDATE_FAIL);
+		}
+	}
+
+	@Transactional
+	public void applyCompetition(UUID competitionId, UUID participantId) {
+		try {
+			log.error("ID 전달 확인 :{} , : {}", competitionId, participantId);
+			Competition competition = competitionRepository.findById(competitionId);
+			Participant participant = Participant.create(participantId);
+			participantRepository.save(participant);
+
+			// 중볻 참가 신청 확인
+			Boolean alreadyApplied = mappingRepository.checkIsParticipate(competitionId, participantId);
+			if(alreadyApplied){
+				throw CustomBusinessException.from(CompetitionServiceCode.COMPETITION_APPLY_EXIST);
+			}
+			log.error("중복 확인까지는 성공");
+
+			// 대회 신청 마감 확인
+			Integer ParticipantCount = mappingRepository.checkParticipantCount(competition,participant);
+			if (ParticipantCount > competition.getParticipantsNum()) {
+				throw CustomBusinessException.from(CompetitionServiceCode.COMPETITION_APPLY_FIRST_FAIL);
+			}
+			log.error("마감 확인까지는 성공");
+
+			CompetitionParticipantMapping apply = CompetitionParticipantMapping.create(competition, participant);
+			mappingRepository.save(apply);
+
+		} catch (Exception e) {
+			log.error("error check : {}", e.getMessage());
+			throw CustomBusinessException.from(CompetitionServiceCode.COMPETITION_APPLY_FAIL);
 		}
 	}
 }

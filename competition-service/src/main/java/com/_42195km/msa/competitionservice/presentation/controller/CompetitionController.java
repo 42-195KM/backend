@@ -22,6 +22,7 @@ import com._42195km.msa.competitionservice.application.exception.CompetitionServ
 import com._42195km.msa.competitionservice.application.mapper.CompetitionMapper;
 import com._42195km.msa.competitionservice.application.service.CompetitionService;
 import com._42195km.msa.competitionservice.domain.model.Competition;
+import com._42195km.msa.competitionservice.presentation.dto.request.ApplyCompetitionRequestDto;
 import com._42195km.msa.competitionservice.presentation.dto.request.CreateCompetitionRequestDto;
 import com._42195km.msa.competitionservice.presentation.dto.request.GetCompetitionRequestDto;
 import com._42195km.msa.competitionservice.presentation.dto.request.SearchCompetitionRequestDto;
@@ -119,10 +120,11 @@ public class CompetitionController {
 	@PostMapping("/{competitionId}/apply")
 	@Operation(summary = "대회 신청")
 	public ResponseEntity<?> applyCompetition(@PathVariable("competitionId") UUID competitionId,
-		@RequestBody Competition competition) {
-		return ResponseEntity.ok(new ApiResponse<>(CompetitionServiceCode.COMPETITION_CREATE_SUCCESS.getCode(),
-			"",
-			CompetitionServiceCode.COMPETITION_CREATE_SUCCESS.getMessage(),
+		@RequestBody ApplyCompetitionRequestDto participant) {
+		competitionService.applyCompetition(competitionId,participant.getParticipantId());
+		return ResponseEntity.ok(new ApiResponse<>(CompetitionServiceCode.COMPETITION_APPLY_SUCCESS.getCode(),
+			"대회 신청에 성공했습니다.",
+			CompetitionServiceCode.COMPETITION_APPLY_SUCCESS.getMessage(),
 			HttpStatus.CREATED.value()));
 	}
 
