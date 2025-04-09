@@ -5,8 +5,8 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 public enum CommonErrorCode implements ErrorCode {
-
-  METHOD_ARGUMENT_NOT_VALID("COM_001", "Validation 실패", HttpStatus.BAD_REQUEST);
+  METHOD_ARGUMENT_NOT_VALID("COM_001", "Validation 실패", HttpStatus.BAD_REQUEST),
+  ;
 
   private final String code;
   private final String message;
