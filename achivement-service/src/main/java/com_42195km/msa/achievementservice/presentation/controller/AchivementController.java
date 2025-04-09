@@ -21,6 +21,7 @@ import com_42195km.msa.achievementservice.domain.repository.AchievementRepositor
 import com_42195km.msa.achievementservice.infrastructure.config.AchivementServiceCode;
 import com_42195km.msa.achievementservice.presentation.dto.request.CreateAchievementRequestDto;
 import com_42195km.msa.achievementservice.presentation.dto.response.CreateAchievementResponseDto;
+import com_42195km.msa.achievementservice.presentation.dto.response.GetAchievementResponseDto;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -52,7 +53,18 @@ public class AchivementController {
 	// 업적 조회 (GET api/vi/achivements/{achivementId})
 	@GetMapping("/achivements/{achievementId}")
 	public ResponseEntity<?> getAchievement(@PathVariable UUID achievementId) {
-		return null;
+		Achievement achievement = achievementService.getAchievementById(achievementId);
+		GetAchievementResponseDto responseDto = new GetAchievementResponseDto(achievement);
+
+		AchivementServiceCode serviceCode = AchivementServiceCode.ACHIVEMENT_GET_SUCCESS;
+		ApiResponse.<GetAchievementResponseDto>builder()
+			.code(serviceCode.getCode())
+			.message(serviceCode.getMessage())
+			.status(serviceCode.getStatus())
+			.data(responseDto)
+			.build();
+
+		return ResponseEntity.ok(responseDto);
 	}
 
 	// 업적 목록 보기 (GET api/v1/achivements)

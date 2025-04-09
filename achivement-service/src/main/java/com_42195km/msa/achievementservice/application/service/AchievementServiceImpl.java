@@ -1,5 +1,6 @@
 package com_42195km.msa.achievementservice.application.service;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -36,7 +37,14 @@ public class AchievementServiceImpl implements AchivementService{
 
 	@Override
 	public Achievement getAchievementById(UUID achievementId) {
-		return null;
+		try{
+			Optional<Achievement> achievement = achievementRepository.findById(achievementId);
+			return achievement.orElseThrow(() ->
+				CustomBusinessException.from(AchivementServiceCode.ACHIVEMENT_GET_FAIL));
+		}
+		catch (Exception e){
+			throw CustomBusinessException.from(AchivementServiceCode.ACHIVEMENT_GET_FAIL);
+		}
 	}
 
 	@Override
