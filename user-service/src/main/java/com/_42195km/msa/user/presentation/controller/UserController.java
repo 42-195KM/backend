@@ -142,4 +142,9 @@ public class UserController {
 					.build()
 			);
 	}
+	
+	/*
+		TODO : softDelete는 Auth 구현 후 AuditorAwareImpl이 잘 동작하면 생성
+	 */
+
 }
