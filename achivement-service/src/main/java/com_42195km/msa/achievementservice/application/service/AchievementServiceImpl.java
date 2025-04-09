@@ -7,13 +7,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com._42195km.msa.common.BaseEntity;
 import com._42195km.msa.common.exception.CustomBusinessException;
 
 import com_42195km.msa.achievementservice.application.dto.request.CreateAchievementCommandDto;
 import com_42195km.msa.achievementservice.domain.model.Achievement;
 import com_42195km.msa.achievementservice.domain.repository.AchievementRepository;
 import com_42195km.msa.achievementservice.domain.repository.AchievementUserRepository;
-import com_42195km.msa.achievementservice.infrastructure.config.AchivementServiceCode;
+import com_42195km.msa.achievementservice.infrastructure.config.AchievementServiceCode;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -31,7 +32,7 @@ public class AchievementServiceImpl implements AchivementService{
 			return achievement;
 		}
 		catch (Exception e){
-			throw CustomBusinessException.from(AchivementServiceCode.ACHIVEMENT_CREATE_FAIL);
+			throw CustomBusinessException.from(AchievementServiceCode.ACHIEVEMENT_CREATE_FAIL);
 		}
 	}
 
@@ -40,30 +41,53 @@ public class AchievementServiceImpl implements AchivementService{
 		try{
 			Optional<Achievement> achievement = achievementRepository.findById(achievementId);
 			return achievement.orElseThrow(() ->
-				CustomBusinessException.from(AchivementServiceCode.ACHIVEMENT_GET_FAIL));
+				CustomBusinessException.from(AchievementServiceCode.ACHIEVEMENT_GET_FAIL));
 		}
 		catch (Exception e){
-			throw CustomBusinessException.from(AchivementServiceCode.ACHIVEMENT_GET_FAIL);
+			throw CustomBusinessException.from(AchievementServiceCode.ACHIEVEMENT_GET_FAIL);
 		}
 	}
 
 	@Override
 	public Page<Achievement> getAchievements(Pageable pageable) {
-		return achievementRepository.findAll(pageable);
+		try{
+			return achievementRepository.findAll(pageable);
+		}
+		catch (Exception e) {
+			throw CustomBusinessException.from(AchievementServiceCode.ACHIEVEMENT_GET_ALL_FAIL);
+		}
 	}
 
 	@Override
 	public Page<Achievement> searchAchievements(String keyword, Pageable pageable) {
-		return achievementRepository.search(keyword, pageable);
+		try{
+			return achievementRepository.search(keyword, pageable);
+		}
+		catch (Exception e) {
+			throw CustomBusinessException.from(AchievementServiceCode.ACHIEVEMENT_SEARCH_FAIL);
+		}
 	}
 
 	@Override
 	public Page<Achievement> getAchivementsByUser(UUID userId, Pageable pageable) {
-		return null;
+		try{
+			return achievementUserRepository.search(userId, pageable);
+		}
+		catch (Exception e) {
+			throw CustomBusinessException.from(AchievementServiceCode.ACHIEVEMENT_GET_BY_USER_FAIL);
+		}
 	}
 
 	@Override
 	public Achievement deleteAchievement(UUID achievementId) {
-		return null;
+		try{
+			Optional<Achievement> achievement = achievementRepository.findById(achievementId);
+			achievement.ifPresent(BaseEntity::setDeleted);
+			return achievement.orElseThrow(() ->
+				CustomBusinessException.from(AchievementServiceCode.ACHIEVEMENT_DELETE_FAIL));
+		}
+		catch (Exception e) {
+			throw CustomBusinessException.from(AchievementServiceCode.ACHIEVEMENT_DELETE_FAIL);
+		}
 	}
 }

@@ -20,17 +20,17 @@ import com._42195km.msa.common.api.ApiResponse;
 import com_42195km.msa.achievementservice.application.dto.request.CreateAchievementCommandDto;
 import com_42195km.msa.achievementservice.application.service.AchivementService;
 import com_42195km.msa.achievementservice.domain.model.Achievement;
-import com_42195km.msa.achievementservice.domain.repository.AchievementRepository;
-import com_42195km.msa.achievementservice.infrastructure.config.AchivementServiceCode;
+import com_42195km.msa.achievementservice.infrastructure.config.AchievementServiceCode;
 import com_42195km.msa.achievementservice.presentation.dto.request.CreateAchievementRequestDto;
 import com_42195km.msa.achievementservice.presentation.dto.response.CreateAchievementResponseDto;
+import com_42195km.msa.achievementservice.presentation.dto.response.DeleteAchievementResponseDto;
 import com_42195km.msa.achievementservice.presentation.dto.response.GetAchievementResponseDto;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1")
-public class AchivementController {
+public class AchievementController {
 
 	private final AchivementService achievementService;
 
@@ -41,7 +41,7 @@ public class AchivementController {
 		Achievement achievement = achievementService.createAchievement(createAchievementCommandDto);
 		CreateAchievementResponseDto responseDto = new CreateAchievementResponseDto(achievement);
 
-		AchivementServiceCode serviceCode = AchivementServiceCode.ACHIVEMENT_CREATE_SUCCESS;
+		AchievementServiceCode serviceCode = AchievementServiceCode.ACHIEVEMENT_CREATE_SUCCESS;
 
 		ApiResponse<CreateAchievementResponseDto> response = ApiResponse.<CreateAchievementResponseDto>builder()
 			.code(serviceCode.getCode())
@@ -59,7 +59,7 @@ public class AchivementController {
 		Achievement achievement = achievementService.getAchievementById(achievementId);
 		GetAchievementResponseDto responseDto = new GetAchievementResponseDto(achievement);
 
-		AchivementServiceCode serviceCode = AchivementServiceCode.ACHIVEMENT_GET_SUCCESS;
+		AchievementServiceCode serviceCode = AchievementServiceCode.ACHIEVEMENT_GET_SUCCESS;
 		ApiResponse.<GetAchievementResponseDto>builder()
 			.code(serviceCode.getCode())
 			.message(serviceCode.getMessage())
@@ -80,7 +80,7 @@ public class AchivementController {
 		Page<GetAchievementResponseDto> responseDtos = achievementService.getAchievements(pageable)
 			.map(GetAchievementResponseDto::new);
 
-		AchivementServiceCode serviceCode = AchivementServiceCode.ACHIVEMENT_GET_ALL_SUCCESS;
+		AchievementServiceCode serviceCode = AchievementServiceCode.ACHIEVEMENT_GET_ALL_SUCCESS;
 
 		ApiResponse<Page<GetAchievementResponseDto>> response = ApiResponse.<Page<GetAchievementResponseDto>>builder()
 			.code(serviceCode.getCode())
@@ -103,7 +103,7 @@ public class AchivementController {
 		Page<GetAchievementResponseDto> responseDtos = achievementService.searchAchievements(title, pageable)
 			.map(GetAchievementResponseDto::new);
 
-		AchivementServiceCode serviceCode = AchivementServiceCode.ACHIVEMENT_SEARCH_SUCCESS;
+		AchievementServiceCode serviceCode = AchievementServiceCode.ACHIEVEMENT_SEARCH_SUCCESS;
 
 		ApiResponse<Page<GetAchievementResponseDto>> response = ApiResponse.<Page<GetAchievementResponseDto>>builder()
 			.code(serviceCode.getCode())
@@ -118,14 +118,41 @@ public class AchivementController {
 	// 특정 사용자가 달성한 업적 검색 (GET api/v1/achivements/user/{userId})
 	@GetMapping("/achivements/user/{userId}")
 	public ResponseEntity<?> getAchievementsByUserId(
-		@PathVariable("userId") UUID userId
+		@PathVariable("userId") UUID userId,
+		@RequestParam(defaultValue = "0", required = false) int page,
+		@RequestParam(defaultValue = "10", required = false) int size
 	){
-		return null;
+		Pageable pageable = PageRequest.of(page, size);
+		Page<GetAchievementResponseDto> responseDtos = achievementService.getAchivementsByUser(userId, pageable)
+			.map(GetAchievementResponseDto::new);
+
+		AchievementServiceCode serviceCode = AchievementServiceCode.ACHIEVEMENT_GET_BY_USER_SUCCESS;
+
+		ApiResponse<Page<GetAchievementResponseDto>> response = ApiResponse.<Page<GetAchievementResponseDto>>builder()
+			.code(serviceCode.getCode())
+			.message(serviceCode.getMessage())
+			.status(serviceCode.getStatus())
+			.data(responseDtos)
+			.build();
+
+		return ResponseEntity.ok(response);
 	}
 
 	// 업적 삭제 (DELETE api/vi/achivements/{achivementId})
 	@DeleteMapping("/achivements/{achievementId}")
 	public ResponseEntity<?> deleteAchievement(@PathVariable UUID achievementId){
-		return null;
+		Achievement achievement = achievementService.deleteAchievement(achievementId);
+		DeleteAchievementResponseDto responseDto = new DeleteAchievementResponseDto(achievement);
+
+		AchievementServiceCode serviceCode = AchievementServiceCode.ACHIEVEMENT_DELETE_SUCCESS;
+
+		ApiResponse.<DeleteAchievementResponseDto>builder()
+			.code(serviceCode.getCode())
+			.message(serviceCode.getMessage())
+			.status(serviceCode.getStatus())
+			.data(responseDto)
+			.build();
+
+		return ResponseEntity.ok(responseDto);
 	}
 }
