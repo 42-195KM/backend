@@ -3,8 +3,10 @@ package com_42195km.msa.achievementservice.presentation.dto.request;
 import com_42195km.msa.achievementservice.application.dto.request.CreateAchievementCommandDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
+@Setter
 @NoArgsConstructor
 public class CreateAchievementRequestDto {
 	private String title;

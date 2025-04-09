@@ -3,15 +3,21 @@ package com_42195km.msa.runningrecordservice.presentation.dto.request;
 import java.sql.Timestamp;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import com_42195km.msa.runningrecordservice.application.dto.request.CreateRunningRecordCommandDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
+@Setter
 @NoArgsConstructor
 public class CreateRunningRecordRequestDto {
 	private UUID userId;
 	private double distance;
+	// TODO: TimeStamp Serializable issue...
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS")
 	private Timestamp timer;
 	private double pace;
 

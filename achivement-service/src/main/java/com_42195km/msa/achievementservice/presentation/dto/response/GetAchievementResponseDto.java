@@ -5,8 +5,10 @@ import java.util.UUID;
 import com_42195km.msa.achievementservice.domain.model.Achievement;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
+@Setter
 @AllArgsConstructor
 public class GetAchievementResponseDto {
 	private UUID id;

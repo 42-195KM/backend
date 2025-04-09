@@ -7,8 +7,10 @@ import com_42195km.msa.achievementservice.domain.model.Achievement;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
+@Setter
 @AllArgsConstructor
 public class CreateAchievementResponseDto {
 	private UUID id;
