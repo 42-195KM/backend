@@ -1,0 +1,47 @@
+spring:
+  application:
+    name: runningrecord-service
+
+  config:
+    import: optional:file:.env[.properties]
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  datasource:
+    url: ${SPRING_DATASOURCE_RUNNING_RECORD_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    hikari:
+      maximum-pool-size: 3
+      minimum-idle: 1
+      connection-timeout: 20000
+      auto-commit: false
+
+server:
+  port: 19021
+
+logging:
+  level:
+    root: info
+    com_42195km:
+      msa: debug
+    org:
+      hibernate:
+        SQL: debug
+        type:
+          descriptor:
+            sql:
+              BasicBinder: debug
+      springframework:
+        transaction: debug
+        orm:
+          jpa: debug
+
+
