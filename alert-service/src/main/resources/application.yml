@@ -4,7 +4,7 @@ server:
 
 spring:
   application:
-    name: alarm-service
+    name: alert-service
   config:
     import: optional:file:.env[.properties]
 
@@ -32,6 +32,8 @@ spring:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
 
+slack:
+  token: ${SLACK_BOT_TOKEN}
 
 eureka:
   client:
