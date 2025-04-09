@@ -28,45 +28,45 @@ public class ParticipantController {
 	@GetMapping("")
 	@Operation(description = "")
 	public ResponseEntity<?> getParticipants() {
-		return ResponseEntity.ok(new ApiResponse<>(CompetitionErrorCode.COMPETITION_CREATE_POST_SUCCESS.getCode(),
+		return ResponseEntity.ok(new ApiResponse<>(CompetitionErrorCode.COMPETITION_CREATE_SUCCESS.getCode(),
 			"",
-			CompetitionErrorCode.COMPETITION_CREATE_POST_SUCCESS.getMessage(),
+			CompetitionErrorCode.COMPETITION_CREATE_SUCCESS.getMessage(),
 			HttpStatus.CREATED.value()));
 	}
 
 	@GetMapping("/search")
 	@Operation(description = "")
 	public ResponseEntity<?> getParticipants(@RequestParam(value = "name") String name) {
-		return ResponseEntity.ok(new ApiResponse<>(CompetitionErrorCode.COMPETITION_CREATE_POST_SUCCESS.getCode(),
+		return ResponseEntity.ok(new ApiResponse<>(CompetitionErrorCode.COMPETITION_CREATE_SUCCESS.getCode(),
 			"",
-			CompetitionErrorCode.COMPETITION_CREATE_POST_SUCCESS.getMessage(),
+			CompetitionErrorCode.COMPETITION_CREATE_SUCCESS.getMessage(),
 			HttpStatus.CREATED.value()));
 	}
 
 	@GetMapping("/{userId}")
 	@Operation(description = "")
 	public ResponseEntity<?> getParticipant(@PathVariable("userId") UUID userId) {
-		return ResponseEntity.ok(new ApiResponse<>(CompetitionErrorCode.COMPETITION_CREATE_POST_SUCCESS.getCode(),
+		return ResponseEntity.ok(new ApiResponse<>(CompetitionErrorCode.COMPETITION_CREATE_SUCCESS.getCode(),
 			"",
-			CompetitionErrorCode.COMPETITION_CREATE_POST_SUCCESS.getMessage(),
+			CompetitionErrorCode.COMPETITION_CREATE_SUCCESS.getMessage(),
 			HttpStatus.CREATED.value()));
 	}
 
 	@PutMapping("/cancel/company/{userId}")
 	@Operation(description = "")
 	public ResponseEntity<?> cancelParticipantByCompany(@PathVariable("userId") UUID userId) {
-		return ResponseEntity.ok(new ApiResponse<>(CompetitionErrorCode.COMPETITION_CREATE_POST_SUCCESS.getCode(),
+		return ResponseEntity.ok(new ApiResponse<>(CompetitionErrorCode.COMPETITION_CREATE_SUCCESS.getCode(),
 			"",
-			CompetitionErrorCode.COMPETITION_CREATE_POST_SUCCESS.getMessage(),
+			CompetitionErrorCode.COMPETITION_CREATE_SUCCESS.getMessage(),
 			HttpStatus.CREATED.value()));
 	}
 
 	@PutMapping("/cancel/{userId}")
 	@Operation(description = "")
 	public ResponseEntity<?> cancelParticipant(@PathVariable("userId") UUID userId) {
-		return ResponseEntity.ok(new ApiResponse<>(CompetitionErrorCode.COMPETITION_CREATE_POST_SUCCESS.getCode(),
+		return ResponseEntity.ok(new ApiResponse<>(CompetitionErrorCode.COMPETITION_CREATE_SUCCESS.getCode(),
 			"",
-			CompetitionErrorCode.COMPETITION_CREATE_POST_SUCCESS.getMessage(),
+			CompetitionErrorCode.COMPETITION_CREATE_SUCCESS.getMessage(),
 			HttpStatus.CREATED.value()));
 	}
 

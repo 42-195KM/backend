@@ -22,11 +22,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@Builder
 @Entity
 @Table(name = "p_competition")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 public class Competition extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
@@ -49,6 +47,16 @@ public class Competition extends BaseEntity {
 
 	@OneToMany(mappedBy = "competition", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<CompetitionParticipantMapping> participantMappings = new ArrayList<>();
+
+	@Builder
+	public Competition(UUID userId, String title, CompetitionType type, ReceptionType receptionType, Integer participantsNum, Integer price) {
+		this.userId = userId;
+		this.title = title;
+		this.type = type;
+		this.receptionType = receptionType;
+		this.participantsNum = participantsNum;
+		this.price = price;
+	}
 
 	public static Competition create(CreateCompetitionCommandDto commandDto){
 		return Competition.builder()
