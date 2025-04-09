@@ -1,6 +1,7 @@
 package com._42195km.msa.competitionservice.application.service;
 
 import java.util.Arrays;
+import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -47,7 +48,7 @@ public class CompetitionService {
 		}
 	}
 
-	public Page<CompetitionAppResponseDto> getCompetition(String keyword, Pageable pageable) {
+	public Page<CompetitionAppResponseDto> searchCompetition(String keyword, Pageable pageable) {
 
 		try {
 			Page<Competition> competition;
@@ -71,6 +72,15 @@ public class CompetitionService {
 			return competitionMapper.toAppResponseDtoPage(competition);
 		} catch (Exception e) {
 			log.error("error check : {}", e.getMessage());
+			throw CustomBusinessException.from(CompetitionServiceCode.COMPETITION_GET_FAIL);
+		}
+	}
+
+	public CompetitionAppResponseDto getCompetition(UUID competitionId) {
+		try {
+			Competition competition = competitionRepository.findById(competitionId);
+			return competitionMapper.toAppResponseDto(competition);
+		} catch (Exception e) {
 			throw CustomBusinessException.from(CompetitionServiceCode.COMPETITION_GET_FAIL);
 		}
 	}

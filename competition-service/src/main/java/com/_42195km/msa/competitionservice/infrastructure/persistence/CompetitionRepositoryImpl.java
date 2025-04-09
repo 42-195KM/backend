@@ -1,9 +1,13 @@
 package com._42195km.msa.competitionservice.infrastructure.persistence;
 
+import java.util.UUID;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import com._42195km.msa.common.exception.CustomBusinessException;
+import com._42195km.msa.competitionservice.application.exception.CompetitionServiceCode;
 import com._42195km.msa.competitionservice.domain.model.Competition;
 import com._42195km.msa.competitionservice.domain.repository.CompetitionRepository;
 
@@ -33,6 +37,10 @@ public class CompetitionRepositoryImpl implements CompetitionRepository {
 	@Override
 	public Page<Competition> searchByEnumType(String keyword, Pageable pageable) {
 		return jpaRepository.searchByEnumType(keyword, pageable);
+	}
+
+	public Competition findById(UUID id) {
+		return jpaRepository.findById(id).orElseThrow(()-> CustomBusinessException.from(CompetitionServiceCode.COMPETITION_GET_ID_FAIL));
 	}
 
 }

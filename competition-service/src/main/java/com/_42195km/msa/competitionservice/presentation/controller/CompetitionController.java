@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com._42195km.msa.common.api.ApiResponse;
@@ -65,7 +64,7 @@ public class CompetitionController {
 	@GetMapping("/search")
 	@Operation(summary = "대회 검색")
 	public ResponseEntity<?> searchCompetitions(@ParameterObject SearchCompetitionRequestDto requstDto) {
-		Page<CompetitionAppResponseDto> competition = competitionService.getCompetition(requstDto.keyword(),requstDto.toPageable());
+		Page<CompetitionAppResponseDto> competition = competitionService.searchCompetition(requstDto.keyword(),requstDto.toPageable());
 		Page<CompetitionResponseDto> presentationCompetition = competitionMapper.toPresentationDtoPage(competition);
 		return ResponseEntity.ok(new ApiResponse<>(CompetitionServiceCode.COMPETITION_CREATE_SUCCESS.getCode(),
 			presentationCompetition,
@@ -76,8 +75,10 @@ public class CompetitionController {
 	@GetMapping("/{competitionId}")
 	@Operation(summary = "대회 단건 조회")
 	public ResponseEntity<?> getCompetition(@PathVariable("competitionId") UUID competitionId) {
+		CompetitionAppResponseDto competition = competitionService.getCompetition(competitionId);
+		CompetitionResponseDto presentation = competitionMapper.toPresentationDto(competition);
 		return ResponseEntity.ok(new ApiResponse<>(CompetitionServiceCode.COMPETITION_CREATE_SUCCESS.getCode(),
-			"",
+			presentation,
 			CompetitionServiceCode.COMPETITION_CREATE_SUCCESS.getMessage(),
 			HttpStatus.CREATED.value()));
 	}
