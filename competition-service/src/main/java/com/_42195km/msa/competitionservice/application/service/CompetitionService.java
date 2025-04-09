@@ -11,7 +11,7 @@ import com._42195km.msa.competitionservice.application.mapper.CompetitionMapper;
 import com._42195km.msa.competitionservice.domain.model.Competition;
 import com._42195km.msa.competitionservice.infrastructure.persistence.CompetitionRepositoryImpl;
 import com._42195km.msa.competitionservice.infrastructure.persistence.ParticipantRepositoryImpl;
-import com._42195km.msa.competitionservice.presentation.exception.CompetitionErrorCode;
+import com._42195km.msa.competitionservice.application.exception.CompetitionServiceCode;
 
 import lombok.RequiredArgsConstructor;
 
@@ -28,7 +28,7 @@ public class CompetitionService {
 			Competition competition = Competition.create(command);
 			competitionRepository.save(competition);
 		} catch (Exception e) {
-			throw CustomBusinessException.from(CompetitionErrorCode.COMPETITION_CREATE_FAIL);
+			throw CustomBusinessException.from(CompetitionServiceCode.COMPETITION_CREATE_FAIL);
 		}
 
 	}
@@ -38,7 +38,7 @@ public class CompetitionService {
 			Page<Competition> competitions = competitionRepository.findAll(pageable);
 			return competitionMapper.toAppResponseDtoPage(competitions);
 		} catch (Exception e) {
-			throw CustomBusinessException.from(CompetitionErrorCode.COMPETITION_GET_FAIL);
+			throw CustomBusinessException.from(CompetitionServiceCode.COMPETITION_GET_FAIL);
 		}
 	}
 }
