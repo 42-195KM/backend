@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -66,7 +65,8 @@ public class CompetitionController {
 	@GetMapping("/search")
 	@Operation(summary = "대회 검색")
 	public ResponseEntity<?> searchCompetitions(@ParameterObject SearchCompetitionRequestDto requstDto) {
-		Page<CompetitionAppResponseDto> competition = competitionService.searchCompetition(requstDto.keyword(),requstDto.toPageable());
+		Page<CompetitionAppResponseDto> competition = competitionService.searchCompetition(requstDto.keyword(),
+			requstDto.toPageable());
 		Page<CompetitionResponseDto> presentationCompetition = competitionMapper.toPresentationDtoPage(competition);
 		return ResponseEntity.ok(new ApiResponse<>(CompetitionServiceCode.COMPETITION_SEARCH_SUCCESS.getCode(),
 			presentationCompetition,
@@ -87,8 +87,10 @@ public class CompetitionController {
 
 	@GetMapping("/{competitionId}/check")
 	@Operation(summary = "주최 대회 확인")
-	public ResponseEntity<?> checkCompetition(@PathVariable("competitionId") UUID userId, @ParameterObject GetCompetitionRequestDto requestDto) {
-		Page<CompetitionAppResponseDto> competition = competitionService.getHostCompetition(userId,requestDto.toPageable());
+	public ResponseEntity<?> checkCompetition(@PathVariable("competitionId") UUID userId,
+		@ParameterObject GetCompetitionRequestDto requestDto) {
+		Page<CompetitionAppResponseDto> competition = competitionService.getHostCompetition(userId,
+			requestDto.toPageable());
 		Page<CompetitionResponseDto> presentationCompetition = competitionMapper.toPresentationDtoPage(competition);
 		return ResponseEntity.ok(new ApiResponse<>(CompetitionServiceCode.COMPETITION_GET_SUCCESS.getCode(),
 			presentationCompetition,
@@ -98,8 +100,9 @@ public class CompetitionController {
 
 	@PatchMapping("/{competitionId}")
 	@Operation(summary = "대회 수정")
-	public ResponseEntity<?> updateCompetition(@PathVariable("competitionId") UUID competitionId, @RequestBody UpdateCompetitionRequestDto requestDto) {
-		competitionService.updateCompetition(competitionId,requestDto.toCommandDto());
+	public ResponseEntity<?> updateCompetition(@PathVariable("competitionId") UUID competitionId,
+		@RequestBody UpdateCompetitionRequestDto requestDto) {
+		competitionService.updateCompetition(competitionId, requestDto.toCommandDto());
 		return ResponseEntity.ok(new ApiResponse<>(CompetitionServiceCode.COMPETITION_UPDATE_SUCCESS.getCode(),
 			"대회 수정이 완료되었습니다.",
 			CompetitionServiceCode.COMPETITION_UPDATE_SUCCESS.getMessage(),
@@ -121,13 +124,16 @@ public class CompetitionController {
 	@Operation(summary = "대회 신청")
 	public ResponseEntity<?> applyCompetition(@PathVariable("competitionId") UUID competitionId,
 		@RequestBody ApplyCompetitionRequestDto participant) {
-		competitionService.applyCompetition(competitionId,participant.getParticipantId());
+		competitionService.applyCompetition(competitionId, participant.getParticipantId());
 		return ResponseEntity.ok(new ApiResponse<>(CompetitionServiceCode.COMPETITION_APPLY_SUCCESS.getCode(),
 			"대회 신청에 성공했습니다.",
 			CompetitionServiceCode.COMPETITION_APPLY_SUCCESS.getMessage(),
 			HttpStatus.CREATED.value()));
 	}
 
+	/*
+	TODO : 결제 부분 미구현
+	 */
 	@PostMapping("/payment")
 	@Operation(summary = "대회 결제")
 	public ResponseEntity<?> payCompetition(@RequestBody Competition competition) {
@@ -140,9 +146,14 @@ public class CompetitionController {
 	@PostMapping("/draw/{competitionId}")
 	@Operation(summary = "대회 추첨")
 	public ResponseEntity<?> drawCompetition(@PathVariable("competitionId") UUID competitionId) {
-		return ResponseEntity.ok(new ApiResponse<>(CompetitionServiceCode.COMPETITION_CREATE_SUCCESS.getCode(),
-			"",
-			CompetitionServiceCode.COMPETITION_CREATE_SUCCESS.getMessage(),
+		competitionService.drawCompetition(competitionId);
+		return ResponseEntity.ok(new ApiResponse<>(CompetitionServiceCode.COMPETITION_DRAW_SUCCESS.getCode(),
+			"대회 추첨이 완료되었습니다.",
+			CompetitionServiceCode.COMPETITION_DRAW_SUCCESS.getMessage(),
 			HttpStatus.CREATED.value()));
 	}
+
+	/*
+	TODO : 추첨 선정 인원 알림 전송
+	 */
 }

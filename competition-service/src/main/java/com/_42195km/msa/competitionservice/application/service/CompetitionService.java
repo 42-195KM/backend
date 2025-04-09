@@ -1,6 +1,8 @@
 package com._42195km.msa.competitionservice.application.service;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -125,31 +127,65 @@ public class CompetitionService {
 	@Transactional
 	public void applyCompetition(UUID competitionId, UUID participantId) {
 		try {
-			log.error("ID 전달 확인 :{} , : {}", competitionId, participantId);
 			Competition competition = competitionRepository.findById(competitionId);
 			Participant participant = Participant.create(participantId);
 			participantRepository.save(participant);
 
-			// 중볻 참가 신청 확인
-			Boolean alreadyApplied = mappingRepository.checkIsParticipate(competitionId, participantId);
-			if(alreadyApplied){
-				throw CustomBusinessException.from(CompetitionServiceCode.COMPETITION_APPLY_EXIST);
+			// 중복 참가 신청 확인 // 접수 유형이 선착순인 경우
+			if (competition.getReceptionType() == ReceptionType.FIRST) {
+				Integer currentCount = mappingRepository.checkParticipantCount(competition, participant);
+				if (currentCount >= competition.getParticipantsNum()) {
+					throw CustomBusinessException.from(CompetitionServiceCode.COMPETITION_APPLY_FIRST_FAIL);
+				}
 			}
-			log.error("중복 확인까지는 성공");
 
 			// 대회 신청 마감 확인
 			Integer ParticipantCount = mappingRepository.checkParticipantCount(competition,participant);
 			if (ParticipantCount > competition.getParticipantsNum()) {
 				throw CustomBusinessException.from(CompetitionServiceCode.COMPETITION_APPLY_FIRST_FAIL);
 			}
-			log.error("마감 확인까지는 성공");
 
 			CompetitionParticipantMapping apply = CompetitionParticipantMapping.create(competition, participant);
 			mappingRepository.save(apply);
 
 		} catch (Exception e) {
-			log.error("error check : {}", e.getMessage());
 			throw CustomBusinessException.from(CompetitionServiceCode.COMPETITION_APPLY_FAIL);
+		}
+	}
+
+	@Transactional
+	public void drawCompetition(UUID competitionId) {
+		try {
+			Competition competition = competitionRepository.findById(competitionId);
+
+			// 접수 타입이 DRAW인지 확인
+			if (competition.getReceptionType() != ReceptionType.DRAW) {
+				throw CustomBusinessException.from(CompetitionServiceCode.COMPETITION_DRAW_INVALID_TYPE);
+			}
+
+			List<CompetitionParticipantMapping> allApplicants = mappingRepository.findAllByCompetition(competition);
+
+			// 인원보다 신청자가 적거나 같으면 그대로 확정
+			if (allApplicants.size() <= competition.getParticipantsNum()) {
+				allApplicants.forEach(mapping -> {
+					mapping.getParticipant().markAsSelected();
+				});
+				return;
+			}
+
+			// 랜덤 추첨
+			Collections.shuffle(allApplicants);
+
+			List<CompetitionParticipantMapping> selected = allApplicants.subList(0, competition.getParticipantsNum());
+
+			selected.forEach(mapping -> {
+				mapping.getParticipant().markAsSelected();
+			});
+
+
+		} catch (Exception e) {
+			log.error("추첨 실패: {}", e.getMessage());
+			throw CustomBusinessException.from(CompetitionServiceCode.COMPETITION_DRAW_FAIL);
 		}
 	}
 }

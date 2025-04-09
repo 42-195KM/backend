@@ -1,5 +1,6 @@
 package com._42195km.msa.competitionservice.infrastructure.persistence;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Repository;
@@ -27,5 +28,9 @@ public class CompetitionParticipantMappingRepositoryImpl implements CompetitionP
 	public CompetitionParticipantMapping save(CompetitionParticipantMapping competitionParticipantMapping){
 		return jpaRepository.save(competitionParticipantMapping);
 
+	}
+
+	public List<CompetitionParticipantMapping> findAllByCompetition(Competition competition) {
+		return jpaRepository.findAllByCompetition(competition);
 	}
 }

@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.kafka.common.protocol.types.Field;
+import org.hibernate.annotations.ColumnDefault;
+
 import com._42195km.msa.common.BaseEntity;
 
 import jakarta.persistence.CascadeType;
@@ -31,6 +34,9 @@ public class Participant extends BaseEntity {
 	@Column(name = "participant_id")
 	private UUID participantId;
 
+	@ColumnDefault("false")
+	private Boolean isSelected;
+
 	@OneToMany(mappedBy = "participant", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<CompetitionParticipantMapping> competitionMappings = new ArrayList<>();
 
@@ -41,6 +47,10 @@ public class Participant extends BaseEntity {
 
 	public static Participant create(UUID participantId) {
 		return Participant.builder().participantId(participantId).build();
+	}
+
+	public void markAsSelected() {
+		this.isSelected = true;
 	}
 
 }

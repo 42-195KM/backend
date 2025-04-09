@@ -1,5 +1,6 @@
 package com._42195km.msa.competitionservice.infrastructure.persistence;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,4 +14,6 @@ public interface CompetitionParticipantMappingJpaRepository extends JpaRepositor
 	Boolean existsByParticipantIdAndCompetitionId(UUID participantId, UUID competitionId);
 
 	Integer countByCompetitionAndParticipant(Competition competition, Participant participant);
+
+	List<CompetitionParticipantMapping> findAllByCompetition(Competition competition);
 }
