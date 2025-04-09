@@ -41,12 +41,17 @@ public abstract class BaseEntity {
 	private Long deletedBy;
 
 	// @PreUpdate
-	// public void setDeleted() {
-	// 	if (isDeleted) {
-	// 		deletedAt = LocalDateTime.now();
-	// 		deletedBy = getAuthenticatedUsername();
-	// 	}
-	// }
+	public void setDeleted() {
+		// if (isDeleted) {
+		// 	deletedAt = LocalDateTime.now();
+		// 	deletedBy = getAuthenticatedUsername();
+		// }
+		if(!isDeleted){
+			isDeleted = true;
+			deletedAt = LocalDateTime.now();
+			// 	deletedBy = getAuthenticatedUsername();
+		}
+	}
 	//
 	// private String getAuthenticatedUsername() {
 	// 	Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
