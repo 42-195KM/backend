@@ -6,6 +6,8 @@ import java.util.UUID;
 
 import com._42195km.msa.common.BaseEntity;
 import com._42195km.msa.competitionservice.application.dto.request.CreateCompetitionCommandDto;
+import com._42195km.msa.competitionservice.application.dto.request.UpdateCompetitionCommandDto;
+import com._42195km.msa.competitionservice.presentation.dto.request.UpdateCompetitionRequestDto;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -73,4 +75,21 @@ public class Competition extends BaseEntity {
 			.build();
 	}
 
+	public void update(UpdateCompetitionCommandDto commandDto) {
+		if (commandDto.getTitle() != null) {
+			this.title = commandDto.getTitle();
+		}
+		if (commandDto.getType() != null) {
+			this.type = commandDto.getType();
+		}
+		if (commandDto.getReceptionType() != null) {
+			this.receptionType = commandDto.getReceptionType();
+		}
+		if (commandDto.getParticipantsNum() != null) {
+			this.participantsNum = commandDto.getParticipantsNum();
+		}
+		if (commandDto.getPrice() != null) {
+			this.price = commandDto.getPrice();
+		}
+	}
 }

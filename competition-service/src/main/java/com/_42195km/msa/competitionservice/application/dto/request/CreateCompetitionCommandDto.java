@@ -13,8 +13,6 @@ import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 public class CreateCompetitionCommandDto {
 
 	private UUID userId;
@@ -28,5 +26,25 @@ public class CreateCompetitionCommandDto {
 	private Integer participantsNum;
 
 	private Integer price;
+
+	private CreateCompetitionCommandDto(UUID userId, String title, CompetitionType type, ReceptionType receptionType, Integer participantsNum, Integer price) {
+		this.userId = userId;
+		this.title = title;
+		this.type = type;
+		this.receptionType = receptionType;
+		this.participantsNum = participantsNum;
+		this.price = price;
+	}
+
+	public static CreateCompetitionCommandDto from(CreateCompetitionRequestDto dto) {
+		return new CreateCompetitionCommandDto(
+			dto.getUserId(),
+			dto.getTitle(),
+			dto.getType(),
+			dto.getReceptionType(),
+			dto.getParticipantsNum(),
+			dto.getPrice()
+		);
+	}
 
 }

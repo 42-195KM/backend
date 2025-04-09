@@ -6,9 +6,11 @@ import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com._42195km.msa.common.exception.CustomBusinessException;
 import com._42195km.msa.competitionservice.application.dto.request.CreateCompetitionCommandDto;
+import com._42195km.msa.competitionservice.application.dto.request.UpdateCompetitionCommandDto;
 import com._42195km.msa.competitionservice.application.dto.response.CompetitionAppResponseDto;
 import com._42195km.msa.competitionservice.application.exception.CompetitionServiceCode;
 import com._42195km.msa.competitionservice.application.mapper.CompetitionMapper;
@@ -17,6 +19,7 @@ import com._42195km.msa.competitionservice.domain.model.CompetitionType;
 import com._42195km.msa.competitionservice.domain.model.ReceptionType;
 import com._42195km.msa.competitionservice.infrastructure.persistence.CompetitionRepositoryImpl;
 import com._42195km.msa.competitionservice.infrastructure.persistence.ParticipantRepositoryImpl;
+import com._42195km.msa.competitionservice.presentation.dto.request.UpdateCompetitionRequestDto;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -91,6 +94,16 @@ public class CompetitionService {
 		} catch (Exception e) {
 			log.error("error check : {}", e.getMessage());
 			throw CustomBusinessException.from(CompetitionServiceCode.COMPETITION_GET_FAIL);
+		}
+	}
+
+	@Transactional
+	public void updateCompetition(UUID competitionId, UpdateCompetitionCommandDto commandDto) {
+		try {
+			Competition competition = competitionRepository.findById(competitionId);
+			competition.update(commandDto);
+		} catch (Exception e) {
+			throw CustomBusinessException.from(CompetitionServiceCode.COMPETITION_UPDATE_FAIL);
 		}
 	}
 }

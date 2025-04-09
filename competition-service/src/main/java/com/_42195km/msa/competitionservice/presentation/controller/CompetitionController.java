@@ -25,6 +25,7 @@ import com._42195km.msa.competitionservice.domain.model.Competition;
 import com._42195km.msa.competitionservice.presentation.dto.request.CreateCompetitionRequestDto;
 import com._42195km.msa.competitionservice.presentation.dto.request.GetCompetitionRequestDto;
 import com._42195km.msa.competitionservice.presentation.dto.request.SearchCompetitionRequestDto;
+import com._42195km.msa.competitionservice.presentation.dto.request.UpdateCompetitionRequestDto;
 import com._42195km.msa.competitionservice.presentation.dto.response.CompetitionResponseDto;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -94,17 +95,18 @@ public class CompetitionController {
 			HttpStatus.CREATED.value()));
 	}
 
-	@PutMapping("/{competitionId}")
+	@PatchMapping("/{competitionId}")
 	@Operation(summary = "대회 수정")
-	public ResponseEntity<?> updateCompetition(@PathVariable("competitionId") UUID competitionId) {
-		return ResponseEntity.ok(new ApiResponse<>(CompetitionServiceCode.COMPETITION_CREATE_SUCCESS.getCode(),
-			"",
-			CompetitionServiceCode.COMPETITION_CREATE_SUCCESS.getMessage(),
+	public ResponseEntity<?> updateCompetition(@PathVariable("competitionId") UUID competitionId, @RequestBody UpdateCompetitionRequestDto requestDto) {
+		competitionService.updateCompetition(competitionId,requestDto.toCommandDto());
+		return ResponseEntity.ok(new ApiResponse<>(CompetitionServiceCode.COMPETITION_UPDATE_SUCCESS.getCode(),
+			"대회 수정이 완료되었습니다.",
+			CompetitionServiceCode.COMPETITION_UPDATE_SUCCESS.getMessage(),
 			HttpStatus.CREATED.value()));
 
 	}
 
-	@PatchMapping("/{competitionId}")
+	@PatchMapping("/{competitionId}/delete")
 	@Operation(summary = "대회 삭제")
 	public ResponseEntity<?> deleteCompetition(@PathVariable("competitionId") UUID competitionId) {
 		return ResponseEntity.ok(new ApiResponse<>(CompetitionServiceCode.COMPETITION_CREATE_SUCCESS.getCode(),

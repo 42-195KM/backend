@@ -20,4 +20,6 @@ public interface CompetitionRepository {
 	Page<Competition> searchByEnumType(@Param("keyword") String keyword, Pageable pageable);
 
 	Competition findById(UUID id);
+
+	Page<Competition> findByHost(UUID hostId,Pageable pageable);
 }
