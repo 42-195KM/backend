@@ -25,4 +25,14 @@ public class CompetitionRepositoryImpl implements CompetitionRepository {
 		return jpaRepository.findByIsDeletedFalse(pageable);
 	}
 
+	@Override
+	public Page<Competition> searchByTitle(String keyword, Pageable pageable) {
+		return jpaRepository.searchByTitle(keyword, pageable);
+	}
+
+	@Override
+	public Page<Competition> searchByEnumType(String keyword, Pageable pageable) {
+		return jpaRepository.searchByEnumType(keyword, pageable);
+	}
+
 }

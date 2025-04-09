@@ -10,6 +10,8 @@ import com._42195km.msa.competitionservice.application.dto.request.CreateCompeti
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -35,9 +37,11 @@ public class Competition extends BaseEntity {
 
 	private String title;
 
+	@Enumerated(EnumType.STRING)
 	private CompetitionType type;
 
 	@Column(name = "reception_type")
+	@Enumerated(EnumType.STRING)
 	private ReceptionType receptionType;
 
 	@Column(name = "participants_num")

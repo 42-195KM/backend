@@ -2,6 +2,7 @@ package com._42195km.msa.competitionservice.presentation.controller;
 
 import java.util.UUID;
 
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +25,7 @@ import com._42195km.msa.competitionservice.application.service.CompetitionServic
 import com._42195km.msa.competitionservice.domain.model.Competition;
 import com._42195km.msa.competitionservice.presentation.dto.request.CreateCompetitionRequestDto;
 import com._42195km.msa.competitionservice.presentation.dto.request.GetCompetitionRequestDto;
+import com._42195km.msa.competitionservice.presentation.dto.request.SearchCompetitionRequestDto;
 import com._42195km.msa.competitionservice.presentation.dto.response.CompetitionResponseDto;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -62,9 +64,11 @@ public class CompetitionController {
 
 	@GetMapping("/search")
 	@Operation(summary = "대회 검색")
-	public ResponseEntity<?> searchCompetitions(@RequestParam(required = false) String keyword) {
+	public ResponseEntity<?> searchCompetitions(@ParameterObject SearchCompetitionRequestDto requstDto) {
+		Page<CompetitionAppResponseDto> competition = competitionService.getCompetition(requstDto.keyword(),requstDto.toPageable());
+		Page<CompetitionResponseDto> presentationCompetition = competitionMapper.toPresentationDtoPage(competition);
 		return ResponseEntity.ok(new ApiResponse<>(CompetitionServiceCode.COMPETITION_CREATE_SUCCESS.getCode(),
-			"",
+			presentationCompetition,
 			CompetitionServiceCode.COMPETITION_CREATE_SUCCESS.getMessage(),
 			HttpStatus.CREATED.value()));
 	}

@@ -12,9 +12,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com._42195km.msa.common.api.ApiResponse;
-import com._42195km.msa.competitionservice.domain.repository.ParticipantRepository;
-import com._42195km.msa.competitionservice.presentation.exception.CompetitionErrorCode;
 import com._42195km.msa.competitionservice.application.exception.CompetitionServiceCode;
+import com._42195km.msa.competitionservice.domain.repository.ParticipantRepository;
 
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
