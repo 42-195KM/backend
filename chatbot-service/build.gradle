@@ -15,7 +15,12 @@ java {
 
 repositories {
     mavenCentral()
-    maven {url 'https://repo.spring.io/snapshot'}
+    maven { url 'https://repo.spring.io/milestone' }
+    maven { url 'https://repo.spring.io/snapshot' }
+    maven {
+        name = 'Central Portal Snapshots'
+        url = 'https://central.sonatype.com/repository/maven-snapshots/'
+    }
 }
 
 ext {
@@ -31,6 +36,10 @@ dependencies {
 
     // spring AI
     implementation 'org.springframework.ai:spring-ai-vertex-ai-gemini-spring-boot-starter:1.0.0-SNAPSHOT'
+    implementation 'org.springframework.ai:spring-ai-starter-model-vertex-ai-embedding'
+    implementation platform("org.springframework.ai:spring-ai-bom:1.0.0-SNAPSHOT")
+
+
 
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 
