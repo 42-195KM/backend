@@ -16,3 +16,9 @@ eureka:
       defaultZone: ${EUREKA_SERVER}  # Eureka 서버 URL
 server:
   port: ${AUTH_SERVER}
+
+service:
+  jwt:
+    access-expiration: ${JWT_ACCESS_EXPIRATION}
+    refresh-expiration: ${JWT_REFRESH_EXPIRATION}
+    secret-key: ${JWT_SECRET_KEY}

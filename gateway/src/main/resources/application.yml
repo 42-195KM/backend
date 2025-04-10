@@ -76,12 +76,12 @@ spring:
           filters:
             - RewritePath=/runningrecord-service/(?<segment>.*), /$\{segment}
         # 리캡 서비스 (나중에 추가되면 변경)
-        - id: recap-service
-          uri: lb://recap-service
+        - id: userrecap-service
+          uri: lb://userrecap-service
           predicates:
-            - Path=/api/v1/app/userRecaps/** , /api/v1/userRecaps/** , /recap-service/**
+            - Path=/api/v1/app/userRecaps/** , /api/v1/userRecaps/** , /userrecap-service/**
           filters:
-            - RewritePath=/recap-service/(?<segment>.*), /$\{segment}
+            - RewritePath=/userrecap-service/(?<segment>.*), /$\{segment}
       # 포트 계속 추가
       globalcors:
         corsConfigurations:
@@ -139,8 +139,9 @@ springdoc:
       - name: runningrecord-service
         url: /runningrecord-service/v3/api-docs
       # 리캡 서비스 Swagger
-      - name: recap-service
-        url: /recap-service/v3/api-docs
+      - name: userrecap-service
+        url: /userrecap-service/v3/api-docs
 
-      #  jwt:
-#    secret-key: ${JWT_SECRET_KEY}
+service:
+  jwt:
+    secret-key: ${JWT_SECRET_KEY}
