@@ -1,5 +1,6 @@
 package com_42195km.msa.runningrecordservice.application.service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -60,9 +61,9 @@ public class RunningRecordServiceImpl implements RunningRecordService {
 	}
 
 	@Override
-	public Page<RunningRecord> searchRecords(UUID userId, Pageable pageable) {
+	public Page<RunningRecord> searchRecords(UUID userId, LocalDateTime createdAt, Pageable pageable) {
 		try{
-			return runningRecordRepository.searchByUserId(userId, pageable);
+			return runningRecordRepository.searchByUserId(userId, createdAt, pageable);
 		} catch (Exception e) {
 			throw CustomBusinessException.from(RunningRecordServiceCode.RUNNING_RECORD_SEARCH_FAIL);
 		}

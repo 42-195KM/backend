@@ -1,5 +1,6 @@
 package com_42195km.msa.runningrecordservice.infrastructure.persistence;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -25,7 +26,12 @@ public interface RunningRecordJpaRepository extends RunningRecordRepository, Jpa
 	@Override
 	@Query("SELECT r FROM RunningRecord r "
 		+ "WHERE r.userId = :userId "
-		+ "AND r.isDeleted = false")
-	Page<RunningRecord> searchByUserId(@Param("userId") UUID userId, Pageable pageable);
+		+ "AND r.isDeleted = false "
+		+ "AND r.createdAt BETWEEN :createdAt AND CURRENT_TIMESTAMP"
+	)
+	Page<RunningRecord> searchByUserId(
+		@Param("userId") UUID userId,
+		@Param("createdAt") LocalDateTime createdAt,
+		Pageable pageable);
 
 }

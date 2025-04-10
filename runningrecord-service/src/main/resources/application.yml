@@ -49,4 +49,7 @@ logging:
         orm:
           jpa: debug
 
-
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_SERVER}
