@@ -37,10 +37,10 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 	public Page<Object> searchByReceptionType(String keyword, Pageable pageable){
 		return mappingJpaRepository.searchByReceptionType(keyword, pageable);
 	}
-	public Page<Object> searchByStatue(String keyword, Pageable pageable){
-		return mappingJpaRepository.searchByStatue(keyword, pageable);
+	public Page<Object> searchByStatus(String keyword, Pageable pageable){
+		return mappingJpaRepository.searchByStatus(keyword, pageable);
 	}
-	public Page<Object> searchByUuid(UUID uuid, Pageable pageable){
+	public Page<Object> searchByUuid(String uuid, Pageable pageable){
 		return mappingJpaRepository.searchByUuid(uuid, pageable);
 	}
 	public Page<Object> getByUuid(UUID uuid,Pageable pageable){

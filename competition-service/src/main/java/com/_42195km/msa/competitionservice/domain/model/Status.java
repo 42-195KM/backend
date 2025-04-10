@@ -1,6 +1,6 @@
 package com._42195km.msa.competitionservice.domain.model;
 
-public enum Statue {
+public enum Status {
 	APPLY,
 	PAY,
 	SELECTED,

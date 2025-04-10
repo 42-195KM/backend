@@ -140,7 +140,9 @@ public class CompetitionService {
 
 			// 대회 신청 마감 확인 // 접수 유형이 선착순인 경우
 			if (competition.getReceptionType() == ReceptionType.FIRST) {
-				Integer ParticipantCount = mappingRepository.checkParticipantCount(competition, participant);
+				long ParticipantCount = mappingRepository.countByCompetition(competition);
+				log.error("참가자 수 확인 : {}", ParticipantCount);
+
 				if (ParticipantCount > competition.getParticipantsNum()) {
 					throw CustomBusinessException.from(CompetitionServiceCode.COMPETITION_APPLY_FIRST_FAIL);
 				}
@@ -171,7 +173,7 @@ public class CompetitionService {
 			// 인원보다 신청자가 적거나 같으면 그대로 확정
 			if (allApplicants.size() <= competition.getParticipantsNum()) {
 				allApplicants.forEach(mapping -> {
-					mapping.getParticipant().markAsSelected();
+					mapping.markAsSelected();
 				});
 				return;
 			}
@@ -180,7 +182,7 @@ public class CompetitionService {
 			Collections.shuffle(allApplicants);
 			List<CompetitionParticipantMapping> selected = allApplicants.subList(0, competition.getParticipantsNum());
 			selected.forEach(mapping -> {
-				mapping.getParticipant().markAsSelected();
+				mapping.markAsSelected();
 			});
 
 		} catch (Exception e) {

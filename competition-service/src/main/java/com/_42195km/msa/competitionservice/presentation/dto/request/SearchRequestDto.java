@@ -12,7 +12,7 @@ public record SearchRequestDto(
 	@Min(0) @NotNull @Parameter(example = "0", description = "페이지 번호") int page,
 	@NotNull @Parameter(example = "10", description = "페이지 사이즈 (허용: 10, 30, 50)") int size,
 	@Parameter(description = "검색 키워드", example = "춘천") String keyword,
-	@Parameter(description = "검색 기준", example = "title") String SearchType
+	@Parameter(description = "검색 기준", example = "title") String searchType
 ) {
 	public Pageable toPageable() {
 		int allowedSize = (size == 10 || size == 30 || size == 50) ? size : 10;

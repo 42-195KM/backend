@@ -6,6 +6,8 @@ import com._42195km.msa.common.BaseEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -35,12 +37,25 @@ public class CompetitionParticipantMapping extends BaseEntity {
 	@JoinColumn(name = "participant_id", nullable = false)
 	private Participant participant;
 
+	@Column(name = "status", nullable = false)
+	@Enumerated(EnumType.STRING)
+	private Status status = Status.APPLY;
+
 	@Builder
 	public CompetitionParticipantMapping(Competition competition, Participant participant) {
 		this.competition = competition;
 		this.participant = participant;
 	}
+
 	public static CompetitionParticipantMapping create(Competition competition, Participant participant) {
 		return CompetitionParticipantMapping.builder().competition(competition).participant(participant).build();
+	}
+
+	public void markAsSelected() {
+		this.status = Status.SELECTED;
+	}
+
+	public void cancel() {
+		this.status = Status.CANCEL;
 	}
 }

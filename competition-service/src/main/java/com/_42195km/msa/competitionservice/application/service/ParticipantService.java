@@ -14,6 +14,7 @@ import com._42195km.msa.competitionservice.application.dto.response.SearchPartic
 import com._42195km.msa.competitionservice.application.exception.CompetitionServiceCode;
 import com._42195km.msa.competitionservice.application.mapper.ParticipantMapper;
 import com._42195km.msa.competitionservice.domain.model.Competition;
+import com._42195km.msa.competitionservice.domain.model.CompetitionParticipantMapping;
 import com._42195km.msa.competitionservice.domain.model.Participant;
 import com._42195km.msa.competitionservice.infrastructure.persistence.CompetitionParticipantMappingRepositoryImpl;
 import com._42195km.msa.competitionservice.infrastructure.persistence.CompetitionRepositoryImpl;
@@ -35,7 +36,7 @@ public class ParticipantService {
 	public Page<ParticipantAppResponseDto> getParticipants(Pageable pageable, UUID competitionId) {
 		try {
 			Competition competition = competitionRepository.findById(competitionId);
-			Page<Participant> participants = mappingRepository.findParticipants(competitionId, pageable);
+			Page<CompetitionParticipantMapping> participants = mappingRepository.findParticipants(competitionId, pageable);
 			return participantMapper.toParticipantAppResponseDtoPage(participants);
 		} catch (Exception e) {
 			throw CustomBusinessException.from(CompetitionServiceCode.PARTICIPANT_GET_FAIL);
@@ -56,17 +57,23 @@ public class ParticipantService {
 				case "receptiontype":
 					searchedPage = participantRepository.searchByReceptionType(keyword, pageable);
 					break;
-				case "statue":
-					searchedPage = participantRepository.searchByStatue(keyword, pageable);
+				case "status":
+					searchedPage = participantRepository.searchByStatus(keyword, pageable);
 					break;
 				case "uuid":
-					searchedPage = participantRepository.searchByUuid(UUID.fromString(keyword), pageable);
+					try {
+						UUID uuid = UUID.fromString(keyword);
+						searchedPage = participantRepository.searchByUuid(keyword, pageable);
+					} catch (IllegalArgumentException e) {
+						throw CustomBusinessException.from(CompetitionServiceCode.PARTICIPANT_SEARCH_FAIL);
+					}
 					break;
 				default:
-					searchedPage = participantRepository.searchByUuid(UUID.fromString(keyword), pageable);
+					throw CustomBusinessException.from(CompetitionServiceCode.PARTICIPANT_SEARCH_FAIL);
 			}
 			return searchedPage.map(participantMapper::toSearchParticipantAppResponseDto);
 		} catch (Exception e) {
+			log.error("검색 오류: {}", e.getMessage());
 			throw CustomBusinessException.from(CompetitionServiceCode.PARTICIPANT_SEARCH_FAIL);
 		}
 	}
@@ -82,6 +89,14 @@ public class ParticipantService {
 		} catch (Exception e) {
 			log.error(e.getMessage());
 			throw CustomBusinessException.from(CompetitionServiceCode.PARTICIPANT_GET_FAIL);
+		}
+	}
+
+	public void cancelParticipantByCompany(UUID userId) {
+		try {
+			//participantRepository.cancelByCompany(userId);
+		} catch (Exception e) {
+			throw CustomBusinessException.from(CompetitionServiceCode.PARTICIPANT_CANCEL_FAIL);
 		}
 	}
 }

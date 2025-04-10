@@ -31,6 +31,8 @@ public enum CompetitionServiceCode implements ServiceCode {
 	PARTICIPANT_GET_SUCCESS("CPT_020", "대회 참가자 조회 성공", HttpStatus.OK),
 	PARTICIPANT_SEARCH_FAIL("CPT_021", "대회 참가자 검색 실패", HttpStatus.BAD_REQUEST),
 	PARTICIPANT_SEARCH_SUCCESS("CPT_022", "대회 참가자 검색 성공", HttpStatus.OK),
+	PARTICIPANT_CANCEL_FAIL("CPT_023", "대회 신청 취소 실패", HttpStatus.BAD_REQUEST),
+	PARTICIPANT_CANCEL_SUCCESS("CPT_024", "대회 신청 취소 성공", HttpStatus.OK),
 	;
 
 	private final String code;

@@ -3,17 +3,15 @@ package com._42195km.msa.competitionservice.application.mapper;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
-import com._42195km.msa.competitionservice.application.dto.response.CompetitionAppResponseDto;
 import com._42195km.msa.competitionservice.application.dto.response.ParticipantAppResponseDto;
 import com._42195km.msa.competitionservice.application.dto.response.SearchParticipantAppResponseDto;
+import com._42195km.msa.competitionservice.domain.model.CompetitionParticipantMapping;
 import com._42195km.msa.competitionservice.domain.model.CompetitionType;
 import com._42195km.msa.competitionservice.domain.model.Participant;
 import com._42195km.msa.competitionservice.domain.model.ReceptionType;
-import com._42195km.msa.competitionservice.domain.model.Statue;
-import com._42195km.msa.competitionservice.presentation.dto.response.CompetitionResponseDto;
+import com._42195km.msa.competitionservice.domain.model.Status;
 import com._42195km.msa.competitionservice.presentation.dto.response.ParticipantResponseDto;
 import com._42195km.msa.competitionservice.presentation.dto.response.SearchResponseDto;
 
@@ -23,19 +21,17 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ParticipantMapper {
 
-	public ParticipantAppResponseDto toParticipantAppResponseDto(Participant participant) {
-		return ParticipantAppResponseDto.builder().participantId(participant.getParticipantId()).statue(
-			String.valueOf(participant.getStatue())).build();
+	public ParticipantAppResponseDto toParticipantAppResponseDto(CompetitionParticipantMapping participant) {
+		return ParticipantAppResponseDto.builder().participantId(participant.getParticipant().getParticipantId()).status(participant.getStatus()).build();
 	}
 
-	public Page<ParticipantAppResponseDto> toParticipantAppResponseDtoPage(Page<Participant> participants) {
+	public Page<ParticipantAppResponseDto> toParticipantAppResponseDtoPage(Page<CompetitionParticipantMapping> participants) {
 		return participants.map(participant -> toParticipantAppResponseDto(participant));
 	}
 
 	public ParticipantResponseDto toParticipantResponseDto(ParticipantAppResponseDto participantAppResponseDto) {
 		return ParticipantResponseDto.builder()
 			.participantId(participantAppResponseDto.getParticipantId())
-			.statue(participantAppResponseDto.getStatue())
 			.build();
 	}
 
@@ -51,7 +47,7 @@ public class ParticipantMapper {
 			.competitionType(arr[2] != null ? (CompetitionType) arr[2] : null)
 			.receptionType(arr[3] != null ? (ReceptionType) arr[3] : null)
 			.participantID(arr[4] != null ? (UUID) arr[4] : null)
-			.statue(arr[5] != null ? (Statue) arr[5] : null)
+			.status(arr[5] != null ? (Status) arr[5] : null)
 			.build();
 	}
 
@@ -62,7 +58,7 @@ public class ParticipantMapper {
 			.competitionType(appResponseDto.getCompetitionType())
 			.receptionType(appResponseDto.getReceptionType())
 			.participantID(appResponseDto.getParticipantID())
-			.statue(appResponseDto.getStatue())
+			.status(appResponseDto.getStatus())
 			.build();
 	}
 
@@ -73,7 +69,7 @@ public class ParticipantMapper {
 			dto.getCompetitionType(),
 			dto.getReceptionType(),
 			dto.getParticipantID(),
-			dto.getStatue()
+			dto.getStatus()
 		));
 	}
 }

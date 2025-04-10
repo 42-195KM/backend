@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import org.hibernate.annotations.ColumnDefault;
-
 import com._42195km.msa.common.BaseEntity;
 
 import jakarta.persistence.CascadeType;
@@ -35,9 +33,6 @@ public class Participant extends BaseEntity {
 	@Column(name = "participant_id")
 	private UUID participantId;
 
-	@Column(name = "statue", nullable = false)
-	@Enumerated(EnumType.STRING)
-	private Statue statue = Statue.APPLY;
 
 	@OneToMany(mappedBy = "participant", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<CompetitionParticipantMapping> competitionMappings = new ArrayList<>();
@@ -49,14 +44,6 @@ public class Participant extends BaseEntity {
 
 	public static Participant create(UUID participantId) {
 		return Participant.builder().participantId(participantId).build();
-	}
-
-	public void markAsSelected() {
-		this.statue = Statue.SELECTED;
-	}
-
-	public void cancel() {
-		this.statue = Statue.CANCEL;
 	}
 
 }

@@ -23,20 +23,23 @@ public class CompetitionParticipantMappingRepositoryImpl implements CompetitionP
 		return jpaRepository.existsByParticipantIdAndCompetitionId(participantId, competitionId);
 	}
 
+	public long countByCompetition(Competition competition){
+		return jpaRepository.countByCompetition(competition);
+	}
+
 	public Integer checkParticipantCount(Competition competition,Participant participant){
 		return jpaRepository.countByCompetitionAndParticipant(competition, participant);
 	}
 
 	public CompetitionParticipantMapping save(CompetitionParticipantMapping competitionParticipantMapping){
 		return jpaRepository.save(competitionParticipantMapping);
-
 	}
 
 	public List<CompetitionParticipantMapping> findAllByCompetition(Competition competition) {
 		return jpaRepository.findAllByCompetition(competition);
 	}
 
-	public Page<Participant> findParticipants(UUID competitionId, Pageable pageable){
+	public Page<CompetitionParticipantMapping> findParticipants(UUID competitionId, Pageable pageable){
 		return jpaRepository.findParticipantsByCompetitionId(competitionId, pageable);
 	}
 }
