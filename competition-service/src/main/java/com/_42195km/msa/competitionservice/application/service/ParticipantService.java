@@ -1,10 +1,11 @@
 package com._42195km.msa.competitionservice.application.service;
 
-import java.util.Objects;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com._42195km.msa.common.exception.CustomBusinessException;
@@ -19,7 +20,9 @@ import com._42195km.msa.competitionservice.infrastructure.persistence.Competitio
 import com._42195km.msa.competitionservice.infrastructure.persistence.ParticipantRepositoryImpl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ParticipantService {
@@ -39,7 +42,8 @@ public class ParticipantService {
 		}
 	}
 
-	public Page<SearchParticipantAppResponseDto> searchParticipants(String keyword, String searchType, Pageable pageable) {
+	public Page<SearchParticipantAppResponseDto> searchParticipants(String keyword, String searchType,
+		Pageable pageable) {
 		try {
 			Page<Object> searchedPage;
 			switch (searchType.toLowerCase()) {
@@ -64,6 +68,20 @@ public class ParticipantService {
 			return searchedPage.map(participantMapper::toSearchParticipantAppResponseDto);
 		} catch (Exception e) {
 			throw CustomBusinessException.from(CompetitionServiceCode.PARTICIPANT_SEARCH_FAIL);
+		}
+	}
+
+	/*
+	한 명이 여러 대회 신청했을 수도 있으니 Page로 리턴
+	 */
+	public Page<SearchParticipantAppResponseDto> getParticipant(String keyword, Pageable pageable) {
+		try {
+			Page<Object> participant = participantRepository.getByUuid(UUID.fromString(keyword), pageable);
+			return participant.map(participantMapper::toSearchParticipantAppResponseDto);
+
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			throw CustomBusinessException.from(CompetitionServiceCode.PARTICIPANT_GET_FAIL);
 		}
 	}
 }

@@ -60,11 +60,13 @@ public class ParticipantController {
 	}
 
 	@GetMapping("/show/{userId}")
-	@Operation(description = "")
-	public ResponseEntity<?> getParticipant(@PathVariable("userId") UUID userId) {
-		return ResponseEntity.ok(new ApiResponse<>(CompetitionServiceCode.COMPETITION_CREATE_SUCCESS.getCode(),
-			"",
-			CompetitionServiceCode.COMPETITION_CREATE_SUCCESS.getMessage(),
+	@Operation(summary = "참가자 id로 조회")
+	public ResponseEntity<?> getParticipant(@ParameterObject SearchRequestDto requestDto) {
+		Page<SearchParticipantAppResponseDto> participant = participantService.getParticipant(requestDto.keyword(),requestDto.toPageable());
+		Page<SearchResponseDto> presentationParticipant = participantMapper.toPresentationDtoPage(participant);
+		return ResponseEntity.ok(new ApiResponse<>(CompetitionServiceCode.PARTICIPANT_GET_SUCCESS.getCode(),
+			presentationParticipant,
+			CompetitionServiceCode.PARTICIPANT_GET_SUCCESS.getMessage(),
 			HttpStatus.CREATED.value()));
 	}
 

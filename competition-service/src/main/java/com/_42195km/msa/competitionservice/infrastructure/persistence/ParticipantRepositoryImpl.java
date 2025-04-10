@@ -43,4 +43,7 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 	public Page<Object> searchByUuid(UUID uuid, Pageable pageable){
 		return mappingJpaRepository.searchByUuid(uuid, pageable);
 	}
+	public Page<Object> getByUuid(UUID uuid,Pageable pageable){
+		return mappingJpaRepository.getByUuid(uuid,pageable);
+	}
 }

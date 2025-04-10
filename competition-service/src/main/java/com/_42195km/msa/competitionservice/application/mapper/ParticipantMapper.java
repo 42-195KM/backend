@@ -55,6 +55,17 @@ public class ParticipantMapper {
 			.build();
 	}
 
+	public SearchResponseDto toSearchResponseDto(SearchParticipantAppResponseDto appResponseDto) {
+		return SearchResponseDto.builder()
+			.participantID(appResponseDto.getParticipantID())
+			.title(appResponseDto.getTitle())
+			.competitionType(appResponseDto.getCompetitionType())
+			.receptionType(appResponseDto.getReceptionType())
+			.participantID(appResponseDto.getParticipantID())
+			.statue(appResponseDto.getStatue())
+			.build();
+	}
+
 	public Page<SearchResponseDto> toPresentationDtoPage(Page<SearchParticipantAppResponseDto> appResponseDtos) {
 		return appResponseDtos.map(dto -> new SearchResponseDto(
 			dto.getCompetitionID(),

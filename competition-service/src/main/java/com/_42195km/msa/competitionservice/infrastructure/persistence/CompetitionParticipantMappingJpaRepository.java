@@ -50,4 +50,11 @@ public interface CompetitionParticipantMappingJpaRepository extends JpaRepositor
 		"JOIN cpm.participant p " +
 		"WHERE cast(c.id as string) = :uuid OR cast(p.participantId as string) = :uuid")
 	Page<Object> searchByUuid(@Param("uuid") UUID uuid, Pageable pageable);
+
+	@Query("SELECT c.id, c.title, c.type, c.receptionType, p.participantId, p.statue " +
+		"FROM CompetitionParticipantMapping cpm " +
+		"JOIN cpm.competition c " +
+		"JOIN cpm.participant p " +
+		"WHERE p.participantId = :uuid")
+	Page<Object> getByUuid(@Param("uuid") UUID uuid, Pageable pageable);
 }

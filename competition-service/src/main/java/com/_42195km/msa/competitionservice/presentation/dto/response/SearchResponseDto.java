@@ -6,6 +6,7 @@ import com._42195km.msa.competitionservice.domain.model.CompetitionType;
 import com._42195km.msa.competitionservice.domain.model.ReceptionType;
 import com._42195km.msa.competitionservice.domain.model.Statue;
 
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
@@ -17,6 +18,7 @@ public class SearchResponseDto {
 	private UUID participantID;
 	private Statue statue;
 
+	@Builder
 	public SearchResponseDto(UUID competitionID, String title, CompetitionType competitionType, ReceptionType receptionType, UUID participantID, Statue statue) {
 		this.competitionID = competitionID;
 		this.title = title;
