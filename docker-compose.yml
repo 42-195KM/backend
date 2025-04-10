@@ -21,6 +21,48 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=example
     volumes:
       - ~/mongodb:/data/db
+  zookeeper:
+    container_name: zookeeper
+    image: confluentinc/cp-zookeeper:latest
+    ports:
+      - "2181:2181"
+    environment:
+      - ZOOKEEPER_CLIENT_PORT=2181
+      - ZOOKEEPER_TICK_TIME=2000
+    networks:
+      - app_network
+  kafka:
+    container_name: kafka
+    image: confluentinc/cp-kafka:latest
+    ports:
+      - "9092:9092"
+    depends_on:
+      - zookeeper
+    environment:
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      # 내부와 외부 접근을 구분하여 설정. 내부에서는 kafka:29092로 접근하도록 구성합니다.
+      - KAFKA_ADVERTISED_LISTENERS=INSIDE://kafka:29092,OUTSIDE://localhost:9092
+      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
+      - KAFKA_LISTENERS=INSIDE://0.0.0.0:29092,OUTSIDE://0.0.0.0:9092
+      - KAFKA_INTER_BROKER_LISTENER_NAME=INSIDE
+    networks:
+      - app_network
+
+  kafka-ui:
+    container_name: kafka-ui
+    image: provectuslabs/kafka-ui:latest
+    ports:
+      - "9093:8080"
+    depends_on:
+      - kafka
+    environment:
+      # 클러스터 이름을 지정하고, Kafka UI가 접근할 Kafka의 브로커 주소를 설정합니다.
+      - KAFKA_CLUSTERS_0_NAME=local
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:29092
+      - KAFKA_CLUSTERS_0_ZOOKEEPER=zookeeper:2181
+    networks:
+      - app_network
+
 
 networks:
   app_network:
