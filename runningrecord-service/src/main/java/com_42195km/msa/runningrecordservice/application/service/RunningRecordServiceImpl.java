@@ -14,6 +14,7 @@ import com_42195km.msa.runningrecordservice.application.dto.request.CreateRunnin
 import com_42195km.msa.runningrecordservice.domain.model.RunningRecord;
 import com_42195km.msa.runningrecordservice.domain.repository.RunningRecordRepository;
 import com_42195km.msa.runningrecordservice.infrastructure.config.RunningRecordServiceCode;
+import com_42195km.msa.runningrecordservice.infrastructure.messaging.out.RunningRecordEventProducer;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -21,12 +22,14 @@ import lombok.RequiredArgsConstructor;
 public class RunningRecordServiceImpl implements RunningRecordService {
 
 	RunningRecordRepository runningRecordRepository;
+	RunningRecordEventProducer runningRecordEventProducer;
 
 	@Override
 	public RunningRecord createRunningRecord(CreateRunningRecordCommandDto createRunningRecordCommandDto) {
 		try {
 			RunningRecord runningRecord = RunningRecord.createRunningRecord(createRunningRecordCommandDto);
 			runningRecord = runningRecordRepository.save(runningRecord);
+			runningRecordEventProducer.sendRunningRecordCreateEvent(runningRecord);
 			return runningRecord;
 		}
 		catch (Exception e) {

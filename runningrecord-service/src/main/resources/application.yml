@@ -24,6 +24,11 @@ spring:
       connection-timeout: 20000
       auto-commit: false
 
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+    consumer:
+      group-id: running-record-group
+
 server:
   port: ${RUNNING_RECORD_SERVER}
 

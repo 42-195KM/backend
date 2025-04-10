@@ -1,4 +1,4 @@
-package com_42195km.msa.achievementservice.infrastructure.config;
+package com_42195km.msa.runningrecordservice.infrastructure.config;
 
 import static org.apache.kafka.streams.kstream.EmitStrategy.*;
 
@@ -26,7 +26,7 @@ import org.springframework.util.backoff.FixedBackOff;
 
 @Configuration
 @EnableKafka
-public class kafkaConfig {
+public class KafkaConfig {
 	@Value("${spring.kafka.bootstrap-servers}")
 	private String kafkaBootstrapServers;
 
