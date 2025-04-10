@@ -84,7 +84,7 @@ public class UserController {
 			);
 	}
 
-	@GetMapping("/v1/users/{userId}")
+	@GetMapping("/v1/app/users/{userId}")
 	public ResponseEntity<ApiResponse<GetUserResponseDto>> getUser(
 		@PathVariable UUID userId
 	) {
@@ -103,7 +103,7 @@ public class UserController {
 			);
 	}
 
-	@GetMapping("/v1/users/search")
+	@GetMapping("/v1/app/users/search")
 	public ResponseEntity<ApiResponse<Page<SearchUserResponseDto>>> searchUser(
 		@RequestParam String keyword,
 		@PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.ASC) Pageable pageable
@@ -123,7 +123,7 @@ public class UserController {
 			);
 	}
 
-	@PatchMapping("/v1/users/{userId}")
+	@PatchMapping("/v1/app/users/{userId}")
 	public ResponseEntity<ApiResponse<UpdateUserResponseDto>> updateUser(
 		@PathVariable UUID userId,
 		@RequestBody @Valid UpdateUserRequestDto updateUserRequestDto
