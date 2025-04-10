@@ -33,12 +33,12 @@ public abstract class BaseEntity {
 
 	@CreatedBy
 	@Column(updatable = false)
-	private Long createdBy;
+	private UUID createdBy;
 
 	@LastModifiedBy
-	private Long updatedBy;
+	private UUID updatedBy;
 
-	private Long deletedBy;
+	private UUID deletedBy;
 
 	// @PreUpdate
 	public void setDeleted() {
@@ -46,7 +46,7 @@ public abstract class BaseEntity {
 		// 	deletedAt = LocalDateTime.now();
 		// 	deletedBy = getAuthenticatedUsername();
 		// }
-		if(!isDeleted){
+		if (!isDeleted) {
 			isDeleted = true;
 			deletedAt = LocalDateTime.now();
 			// 	deletedBy = getAuthenticatedUsername();
