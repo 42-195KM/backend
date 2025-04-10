@@ -1,5 +1,5 @@
 server:
-  port: ${SERVER_PORT}
+  port: ${CHATBOT_SERVER}
 
 spring:
   application:
@@ -9,9 +9,9 @@ spring:
 
 
   datasource:
-    url: ${SPRING_DATASOURCE_URL}
-    username: ${SPRING_DATASOURCE_USERNAME}
-    password: ${SPRING_DATASOURCE_PASSWORD}
+    url: ${DB_CHATBOT_URL}
+    username: ${DB_CHATBOT_USERNAME}
+    password: ${DB_CHATBOT_PASSWORD}
   jpa:
     hibernate:
       ddl-auto: update

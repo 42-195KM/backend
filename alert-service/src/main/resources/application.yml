@@ -1,6 +1,6 @@
 
 server:
-  port: ${SERVER_PORT}
+  port: ${ALERT_SERVER}
 
 spring:
   application:
@@ -9,9 +9,9 @@ spring:
     import: optional:file:.env[.properties]
 
   datasource:
-    url: ${SPRING_DATASOURCE_URL}
-    username: ${SPRING_DATASOURCE_USERNAME}
-    password: ${SPRING_DATASOURCE_PASSWORD}
+    url: ${DB_ALERT_URL}
+    username: ${DB_ALERT_USERNAME}
+    password: ${DB_ALERT_PASSWORD}
   jpa:
     hibernate:
       ddl-auto: update
