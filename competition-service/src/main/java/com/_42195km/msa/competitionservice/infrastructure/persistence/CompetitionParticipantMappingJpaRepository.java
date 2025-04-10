@@ -32,4 +32,22 @@ public interface CompetitionParticipantMappingJpaRepository extends JpaRepositor
 	@Query("SELECT p.participant FROM CompetitionParticipantMapping p WHERE p.competition.id = :competitionId")
 	Page<Participant> findParticipantsByCompetitionId(@Param("competitionId") UUID competitionId, Pageable pageable);
 
+	@Query("SELECT c.id, c.title, c.type, c.receptionType, p.participantId, p.statue FROM CompetitionParticipantMapping cpm JOIN cpm.competition c JOIN cpm.participant p WHERE LOWER(c.title) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+	Page<Object> searchByTitle(@Param("keyword") String keyword, Pageable pageable);
+
+	@Query("SELECT c.id, c.title, c.type, c.receptionType, p.participantId, p.statue FROM CompetitionParticipantMapping cpm JOIN cpm.competition c JOIN cpm.participant p WHERE CAST(c.type AS string) = :keyword")
+	Page<Object> searchByCompetitionType(@Param("keyword") String keyword, Pageable pageable);
+
+	@Query("SELECT c.id, c.title, c.type, c.receptionType, p.participantId, p.statue FROM CompetitionParticipantMapping cpm JOIN cpm.competition c JOIN cpm.participant p WHERE CAST(c.receptionType AS string) = :keyword")
+	Page<Object> searchByReceptionType(@Param("keyword") String keyword, Pageable pageable);
+
+	@Query("SELECT c.id, c.title, c.type, c.receptionType, p.participantId, p.statue FROM CompetitionParticipantMapping cpm JOIN cpm.competition c JOIN cpm.participant p WHERE CAST(p.statue AS string) = :keyword")
+	Page<Object> searchByStatue(@Param("keyword") String keyword, Pageable pageable);
+
+	@Query("SELECT c.id, c.title, c.type, c.receptionType, p.participantId, p.statue " +
+		"FROM CompetitionParticipantMapping cpm " +
+		"JOIN cpm.competition c " +
+		"JOIN cpm.participant p " +
+		"WHERE cast(c.id as string) = :uuid OR cast(p.participantId as string) = :uuid")
+	Page<Object> searchByUuid(@Param("uuid") UUID uuid, Pageable pageable);
 }

@@ -2,6 +2,7 @@ package com._42195km.msa.competitionservice.presentation.controller;
 
 import java.util.UUID;
 
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,10 +16,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com._42195km.msa.common.api.ApiResponse;
 import com._42195km.msa.competitionservice.application.dto.response.ParticipantAppResponseDto;
+import com._42195km.msa.competitionservice.application.dto.response.SearchParticipantAppResponseDto;
 import com._42195km.msa.competitionservice.application.exception.CompetitionServiceCode;
+import com._42195km.msa.competitionservice.application.mapper.ParticipantMapper;
 import com._42195km.msa.competitionservice.application.service.ParticipantService;
 import com._42195km.msa.competitionservice.domain.repository.ParticipantRepository;
 import com._42195km.msa.competitionservice.presentation.dto.request.GetRequestDto;
+import com._42195km.msa.competitionservice.presentation.dto.request.SearchRequestDto;
+import com._42195km.msa.competitionservice.presentation.dto.response.ParticipantResponseDto;
+import com._42195km.msa.competitionservice.presentation.dto.response.SearchResponseDto;
 
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -30,6 +36,7 @@ import lombok.RequiredArgsConstructor;
 public class ParticipantController {
 
 	private final ParticipantService participantService;
+	private final ParticipantMapper participantMapper;
 
 	@GetMapping("/{competitionId}")
 	@Operation(summary = "대회 참가자 조회")
@@ -42,11 +49,13 @@ public class ParticipantController {
 	}
 
 	@GetMapping("/search")
-	@Operation(description = "")
-	public ResponseEntity<?> getParticipants(@RequestParam(value = "name") String name) {
-		return ResponseEntity.ok(new ApiResponse<>(CompetitionServiceCode.COMPETITION_CREATE_SUCCESS.getCode(),
-			"",
-			CompetitionServiceCode.COMPETITION_CREATE_SUCCESS.getMessage(),
+	@Operation(summary = "참가자 검색")
+	public ResponseEntity<?> getParticipants(@ParameterObject SearchRequestDto requestDto) {
+		Page<SearchParticipantAppResponseDto> participants = participantService.searchParticipants(requestDto.keyword(),requestDto.SearchType(),requestDto.toPageable());
+		Page<SearchResponseDto> presentationParticipants = participantMapper.toPresentationDtoPage(participants);
+		return ResponseEntity.ok(new ApiResponse<>(CompetitionServiceCode.PARTICIPANT_SEARCH_SUCCESS.getCode(),
+			presentationParticipants,
+			CompetitionServiceCode.PARTICIPANT_SEARCH_SUCCESS.getMessage(),
 			HttpStatus.CREATED.value()));
 	}
 

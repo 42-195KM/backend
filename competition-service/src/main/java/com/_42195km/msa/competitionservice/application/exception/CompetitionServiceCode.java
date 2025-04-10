@@ -27,6 +27,10 @@ public enum CompetitionServiceCode implements ServiceCode {
 	COMPETITION_DRAW_INVALID_TYPE("CPT_016", "대회 접수 유형 오류", HttpStatus.BAD_REQUEST),
 	COMPETITION_DRAW_FAIL("CPT_017", "대회 추첨 실패", HttpStatus.BAD_REQUEST),
 	COMPETITION_DRAW_SUCCESS("CPT_018", "대회 추첨 성공", HttpStatus.OK),
+	PARTICIPANT_GET_FAIL("CPT_019", "대회 참가자 조회 실패", HttpStatus.BAD_REQUEST),
+	PARTICIPANT_GET_SUCCESS("CPT_020", "대회 참가자 조회 성공", HttpStatus.OK),
+	PARTICIPANT_SEARCH_FAIL("CPT_021", "대회 참가자 검색 실패", HttpStatus.BAD_REQUEST),
+	PARTICIPANT_SEARCH_SUCCESS("CPT_022", "대회 참가자 검색 성공", HttpStatus.OK),
 	;
 
 	private final String code;
