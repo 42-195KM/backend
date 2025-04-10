@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 
 import java.sql.Timestamp;
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -25,7 +26,6 @@ import com_42195km.msa.runningrecordservice.application.service.RunningRecordSer
 import com_42195km.msa.runningrecordservice.domain.model.RunningRecord;
 import com_42195km.msa.runningrecordservice.domain.repository.RunningRecordRepository;
 import com._42195km.msa.common.exception.CustomBusinessException;
-import com_42195km.msa.runningrecordservice.infrastructure.config.RunningRecordServiceCode;
 
 @ExtendWith(MockitoExtension.class)
 class RunningRecordServiceImplTest {
@@ -162,16 +162,17 @@ class RunningRecordServiceImplTest {
 		record.setPace(6.5);
 
 		Page<RunningRecord> page = new PageImpl<>(List.of(record));
-		when(runningRecordRepository.searchByUserId(userId, pageable))
+		LocalDateTime searchFromDate = LocalDateTime.of(1970, 1, 1, 0, 0);
+		when(runningRecordRepository.searchByUserId(userId, searchFromDate, pageable))
 			.thenReturn(page);
 
 		// When
-		Page<RunningRecord> result = runningRecordService.searchRecords(userId, pageable);
+		Page<RunningRecord> result = runningRecordService.searchRecords(userId, searchFromDate, pageable);
 
 		// Then
 		assertNotNull(result);
 		assertEquals(1, result.getContent().size());
-		verify(runningRecordRepository, times(1)).searchByUserId(userId, pageable);
+		verify(runningRecordRepository, times(1)).searchByUserId(userId, searchFromDate, pageable);
 	}
 
 	@Test
@@ -195,7 +196,6 @@ class RunningRecordServiceImplTest {
 		assertNotNull(result);
 		assertEquals(recordId, result.getId());
 		verify(runningRecordRepository, times(1)).findById(recordId);
-		// runningRecord.ifPresent(BaseEntity::setDeleted) 호출 여부는 스파이(spy)로 처리할 수도 있으나, 여기서는 결과 값만으로 확인
 	}
 
 	@Test

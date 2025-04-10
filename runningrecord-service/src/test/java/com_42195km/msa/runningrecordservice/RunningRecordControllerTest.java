@@ -17,6 +17,7 @@ import com_42195km.msa.runningrecordservice.infrastructure.config.RunningRecordS
 import com_42195km.msa.runningrecordservice.presentation.controller.RunningRecordController;
 import java.sql.Timestamp;
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
@@ -150,7 +151,9 @@ public class RunningRecordControllerTest {
 			.build();
 		PageImpl<RunningRecord> page = new PageImpl<>(Collections.singletonList(record), pageable, 1);
 
-		when(runningRecordService.searchRecords(userId, pageable)).thenReturn(page);
+		LocalDateTime searchFromDate = LocalDateTime.of(1970, 1, 1, 0, 0);
+
+		when(runningRecordService.searchRecords(userId, searchFromDate, pageable)).thenReturn(page);
 
 		mockMvc.perform(get("/api/v1/running-records/search")
 				.param("userId", userId.toString())
