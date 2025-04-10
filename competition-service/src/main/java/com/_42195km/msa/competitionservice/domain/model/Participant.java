@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.kafka.common.protocol.types.Field;
 import org.hibernate.annotations.ColumnDefault;
 
 import com._42195km.msa.common.BaseEntity;
@@ -12,6 +11,8 @@ import com._42195km.msa.common.BaseEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -24,7 +25,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@Table(name = "P_competition_participant")
+@Table(name = "p_competition_participant")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Participant extends BaseEntity {
 	@Id
@@ -34,8 +35,9 @@ public class Participant extends BaseEntity {
 	@Column(name = "participant_id")
 	private UUID participantId;
 
-	@ColumnDefault("false")
-	private Boolean isSelected;
+	@Column(name = "statue", nullable = false)
+	@Enumerated(EnumType.STRING)
+	private Statue statue = Statue.APPLY;
 
 	@OneToMany(mappedBy = "participant", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<CompetitionParticipantMapping> competitionMappings = new ArrayList<>();
@@ -50,7 +52,11 @@ public class Participant extends BaseEntity {
 	}
 
 	public void markAsSelected() {
-		this.isSelected = true;
+		this.statue = Statue.SELECTED;
+	}
+
+	public void cancel() {
+		this.statue = Statue.CANCEL;
 	}
 
 }

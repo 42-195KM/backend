@@ -2,9 +2,11 @@ package com._42195km.msa.competitionservice.presentation.controller;
 
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,10 +14,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com._42195km.msa.common.api.ApiResponse;
+import com._42195km.msa.competitionservice.application.dto.response.ParticipantAppResponseDto;
 import com._42195km.msa.competitionservice.application.exception.CompetitionServiceCode;
+import com._42195km.msa.competitionservice.application.service.ParticipantService;
 import com._42195km.msa.competitionservice.domain.repository.ParticipantRepository;
+import com._42195km.msa.competitionservice.presentation.dto.request.GetRequestDto;
 
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -23,13 +29,14 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ParticipantController {
 
-	private final ParticipantRepository participantRepository;
+	private final ParticipantService participantService;
 
-	@GetMapping("")
-	@Operation(description = "")
-	public ResponseEntity<?> getParticipants() {
+	@GetMapping("/{competitionId}")
+	@Operation(summary = "대회 참가자 조회")
+	public ResponseEntity<?> getParticipants(@ModelAttribute @Valid GetRequestDto requestDto, @RequestParam("competitionId") UUID competitionId) {
+		Page<ParticipantAppResponseDto> participants = participantService.getParticipants(requestDto.toPageable(), competitionId);
 		return ResponseEntity.ok(new ApiResponse<>(CompetitionServiceCode.COMPETITION_CREATE_SUCCESS.getCode(),
-			"",
+			participants,
 			CompetitionServiceCode.COMPETITION_CREATE_SUCCESS.getMessage(),
 			HttpStatus.CREATED.value()));
 	}
@@ -43,7 +50,7 @@ public class ParticipantController {
 			HttpStatus.CREATED.value()));
 	}
 
-	@GetMapping("/{userId}")
+	@GetMapping("/show/{userId}")
 	@Operation(description = "")
 	public ResponseEntity<?> getParticipant(@PathVariable("userId") UUID userId) {
 		return ResponseEntity.ok(new ApiResponse<>(CompetitionServiceCode.COMPETITION_CREATE_SUCCESS.getCode(),

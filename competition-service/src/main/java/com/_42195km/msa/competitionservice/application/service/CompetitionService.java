@@ -131,23 +131,26 @@ public class CompetitionService {
 			Participant participant = Participant.create(participantId);
 			participantRepository.save(participant);
 
-			// 중복 참가 신청 확인 // 접수 유형이 선착순인 경우
-			if (competition.getReceptionType() == ReceptionType.FIRST) {
-				Integer currentCount = mappingRepository.checkParticipantCount(competition, participant);
-				if (currentCount >= competition.getParticipantsNum()) {
-					throw CustomBusinessException.from(CompetitionServiceCode.COMPETITION_APPLY_FIRST_FAIL);
-				}
+			// 중복 참가 신청 확인
+			Boolean chekcDupl = mappingRepository.checkIsParticipate(participantId, competitionId);
+			log.error("중복 확인 : {}", chekcDupl);
+			if (chekcDupl) {
+				throw CustomBusinessException.from(CompetitionServiceCode.COMPETITION_APPLY_EXIST);
 			}
 
-			// 대회 신청 마감 확인
-			Integer ParticipantCount = mappingRepository.checkParticipantCount(competition,participant);
-			if (ParticipantCount > competition.getParticipantsNum()) {
-				throw CustomBusinessException.from(CompetitionServiceCode.COMPETITION_APPLY_FIRST_FAIL);
+			// 대회 신청 마감 확인 // 접수 유형이 선착순인 경우
+			if (competition.getReceptionType() == ReceptionType.FIRST) {
+				Integer ParticipantCount = mappingRepository.checkParticipantCount(competition, participant);
+				if (ParticipantCount > competition.getParticipantsNum()) {
+					throw CustomBusinessException.from(CompetitionServiceCode.COMPETITION_APPLY_FIRST_FAIL);
+				}
 			}
 
 			CompetitionParticipantMapping apply = CompetitionParticipantMapping.create(competition, participant);
 			mappingRepository.save(apply);
 
+		} catch (CustomBusinessException e) {
+			throw CustomBusinessException.from(CompetitionServiceCode.COMPETITION_APPLY_EXIST);
 		} catch (Exception e) {
 			throw CustomBusinessException.from(CompetitionServiceCode.COMPETITION_APPLY_FAIL);
 		}
@@ -175,13 +178,10 @@ public class CompetitionService {
 
 			// 랜덤 추첨
 			Collections.shuffle(allApplicants);
-
 			List<CompetitionParticipantMapping> selected = allApplicants.subList(0, competition.getParticipantsNum());
-
 			selected.forEach(mapping -> {
 				mapping.getParticipant().markAsSelected();
 			});
-
 
 		} catch (Exception e) {
 			log.error("추첨 실패: {}", e.getMessage());

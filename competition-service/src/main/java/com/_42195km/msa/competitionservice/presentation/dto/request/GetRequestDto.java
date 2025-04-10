@@ -8,11 +8,11 @@ import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
-public record GetCompetitionRequestDto(
+public record GetRequestDto(
 	@Min(0) @NotNull @Parameter(example = "'0'") int page,
 	@NotNull @Parameter(example = "'10'") int size
 ) {
-	public GetCompetitionRequestDto{
+	public GetRequestDto {
 		if(size !=0 && size != 30 && size != 50 ){
 			size =10;
 		}

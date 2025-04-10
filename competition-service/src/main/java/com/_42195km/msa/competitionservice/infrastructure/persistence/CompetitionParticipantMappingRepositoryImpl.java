@@ -3,6 +3,8 @@ package com._42195km.msa.competitionservice.infrastructure.persistence;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import com._42195km.msa.competitionservice.domain.model.Competition;
@@ -32,5 +34,9 @@ public class CompetitionParticipantMappingRepositoryImpl implements CompetitionP
 
 	public List<CompetitionParticipantMapping> findAllByCompetition(Competition competition) {
 		return jpaRepository.findAllByCompetition(competition);
+	}
+
+	public Page<Participant> findParticipants(UUID competitionId, Pageable pageable){
+		return jpaRepository.findParticipantsByCompetitionId(competitionId, pageable);
 	}
 }
