@@ -15,9 +15,9 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
   datasource:
-    url: ${SPRING_DATASOURCE_ACHIEVEMENT_URL}
-    username: ${SPRING_DATASOURCE_USERNAME}
-    password: ${SPRING_DATASOURCE_PASSWORD}
+    url: ${DB_ACHIEVEMENT_URL}
+    username: ${DB_ACHIEVEMENT_USERNAME}
+    password: ${DB_ACHIEVEMENT_PASSWORD}
     hikari:
       maximum-pool-size: 3
       minimum-idle: 1
@@ -25,7 +25,7 @@ spring:
       auto-commit: false
 
 server:
-  port: 19018
+  port: ${ACHIEVEMENT_SERVER}
 
 logging:
   level:

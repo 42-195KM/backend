@@ -15,9 +15,9 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
   datasource:
-    url: ${SPRING_DATASOURCE_RUNNING_RECORD_URL}
-    username: ${SPRING_DATASOURCE_USERNAME}
-    password: ${SPRING_DATASOURCE_PASSWORD}
+    url: ${DB_RUNNING_RECORD_URL}
+    username: ${DB_RUNNING_RECORD_USERNAME}
+    password: ${DB_RUNNING_RECORD_PASSWORD}
     hikari:
       maximum-pool-size: 3
       minimum-idle: 1
@@ -25,7 +25,7 @@ spring:
       auto-commit: false
 
 server:
-  port: 19021
+  port: ${RUNNING_RECORD_SERVER}
 
 logging:
   level:
