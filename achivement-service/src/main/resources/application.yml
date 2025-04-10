@@ -1,6 +1,6 @@
 spring:
   application:
-    name: runningrecord-service
+    name: achivement-service
 
   config:
     import: optional:file:.env[.properties]
@@ -15,9 +15,9 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
   datasource:
-    url: ${DB_RUNNING_RECORD_URL}
-    username: ${DB_RUNNING_RECORD_USERNAME}
-    password: ${DB_RUNNING_RECORD_PASSWORD}
+    url: ${DB_ACHIEVEMENT_URL}
+    username: ${DB_ACHIEVEMENT_USERNAME}
+    password: ${DB_ACHIEVEMENT_PASSWORD}
     hikari:
       maximum-pool-size: 3
       minimum-idle: 1
@@ -25,7 +25,7 @@ spring:
       auto-commit: false
 
 server:
-  port: ${RUNNING_RECORD_SERVER}
+  port: ${ACHIEVEMENT_SERVER}
 
 logging:
   level:
@@ -43,5 +43,3 @@ logging:
         transaction: debug
         orm:
           jpa: debug
-
-
