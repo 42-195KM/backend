@@ -10,10 +10,12 @@ import com._42195km.msa.gateway.util.JwtUtil;
 
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class AuthenticationFilter implements GlobalFilter {
 
 	private final JwtUtil jwtUtil;
@@ -45,6 +47,8 @@ public class AuthenticationFilter implements GlobalFilter {
 		String userName = claims.get("userName", String.class);
 		String role = claims.get("role", String.class);
 
+		log.info("userId: {}, userName: {}, role: {}", userId, userName, role);
+
 		// 6) 내부 서비스로 전달할 사용자 정보 헤더에 추가 (exchange 객체 갱신)
 		exchange = exchange.mutate()
 			.request(exchange.getRequest().mutate()
@@ -60,8 +64,8 @@ public class AuthenticationFilter implements GlobalFilter {
 
 	// 인증 없이 통과시킬 경로
 	private boolean isAllowedPath(String path, String method) {
-		return path.startsWith("/api/v1/auth/login") ||  // 로그인 API
-			path.startsWith("/api/v1/users") || // 회원가입 API
+		return path.equals("/api/v1/auth/login") ||    // 로그인
+			path.equals("/api/v1/users") ||    // 회원가입
 			path.startsWith("/swagger-ui") || // Swagger UI
 			path.startsWith("/v3/api-docs"); // Swagger API Docs
 	}
