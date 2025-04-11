@@ -1,13 +1,13 @@
-package com._42195km.msa.crew.presentation.exception;
+package com._42195km.msa.crew.application.exception;
 
 import org.springframework.http.HttpStatus;
 
-import com._42195km.msa.common.exception.code.ErrorCode;
+import com._42195km.msa.common.code.ServiceCode;
 
 import lombok.Getter;
 
 @Getter
-public enum BoardErrorCode implements ErrorCode {
+public enum BoardServiceCode implements ServiceCode {
 	CREW_BOARD_CREATE_POST_SUCCESS("CREW_020", "게시글 생성 성공", HttpStatus.OK),
 	CREW_BOARD_CREATE_POST_FAILED("CREW_021", "게시글 생성 실패", HttpStatus.INTERNAL_SERVER_ERROR),
 	CREW_BOARD_UPDATE_POST_SUCCESS("CREW_022", "게시글 수정 성공", HttpStatus.OK),
@@ -29,9 +29,10 @@ public enum BoardErrorCode implements ErrorCode {
 	private final String message;
 	private final int status;
 
-	BoardErrorCode(String code, String message, HttpStatus status) {
+	BoardServiceCode(String code, String message, HttpStatus status) {
 		this.code = code;
 		this.message = message;
 		this.status = status.value();
 	}
 }
+
