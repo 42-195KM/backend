@@ -22,6 +22,13 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
   ai:
+    vectorstore:
+      pgvector:
+        index-type: HNSW
+        distance-type: COSINE_DISTANCE
+        dimensions: 768
+        max-document-batch-size: 10000 # Optional: Maximum number of documents per batch
+
     vertex:
       ai:
         gemini:
@@ -39,6 +46,7 @@ spring:
           text:
             options:
               model: text-embedding-004
+
 
   kafka:
     bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
