@@ -52,9 +52,9 @@ public class ChatbotController {
 
 
     @PostMapping("/embedding")
-    public ResponseEntity<?> embedding(@RequestBody String embeddingRequest){
-        float[] floats = embeddingService.embeddingInfo(embeddingRequest);
-        return ResponseEntity.ok(floats);
+    public ResponseEntity<?> saveEmbeddingInfo(@RequestBody String embeddingRequest){
+        embeddingService.saveEmbeddingInfo(embeddingRequest);
+        return ResponseEntity.ok("ok");
 
     }
 
