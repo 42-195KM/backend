@@ -11,6 +11,7 @@ spring:
       - file:.env[.properties]
   cloud:
     gateway:
+      preserve-host-header: true  # 헤더에 정보 유지
       routes:
         # 유저 서비스
         - id: user-service
