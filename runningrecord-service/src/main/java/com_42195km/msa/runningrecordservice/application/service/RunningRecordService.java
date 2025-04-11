@@ -1,5 +1,6 @@
 package com_42195km.msa.runningrecordservice.application.service;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -19,7 +20,7 @@ public interface RunningRecordService {
 	Page<RunningRecord> getAllRecords(Pageable pageable);
 
 	// 검색 by UserId
-	Page<RunningRecord> searchRecords(UUID userId, Pageable pageable);
+	Page<RunningRecord> searchRecords(UUID userId, LocalDateTime createdAt, Pageable pageable);
 
 	// 러닝 기록 삭제
 	RunningRecord deleteRecord(UUID runningRecordId);

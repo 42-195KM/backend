@@ -1,9 +1,11 @@
 package com_42195km.msa.runningrecordservice.presentation.controller;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -95,11 +97,17 @@ public class RunningRecordController {
 	@GetMapping("/search")
 	public ResponseEntity<?> searchRecords(
 		@RequestParam(name = "userId", required = true) UUID userId,
+		@RequestParam(name = "createdAt", required = false)
+		@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime createdAt,
 		@RequestParam(defaultValue = "0", required = false) int page,
 		@RequestParam(defaultValue = "10", required = false) int size
 	) {
 		PageRequest pageRequest = PageRequest.of(page, size);
-		Page<GetRunningRecordResponseDto> responseDtos = runningRecordService.searchRecords(userId, pageRequest)
+		// createdAt이 전달되지 않은 경우: 전체 기간 검색을 위해 매우 이전 시점을 기본값으로 사용
+		LocalDateTime searchStart = (createdAt != null) ? createdAt :
+			LocalDateTime.of(1970, 1, 1, 0, 0);
+
+		Page<GetRunningRecordResponseDto> responseDtos = runningRecordService.searchRecords(userId, searchStart, pageRequest)
 			.map(GetRunningRecordResponseDto::new);
 
 		RunningRecordServiceCode runningRecordSearchSuccess = RunningRecordServiceCode.RUNNING_RECORD_SEARCH_SUCCESS;

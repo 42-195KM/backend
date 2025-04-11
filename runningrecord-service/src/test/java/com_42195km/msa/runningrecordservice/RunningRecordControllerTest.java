@@ -16,6 +16,8 @@ import com_42195km.msa.runningrecordservice.domain.model.RunningRecord;
 import com_42195km.msa.runningrecordservice.infrastructure.config.RunningRecordServiceCode;
 import com_42195km.msa.runningrecordservice.presentation.controller.RunningRecordController;
 import java.sql.Timestamp;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
@@ -54,11 +56,14 @@ public class RunningRecordControllerTest {
 
 	@Test
 	void testCreateRunningRecord() throws Exception {
+		// 테스트용 Duration 값을 생성 (예: 100초)
+		Duration testDuration = Duration.ofSeconds(100);
+
 		// 입력 JSON (CreateRunningRecordRequestDto)
 		String jsonRequest = "{" +
 			"\"userId\": \"" + UUID.randomUUID() + "\"," +
 			"\"distance\": 5.5," +
-			"\"timer\": \"" + new Timestamp(System.currentTimeMillis()).toString() + "\"," +
+			"\"timer\": \"" + testDuration.toString() + "\"," +
 			"\"pace\": 6.2" +
 			"}";
 
@@ -67,7 +72,7 @@ public class RunningRecordControllerTest {
 			.id(UUID.randomUUID())
 			.userId(UUID.randomUUID())
 			.distance(5.5)
-			.timer(new Timestamp(System.currentTimeMillis()))
+			.timer(testDuration)
 			.pace(6.2)
 			.build();
 
@@ -90,11 +95,12 @@ public class RunningRecordControllerTest {
 	@Test
 	void testGetRunningRecord() throws Exception {
 		UUID recordId = UUID.randomUUID();
+		Duration testDuration = Duration.ofSeconds(120);
 		RunningRecord record = RunningRecord.builder()
 			.id(recordId)
 			.userId(UUID.randomUUID())
 			.distance(8.0)
-			.timer(new Timestamp(System.currentTimeMillis()))
+			.timer(testDuration)
 			.pace(6.0)
 			.build();
 
@@ -109,12 +115,13 @@ public class RunningRecordControllerTest {
 
 	@Test
 	void testGetAllRunningRecords() throws Exception {
+		Duration testDuration = Duration.ofSeconds(90);
 		Pageable pageable = PageRequest.of(0, 10);
 		RunningRecord record = RunningRecord.builder()
 			.id(UUID.randomUUID())
 			.userId(UUID.randomUUID())
 			.distance(7.0)
-			.timer(new Timestamp(System.currentTimeMillis()))
+			.timer(testDuration)
 			.pace(5.5)
 			.build();
 		PageImpl<RunningRecord> page = new PageImpl<>(Collections.singletonList(record), pageable, 1);
@@ -133,17 +140,20 @@ public class RunningRecordControllerTest {
 	@Test
 	void testSearchRunningRecords() throws Exception {
 		UUID userId = UUID.randomUUID();
+		Duration testDuration = Duration.ofSeconds(150);
 		Pageable pageable = PageRequest.of(0, 10);
 		RunningRecord record = RunningRecord.builder()
 			.id(UUID.randomUUID())
 			.userId(userId)
 			.distance(9.0)
-			.timer(new Timestamp(System.currentTimeMillis()))
+			.timer(testDuration)
 			.pace(6.8)
 			.build();
 		PageImpl<RunningRecord> page = new PageImpl<>(Collections.singletonList(record), pageable, 1);
 
-		when(runningRecordService.searchRecords(userId, pageable)).thenReturn(page);
+		LocalDateTime searchFromDate = LocalDateTime.of(1970, 1, 1, 0, 0);
+
+		when(runningRecordService.searchRecords(userId, searchFromDate, pageable)).thenReturn(page);
 
 		mockMvc.perform(get("/api/v1/running-records/search")
 				.param("userId", userId.toString())
@@ -157,12 +167,13 @@ public class RunningRecordControllerTest {
 
 	@Test
 	void testDeleteRunningRecord() throws Exception {
+		Duration testDuration = Duration.ofSeconds(180);
 		UUID runningRecordId = UUID.randomUUID();
 		RunningRecord record = RunningRecord.builder()
 			.id(runningRecordId)
 			.userId(UUID.randomUUID())
 			.distance(10.0)
-			.timer(new Timestamp(System.currentTimeMillis()))
+			.timer(testDuration)
 			.pace(7.2)
 			.build();
 
