@@ -5,6 +5,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.sql.Timestamp;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -24,7 +26,6 @@ import com_42195km.msa.runningrecordservice.application.service.RunningRecordSer
 import com_42195km.msa.runningrecordservice.domain.model.RunningRecord;
 import com_42195km.msa.runningrecordservice.domain.repository.RunningRecordRepository;
 import com._42195km.msa.common.exception.CustomBusinessException;
-import com_42195km.msa.runningrecordservice.infrastructure.config.RunningRecordServiceCode;
 
 @ExtendWith(MockitoExtension.class)
 class RunningRecordServiceImplTest {
@@ -40,7 +41,7 @@ class RunningRecordServiceImplTest {
 		// Given
 		UUID userId = UUID.randomUUID();
 		double distance = 5.0;
-		Timestamp timer = new Timestamp(System.currentTimeMillis());
+		Duration timer = Duration.ofSeconds(100);
 		double pace = 6.0;
 		CreateRunningRecordCommandDto dto = new CreateRunningRecordCommandDto(userId, distance, timer, pace);
 
@@ -65,7 +66,7 @@ class RunningRecordServiceImplTest {
 		// Given
 		UUID userId = UUID.randomUUID();
 		double distance = 5.0;
-		Timestamp timer = new Timestamp(System.currentTimeMillis());
+		Duration timer = Duration.ofSeconds(50);
 		double pace = 6.0;
 		CreateRunningRecordCommandDto dto = new CreateRunningRecordCommandDto(userId, distance, timer, pace);
 
@@ -74,10 +75,10 @@ class RunningRecordServiceImplTest {
 			.thenThrow(new RuntimeException("DB error"));
 
 		// When & Then: CustomBusinessException이 발생해야 함
-		CustomBusinessException ex = assertThrows(CustomBusinessException.class, () -> {
+		// getMessage() 등을 사용해 메시지를 추가로 검증할 수 있음 (필요시)
+		assertThrows(CustomBusinessException.class, () -> {
 			runningRecordService.createRunningRecord(dto);
 		});
-		// ex.getMessage() 등을 사용해 메시지를 추가로 검증할 수 있음 (필요시)
 	}
 
 	@Test
@@ -88,7 +89,7 @@ class RunningRecordServiceImplTest {
 		runningRecord.setId(recordId);
 		runningRecord.setUserId(UUID.randomUUID());
 		runningRecord.setDistance(10.0);
-		runningRecord.setTimer(new Timestamp(System.currentTimeMillis()));
+		runningRecord.setTimer(Duration.ofSeconds(120));
 		runningRecord.setPace(5.5);
 
 		when(runningRecordRepository.findById(recordId))
@@ -125,14 +126,14 @@ class RunningRecordServiceImplTest {
 		record1.setId(UUID.randomUUID());
 		record1.setUserId(UUID.randomUUID());
 		record1.setDistance(5.0);
-		record1.setTimer(new Timestamp(System.currentTimeMillis()));
+		record1.setTimer(Duration.ofSeconds(120));
 		record1.setPace(6.0);
 
 		RunningRecord record2 = new RunningRecord();
 		record2.setId(UUID.randomUUID());
 		record2.setUserId(UUID.randomUUID());
 		record2.setDistance(10.0);
-		record2.setTimer(new Timestamp(System.currentTimeMillis()));
+		record2.setTimer(Duration.ofSeconds(130));
 		record2.setPace(5.5);
 
 		Page<RunningRecord> page = new PageImpl<>(List.of(record1, record2));
@@ -157,20 +158,21 @@ class RunningRecordServiceImplTest {
 		record.setId(UUID.randomUUID());
 		record.setUserId(userId);
 		record.setDistance(7.0);
-		record.setTimer(new Timestamp(System.currentTimeMillis()));
+		record.setTimer(Duration.ofSeconds(190));
 		record.setPace(6.5);
 
 		Page<RunningRecord> page = new PageImpl<>(List.of(record));
-		when(runningRecordRepository.searchByUserId(userId, pageable))
+		LocalDateTime searchFromDate = LocalDateTime.of(1970, 1, 1, 0, 0);
+		when(runningRecordRepository.searchByUserId(userId, searchFromDate, pageable))
 			.thenReturn(page);
 
 		// When
-		Page<RunningRecord> result = runningRecordService.searchRecords(userId, pageable);
+		Page<RunningRecord> result = runningRecordService.searchRecords(userId, searchFromDate, pageable);
 
 		// Then
 		assertNotNull(result);
 		assertEquals(1, result.getContent().size());
-		verify(runningRecordRepository, times(1)).searchByUserId(userId, pageable);
+		verify(runningRecordRepository, times(1)).searchByUserId(userId, searchFromDate, pageable);
 	}
 
 	@Test
@@ -181,7 +183,7 @@ class RunningRecordServiceImplTest {
 		runningRecord.setId(recordId);
 		runningRecord.setUserId(UUID.randomUUID());
 		runningRecord.setDistance(15.0);
-		runningRecord.setTimer(new Timestamp(System.currentTimeMillis()));
+		runningRecord.setTimer(Duration.ofSeconds(180));
 		runningRecord.setPace(7.0);
 
 		when(runningRecordRepository.findById(recordId))
@@ -194,7 +196,6 @@ class RunningRecordServiceImplTest {
 		assertNotNull(result);
 		assertEquals(recordId, result.getId());
 		verify(runningRecordRepository, times(1)).findById(recordId);
-		// runningRecord.ifPresent(BaseEntity::setDeleted) 호출 여부는 스파이(spy)로 처리할 수도 있으나, 여기서는 결과 값만으로 확인
 	}
 
 	@Test

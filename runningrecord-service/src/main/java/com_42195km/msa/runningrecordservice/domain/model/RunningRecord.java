@@ -1,6 +1,7 @@
 package com_42195km.msa.runningrecordservice.domain.model;
 
 import java.sql.Timestamp;
+import java.time.Duration;
 import java.util.UUID;
 
 import org.hibernate.annotations.UuidGenerator;
@@ -41,7 +42,7 @@ public class RunningRecord extends BaseEntity {
 	private double distance;
 
 	@Column(name = "timer", nullable = false)
-	private Timestamp timer;
+	private Duration timer;
 
 	@Column(name = "pace", nullable = false)
 	private double pace;
