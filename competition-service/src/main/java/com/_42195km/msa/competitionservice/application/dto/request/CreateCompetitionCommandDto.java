@@ -27,7 +27,7 @@ public class CreateCompetitionCommandDto {
 
 	private Integer price;
 
-	private CreateCompetitionCommandDto(UUID userId, String title, CompetitionType type, ReceptionType receptionType, Integer participantsNum, Integer price) {
+	public CreateCompetitionCommandDto(UUID userId, String title, CompetitionType type, ReceptionType receptionType, Integer participantsNum, Integer price) {
 		this.userId = userId;
 		this.title = title;
 		this.type = type;
