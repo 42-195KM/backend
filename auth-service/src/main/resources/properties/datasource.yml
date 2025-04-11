@@ -3,8 +3,8 @@ spring:
   config.activate.on-profile: local
   datasource:
     url: ${DB_AUTH_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    username: ${DB_AUTH_USERNAME}
+    password: ${DB_AUTH_PASSWORD}
     driver-class-name: org.postgresql.Driver
     hikari:
       schema: authschema
