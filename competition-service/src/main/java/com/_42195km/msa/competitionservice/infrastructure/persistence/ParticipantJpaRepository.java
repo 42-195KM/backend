@@ -11,6 +11,6 @@ import com._42195km.msa.competitionservice.domain.model.Participant;
 
 public interface ParticipantJpaRepository extends JpaRepository<Participant, UUID> {
 
-	Page<Participant> findByParticipantId(UUID participantId, Pageable pageable);
+	Participant findByParticipantId(UUID participantId);
 
 }

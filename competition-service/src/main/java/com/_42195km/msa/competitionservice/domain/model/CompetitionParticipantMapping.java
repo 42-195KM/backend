@@ -34,7 +34,7 @@ public class CompetitionParticipantMapping extends BaseEntity {
 	private Competition competition;
 
 	@ManyToOne
-	@JoinColumn(name = "participant_id", nullable = false)
+	@JoinColumn(name = "participant _id", referencedColumnName = "participant_user_id", nullable = false)
 	private Participant participant;
 
 	@Column(name = "status", nullable = false)

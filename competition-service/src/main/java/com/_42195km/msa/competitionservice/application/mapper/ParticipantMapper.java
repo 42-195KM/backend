@@ -42,7 +42,7 @@ public class ParticipantMapper {
 	public SearchParticipantAppResponseDto toSearchParticipantAppResponseDto(Object object) {
 		Object[] arr = (Object[]) object;
 		return SearchParticipantAppResponseDto.builder()
-			.competitionID(arr[0] != null ? (UUID) arr[0] : null)
+			.competitionID(arr[0] != null ? UUID.fromString(arr[0].toString()) : null)
 			.title(arr[1] != null ? (String) arr[1] : null)
 			.competitionType(arr[2] != null ? (CompetitionType) arr[2] : null)
 			.receptionType(arr[3] != null ? (ReceptionType) arr[3] : null)
@@ -53,7 +53,7 @@ public class ParticipantMapper {
 
 	public SearchResponseDto toSearchResponseDto(SearchParticipantAppResponseDto appResponseDto) {
 		return SearchResponseDto.builder()
-			.participantID(appResponseDto.getParticipantID())
+			.competitionID(appResponseDto.getCompetitionID())
 			.title(appResponseDto.getTitle())
 			.competitionType(appResponseDto.getCompetitionType())
 			.receptionType(appResponseDto.getReceptionType())

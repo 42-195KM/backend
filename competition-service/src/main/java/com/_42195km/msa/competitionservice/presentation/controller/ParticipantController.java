@@ -22,6 +22,7 @@ import com._42195km.msa.competitionservice.application.exception.CompetitionServ
 import com._42195km.msa.competitionservice.application.mapper.ParticipantMapper;
 import com._42195km.msa.competitionservice.application.service.ParticipantService;
 import com._42195km.msa.competitionservice.domain.repository.ParticipantRepository;
+import com._42195km.msa.competitionservice.presentation.dto.request.CancelParticipantRequestDto;
 import com._42195km.msa.competitionservice.presentation.dto.request.GetRequestDto;
 import com._42195km.msa.competitionservice.presentation.dto.request.SearchRequestDto;
 import com._42195km.msa.competitionservice.presentation.dto.response.ParticipantResponseDto;
@@ -73,8 +74,8 @@ public class ParticipantController {
 
 	@PutMapping("/cancel/company")
 	@Operation(summary = "")
-	public ResponseEntity<?> cancelParticipantByCompany() {
-		//participantService.cancelParticipantByCompany(userId);
+	public ResponseEntity<?> cancelParticipantByCompany(@ParameterObject CancelParticipantRequestDto requestDto) {
+		participantService.cancelParticipantByCompany(requestDto);
 		return ResponseEntity.ok(new ApiResponse<>(CompetitionServiceCode.PARTICIPANT_CANCEL_SUCCESS.getCode(),
 			"",
 			CompetitionServiceCode.PARTICIPANT_CANCEL_SUCCESS.getMessage(),

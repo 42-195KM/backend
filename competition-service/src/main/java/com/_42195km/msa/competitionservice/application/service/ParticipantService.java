@@ -7,6 +7,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com._42195km.msa.common.exception.CustomBusinessException;
 import com._42195km.msa.competitionservice.application.dto.response.ParticipantAppResponseDto;
@@ -19,6 +20,7 @@ import com._42195km.msa.competitionservice.domain.model.Participant;
 import com._42195km.msa.competitionservice.infrastructure.persistence.CompetitionParticipantMappingRepositoryImpl;
 import com._42195km.msa.competitionservice.infrastructure.persistence.CompetitionRepositoryImpl;
 import com._42195km.msa.competitionservice.infrastructure.persistence.ParticipantRepositoryImpl;
+import com._42195km.msa.competitionservice.presentation.dto.request.CancelParticipantRequestDto;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -92,9 +94,11 @@ public class ParticipantService {
 		}
 	}
 
-	public void cancelParticipantByCompany(UUID userId) {
+	@Transactional
+	public void cancelParticipantByCompany(CancelParticipantRequestDto requestDto) {
 		try {
-			//participantRepository.cancelByCompany(userId);
+			//mappingRepository.findParticipants()
+			participantRepository.cancelByCompany(requestDto.getCompetitionId(),requestDto.getParticipantId());
 		} catch (Exception e) {
 			throw CustomBusinessException.from(CompetitionServiceCode.PARTICIPANT_CANCEL_FAIL);
 		}

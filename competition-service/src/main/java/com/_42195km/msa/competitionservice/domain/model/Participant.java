@@ -30,7 +30,7 @@ public class Participant extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.UUID)
 	private UUID id;
 
-	@Column(name = "participant_id")
+	@Column(name = "participant_user_id", unique = true, nullable = false)
 	private UUID participantId;
 
 

@@ -128,8 +128,12 @@ public class CompetitionService {
 	public void applyCompetition(UUID competitionId, UUID participantId) {
 		try {
 			Competition competition = competitionRepository.findById(competitionId);
-			Participant participant = Participant.create(participantId);
-			participantRepository.save(participant);
+
+			Participant participant = participantRepository.findByParticipantId(participantId);
+			if (participant == null) {
+				participant = new Participant(participantId);
+				participantRepository.save(participant);
+			}
 
 			// 중복 참가 신청 확인
 			Boolean chekcDupl = mappingRepository.checkIsParticipate(participantId, competitionId);
@@ -152,8 +156,9 @@ public class CompetitionService {
 			mappingRepository.save(apply);
 
 		} catch (CustomBusinessException e) {
-			throw CustomBusinessException.from(CompetitionServiceCode.COMPETITION_APPLY_EXIST);
+			throw e ;//CustomBusinessException.from(CompetitionServiceCode.COMPETITION_APPLY_EXIST);
 		} catch (Exception e) {
+			log.error("대회 신청 실패", e);
 			throw CustomBusinessException.from(CompetitionServiceCode.COMPETITION_APPLY_FAIL);
 		}
 	}
