@@ -1,0 +1,148 @@
+server:
+  port: ${GATEWAY_SERVER}
+
+spring:
+  main:
+    web-application-type: reactive
+  application:
+    name: gateway
+  config:
+    import:
+      - file:.env[.properties]
+  cloud:
+    gateway:
+      preserve-host-header: true  # 헤더에 정보 유지
+      routes:
+        # 유저 서비스
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/api/v1/users/**, /api/v1/app/users/** , /user-service/**
+          filters:
+            - RewritePath=/user-service/(?<segment>.*), /$\{segment}
+        # 인증인가 서비스
+        - id: auth-service
+          uri: lb://auth-service
+          predicates:
+            - Path=/api/v1/auth/**, /api/v1/app/auth/** , /auth-service/**
+          filters:
+            - RewritePath=/auth-service/(?<segment>.*), /$\{segment}
+        # 업적 서비스
+        - id: achivement-service
+          uri: lb://achivement-service
+          predicates:
+            - Path=/api/v1/app/achivements/** , /api/v1/achivements/** , /achivement-service/**
+          filters:
+            - RewritePath=/achivement-service/(?<segment>.*), /$\{segment}
+        # 알림 서비스
+        - id: alert-service
+          uri: lb://alert-service
+          predicates:
+            - Path=/api/v1/app/alerts/** , /alert-service/**
+          filters:
+            - RewritePath=/alert-service/(?<segment>.*), /$\{segment}
+        # 챗봇 서비스
+        - id: chatbot-service
+          uri: lb://chatbot-service
+          predicates:
+            - Path=api/v1/chatbots/** , /chatbot-service/**
+          filters:
+            - RewritePath=/chatbot-service/(?<segment>.*), /$\{segment}
+        # 대회 서비스
+        - id: competition-service
+          uri: lb://competition-service
+          predicates:
+            - Path=/api/v1/app/competitions/** , /api/v1/competitions/** , /competition-service/**
+          filters:
+            - RewritePath=/competition-service/(?<segment>.*), /$\{segment}
+        # 크루 서비스
+        - id: crew-service
+          uri: lb://crew-service
+          predicates:
+            - Path=/api/v1/app/crews/** , /api/v1/crews/** , /crew-service/**
+          filters:
+            - RewritePath=/crew-service/(?<segment>.*), /$\{segment}
+        # 랭킹 서비스
+        - id: ranking-service
+          uri: lb://ranking-service
+          predicates:
+            - Path=/api/v1/indiviudal-rankings/** , /api/v1/app/indiviudal-rankings/** , /ranking-service/**
+          filters:
+            - RewritePath=/ranking-service/(?<segment>.*), /$\{segment}
+        # 런닝 기록 서비스
+        - id: runningrecord-service
+          uri: lb://runningrecord-service
+          predicates:
+            - Path=/api/v1/app/running-records/** , /api/v1/running-records/** , /runningrecord-service/**
+          filters:
+            - RewritePath=/runningrecord-service/(?<segment>.*), /$\{segment}
+        # 리캡 서비스 (나중에 추가되면 변경)
+        - id: userrecap-service
+          uri: lb://userrecap-service
+          predicates:
+            - Path=/api/v1/app/userRecaps/** , /api/v1/userRecaps/** , /userrecap-service/**
+          filters:
+            - RewritePath=/userrecap-service/(?<segment>.*), /$\{segment}
+      # 포트 계속 추가
+      globalcors:
+        corsConfigurations:
+          "[/**]":
+            allowedOriginPatterns:
+              - "http://localhost:${GATEWAY_SERVER}"  # 게이트웨이 포트
+              - "http://localhost:${USER_SERVER}"  # user-service 포트
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - PATCH
+            allowedHeaders:
+              - "*"
+            allowCredentials: true
+      discovery:
+        locator:
+          enabled: true
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_SERVER}
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui/index.html
+    urls:
+      # 유저서비스 Swagger
+      - name: user-service
+        url: /user-service/v3/api-docs
+      # 인증인가서비스 Swagger
+      - name: auth-service
+        url: /auth-service/v3/api-docs
+      # 업적 서비스 Swagger
+      - name: achivement-service
+        url: /achivement-service/v3/api-docs
+      # 알림 서비스 Swagger
+      - name: alert-service
+        url: /alert-service/v3/api-docs
+      # 챗봇 서비스 Swagger
+      - name: chatbot-service
+        url: /chatbot-service/v3/api-docs
+      # 대회 서비스 Swagger
+      - name: competition-service
+        url: /competition-service/v3/api-docs
+      # 크루 서비스 Swagger
+      - name: crew-service
+        url: /crew-service/v3/api-docs
+      # 랭킹 서비스 Swagger
+      - name: ranking-service
+        url: /ranking-service/v3/api-docs
+      # 런닝 기록 서비스 Swagger
+      - name: runningrecord-service
+        url: /runningrecord-service/v3/api-docs
+      # 리캡 서비스 Swagger
+      - name: userrecap-service
+        url: /userrecap-service/v3/api-docs
+
+service:
+  jwt:
+    secret-key: ${JWT_SECRET_KEY}
