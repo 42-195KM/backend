@@ -42,4 +42,8 @@ public class CompetitionParticipantMappingRepositoryImpl implements CompetitionP
 	public Page<CompetitionParticipantMapping> findParticipants(UUID competitionId, Pageable pageable){
 		return jpaRepository.findParticipantsByCompetitionId(competitionId, pageable);
 	}
+
+	public CompetitionParticipantMapping findByCompetitionIdAndParticipantId(UUID competitionId, UUID participantId){
+		return jpaRepository.findByCompetitionIdAndParticipantId(competitionId, participantId);
+	}
 }

@@ -3,9 +3,7 @@ package com._42195km.msa.competitionservice.application.service;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,7 +14,6 @@ import com._42195km.msa.competitionservice.application.exception.CompetitionServ
 import com._42195km.msa.competitionservice.application.mapper.ParticipantMapper;
 import com._42195km.msa.competitionservice.domain.model.Competition;
 import com._42195km.msa.competitionservice.domain.model.CompetitionParticipantMapping;
-import com._42195km.msa.competitionservice.domain.model.Participant;
 import com._42195km.msa.competitionservice.infrastructure.persistence.CompetitionParticipantMappingRepositoryImpl;
 import com._42195km.msa.competitionservice.infrastructure.persistence.CompetitionRepositoryImpl;
 import com._42195km.msa.competitionservice.infrastructure.persistence.ParticipantRepositoryImpl;
@@ -38,9 +35,11 @@ public class ParticipantService {
 	public Page<ParticipantAppResponseDto> getParticipants(Pageable pageable, UUID competitionId) {
 		try {
 			Competition competition = competitionRepository.findById(competitionId);
-			Page<CompetitionParticipantMapping> participants = mappingRepository.findParticipants(competitionId, pageable);
+			Page<CompetitionParticipantMapping> participants = mappingRepository.findParticipants(competitionId,
+				pageable);
 			return participantMapper.toParticipantAppResponseDtoPage(participants);
 		} catch (Exception e) {
+			log.error("대회 참가자 검색 실패 로그 : {}", e.getMessage());
 			throw CustomBusinessException.from(CompetitionServiceCode.PARTICIPANT_GET_FAIL);
 		}
 	}
@@ -67,6 +66,7 @@ public class ParticipantService {
 						UUID uuid = UUID.fromString(keyword);
 						searchedPage = participantRepository.searchByUuid(keyword, pageable);
 					} catch (IllegalArgumentException e) {
+						log.error("대회 참가자 검색 실패 로그 : {}", e.getMessage());
 						throw CustomBusinessException.from(CompetitionServiceCode.PARTICIPANT_SEARCH_FAIL);
 					}
 					break;
@@ -75,7 +75,8 @@ public class ParticipantService {
 			}
 			return searchedPage.map(participantMapper::toSearchParticipantAppResponseDto);
 		} catch (Exception e) {
-			log.error("검색 오류: {}", e.getMessage());
+			log.error("검색 오류: {}, 검색 타입: {}, 키워드: {}",
+				e.getMessage(), searchType, keyword);
 			throw CustomBusinessException.from(CompetitionServiceCode.PARTICIPANT_SEARCH_FAIL);
 		}
 	}
@@ -97,9 +98,22 @@ public class ParticipantService {
 	@Transactional
 	public void cancelParticipantByCompany(CancelParticipantRequestDto requestDto) {
 		try {
-			//mappingRepository.findParticipants()
-			participantRepository.cancelByCompany(requestDto.getCompetitionId(),requestDto.getParticipantId());
+			CompetitionParticipantMapping participant = mappingRepository.findByCompetitionIdAndParticipantId(
+				requestDto.getCompetitionId(), requestDto.getParticipantId());
+			participant.cancel();
 		} catch (Exception e) {
+			log.error("신청 취소 디버깅 : {}", e.getMessage());
+			throw CustomBusinessException.from(CompetitionServiceCode.PARTICIPANT_CANCEL_FAIL);
+		}
+	}
+
+	public void cancelParticipant(CancelParticipantRequestDto requestDto) {
+		try {
+			CompetitionParticipantMapping participant = mappingRepository.findByCompetitionIdAndParticipantId(
+				requestDto.getCompetitionId(), requestDto.getParticipantId());
+			participant.cancel();
+		} catch (Exception e) {
+			log.error("신청 취소 디버깅 : {}", e.getMessage());
 			throw CustomBusinessException.from(CompetitionServiceCode.PARTICIPANT_CANCEL_FAIL);
 		}
 	}

@@ -73,21 +73,22 @@ public class ParticipantController {
 	}
 
 	@PutMapping("/cancel/company")
-	@Operation(summary = "")
+	@Operation(summary = "주최측의 신청 취소")
 	public ResponseEntity<?> cancelParticipantByCompany(@ParameterObject CancelParticipantRequestDto requestDto) {
 		participantService.cancelParticipantByCompany(requestDto);
 		return ResponseEntity.ok(new ApiResponse<>(CompetitionServiceCode.PARTICIPANT_CANCEL_SUCCESS.getCode(),
-			"",
+			"신청 취소가 완료되었습니다.",
 			CompetitionServiceCode.PARTICIPANT_CANCEL_SUCCESS.getMessage(),
 			HttpStatus.CREATED.value()));
 	}
 
-	@PutMapping("/cancel/{userId}")
-	@Operation(summary = "")
-	public ResponseEntity<?> cancelParticipant(@PathVariable("userId") UUID userId) {
-		return ResponseEntity.ok(new ApiResponse<>(CompetitionServiceCode.COMPETITION_CREATE_SUCCESS.getCode(),
-			"",
-			CompetitionServiceCode.COMPETITION_CREATE_SUCCESS.getMessage(),
+	@PutMapping("/cancel")
+	@Operation(summary = "신청 취소")
+	public ResponseEntity<?> cancelParticipant(@ParameterObject CancelParticipantRequestDto requestDto) {
+		participantService.cancelParticipant(requestDto);
+		return ResponseEntity.ok(new ApiResponse<>(CompetitionServiceCode.PARTICIPANT_CANCEL_SUCCESS.getCode(),
+			"신청 취소가 완료되었습니다.",
+			CompetitionServiceCode.PARTICIPANT_CANCEL_SUCCESS.getMessage(),
 			HttpStatus.CREATED.value()));
 	}
 

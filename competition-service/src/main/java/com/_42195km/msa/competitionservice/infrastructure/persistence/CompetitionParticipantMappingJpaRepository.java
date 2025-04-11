@@ -60,4 +60,7 @@ public interface CompetitionParticipantMappingJpaRepository extends JpaRepositor
 		"JOIN cpm.participant p " +
 		"WHERE p.participantId = :uuid")
 	Page<Object> getByUuid(@Param("uuid") UUID uuid, Pageable pageable);
+
+	@Query("SELECT cpm FROM CompetitionParticipantMapping cpm WHERE cpm.competition.id = :competitionId AND cpm.participant.participantId = :participantId")
+	CompetitionParticipantMapping findByCompetitionIdAndParticipantId(@Param("competitionId")UUID competitionId,@Param("participantId") UUID participantId);
 }
