@@ -41,15 +41,6 @@ public class CompetitionParticipantMapping extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	private Status status = Status.APPLY;
 
-	@Column(name = "terms_agreed")
-	private Boolean termsAgreed;
-
-	@Column(name = "souvenir_selection")
-	private String souvenirSelection;
-
-	@Column(name = "shipping_address")
-	private String shippingAddress;
-
 
 	@Builder
 	public CompetitionParticipantMapping(Competition competition, Participant participant) {
@@ -69,15 +60,4 @@ public class CompetitionParticipantMapping extends BaseEntity {
 		this.status = Status.CANCEL;
 	}
 
-	public void checkTerm(Boolean termsAgreed){
-		this.termsAgreed = termsAgreed;
-	}
-
-	public void checkSouvenirSelection(String souvenirSelection){
-		this.souvenirSelection = souvenirSelection;
-	}
-
-	public void checkShippingAddress(String shippingAddress){
-		this.shippingAddress = shippingAddress;
-	}
 }

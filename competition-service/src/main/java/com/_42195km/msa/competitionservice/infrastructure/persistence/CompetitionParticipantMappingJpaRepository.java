@@ -25,9 +25,6 @@ public interface CompetitionParticipantMappingJpaRepository extends JpaRepositor
 		""")
 	Boolean existsByParticipantIdAndCompetitionId(@Param("participantId") UUID participantId,
 		@Param("competitionId") UUID competitionId);
-
-	Integer countByCompetitionAndParticipant(Competition competition, Participant participant);
-
 	long countByCompetition(Competition competition);
 
 	List<CompetitionParticipantMapping> findAllByCompetition(Competition competition);

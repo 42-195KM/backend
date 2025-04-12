@@ -27,10 +27,6 @@ public class CompetitionParticipantMappingRepositoryImpl implements CompetitionP
 		return jpaRepository.countByCompetition(competition);
 	}
 
-	public Integer checkParticipantCount(Competition competition,Participant participant){
-		return jpaRepository.countByCompetitionAndParticipant(competition, participant);
-	}
-
 	public CompetitionParticipantMapping save(CompetitionParticipantMapping competitionParticipantMapping){
 		return jpaRepository.save(competitionParticipantMapping);
 	}
