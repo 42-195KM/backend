@@ -38,8 +38,6 @@ public class AuthController {
 		response.setHeader("Refresh-Token", userLogInResponseDto.getRefreshToken());
 		response.setContentType("application/json");
 
-		log.info("logIn response: {}", userLogInResponseDto.getAccessToken());
-
 		return ResponseEntity.ok(
 			ApiResponse
 				.<UserLogInResponseDto>builder()
