@@ -1,4 +1,4 @@
-package com._42195km.msa.auth.infrastructure.filter.success;
+package com._42195km.msa.auth.application.success;
 
 import org.springframework.http.HttpStatus;
 
@@ -7,11 +7,11 @@ import com._42195km.msa.common.code.ServiceCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-@Getter
 @RequiredArgsConstructor
-public enum FilterSuccess implements ServiceCode {
+@Getter
+public enum AuthSuccessCode implements ServiceCode {
 
-	LOGIN_SUCCESS(HttpStatus.OK, "로그인 성공", "S_LOGIN_SUCCESS"),
+	LOGIN_SUCCESS(HttpStatus.OK, "로그인이 성공했습니다.", "S_LOGIN_SUCCESS"),
 	;
 
 	private final HttpStatus httpStatus;
