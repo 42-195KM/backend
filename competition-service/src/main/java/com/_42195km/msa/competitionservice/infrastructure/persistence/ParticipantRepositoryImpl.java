@@ -47,15 +47,7 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 		return mappingJpaRepository.getByUuid(uuid,pageable);
 	}
 
-	public void cancelByCompany(UUID competitionId, UUID participantId) {
-
-	}
-
 	public Participant findByParticipantId(UUID participantId) {
 		return jpaRepository.findByParticipantId(participantId);
-	}
-
-	public void saveAndFlush(Participant participant) {
-		jpaRepository.saveAndFlush(participant);
 	}
 }

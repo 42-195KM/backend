@@ -36,51 +36,6 @@ public class SagaService {
 		return sagaId;
 	}
 
-	// 단계별 진행
-	public void processApplicationStep(String step, UUID competitionId, UUID participantId,
-		Boolean termsAgreed, String souvenirSelection, String shippingAddress) {
-
-		try {
-			String sagaId = findOrCreateSagaId(competitionId, participantId);
-
-			// 현재 Saga 상태 조회
-			SagaState state = sagaStateRepository.getSagaState(sagaId);
-			if (state == null) {
-				throw new RuntimeException("Saga state not found for ID: " + sagaId);
-			}
-
-			// 단계에 따른 처리
-			switch (step) {
-				case "TERMS":
-					if (termsAgreed == null) {
-						throw new IllegalArgumentException("Terms agreement is required");
-					}
-					sagaOrchestrator.processTermsAgreement(sagaId, competitionId, participantId, termsAgreed);
-					break;
-
-				case "SOUVENIR":
-					if (souvenirSelection == null) {
-						throw new IllegalArgumentException("Souvenir selection is required");
-					}
-					sagaOrchestrator.processSouvenirSelection(sagaId, competitionId, participantId, souvenirSelection);
-					break;
-
-				case "SHIPPING":
-					if (shippingAddress == null) {
-						throw new IllegalArgumentException("Shipping address is required");
-					}
-					sagaOrchestrator.processShippingAddress(sagaId, competitionId, participantId, shippingAddress);
-					break;
-
-				default:
-					throw new IllegalArgumentException("Unknown step: " + step);
-			}
-		} catch (Exception e) {
-			log.error(e.getMessage());
-			throw CustomBusinessException.from(CompetitionServiceCode.COMPETITION_APPLY_FAIL);
-		}
-	}
-
 	// 전체 프로세스 자동 실행 메서드
 	public String processCompleteApplication(UUID competitionId, UUID participantId,
 		Boolean termsAgreed, String souvenirSelection, String shippingAddress, String paymentMethod,
