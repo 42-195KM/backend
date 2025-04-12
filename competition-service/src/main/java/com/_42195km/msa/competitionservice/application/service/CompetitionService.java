@@ -195,4 +195,5 @@ public class CompetitionService {
 			throw CustomBusinessException.from(CompetitionServiceCode.COMPETITION_DRAW_FAIL);
 		}
 	}
+
 }
