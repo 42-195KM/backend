@@ -42,8 +42,8 @@ public class KafkaConfig {
 		Map<String, Object> configProps = new HashMap<>();
 		configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaBootstrapServers);
 		configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-		// configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
-		configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+		configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+		// configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
 
 		return new DefaultKafkaProducerFactory<>(configProps);
 	}
@@ -62,9 +62,10 @@ public class KafkaConfig {
 		// 모든 패키지의 클래스 역직렬화 허용 (보안에 주의)
 		configProps.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
 		// 타입 정보가 없는 경우 Map으로 변환
-		//configProps.put(JsonDeserializer.VALUE_DEFAULT_TYPE, "java.util.Map");
+		configProps.put(JsonDeserializer.VALUE_DEFAULT_TYPE, "java.util.Map");
+		// configProps.put(JsonDeserializer.VALUE_TYPE_METHOD, )
 
-		return new DefaultKafkaConsumerFactory<>(configProps, new StringDeserializer(), new JsonDeserializer<>(Object.class));
+		return new DefaultKafkaConsumerFactory<>(configProps);
 	}
 
 	/**

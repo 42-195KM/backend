@@ -1,5 +1,6 @@
 package com._42195km.msa.achievementservice.domain.repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -13,4 +14,5 @@ public interface AchievementRepository {
 	Optional<Achievement> findById(UUID achivementId);
 	Page<Achievement> findAll(Pageable pageable);
 	Page<Achievement> search(String keyWord, Pageable pageable);
+	List<Achievement> findAll();
 }

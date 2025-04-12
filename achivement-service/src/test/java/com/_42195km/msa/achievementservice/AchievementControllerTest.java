@@ -13,7 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com._42195km.msa.achievementservice.application.dto.request.CreateAchievementCommandDto;
 import com._42195km.msa.achievementservice.application.service.AchivementService;
 import com._42195km.msa.achievementservice.domain.model.Achievement;
-import com._42195km.msa.achievementservice.infrastructure.config.AchievementServiceCode;
+import com._42195km.msa.achievementservice.infrastructure.code.AchievementServiceCode;
 import com._42195km.msa.achievementservice.presentation.controller.AchievementController;
 
 import java.util.Collections;

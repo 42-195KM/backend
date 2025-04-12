@@ -1,6 +1,7 @@
 package com._42195km.msa.runningrecordservice.infrastructure.persistence;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -34,4 +35,6 @@ public interface RunningRecordJpaRepository extends RunningRecordRepository, Jpa
 		@Param("createdAt") LocalDateTime createdAt,
 		Pageable pageable);
 
+	@Override
+	List<RunningRecord> findByUserId(UUID userId);
 }

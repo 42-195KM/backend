@@ -1,5 +1,6 @@
 package com._42195km.msa.achievementservice.infrastructure.persistence;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -26,4 +27,7 @@ public interface AchievementJpaRepository extends AchievementRepository, JpaRepo
 	@Query("SELECT a FROM Achievement a "
 		+ "WHERE LOWER(a.title) LIKE LOWER(CONCAT('%', :keyWord, '%'))")
 	Page<Achievement> search(@Param("keyWord") String keyWord, Pageable pageable);
+
+	@Override
+	List<Achievement> findAll();
 }

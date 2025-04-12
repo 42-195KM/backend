@@ -14,7 +14,7 @@ import com._42195km.msa.achievementservice.application.dto.request.CreateAchieve
 import com._42195km.msa.achievementservice.domain.model.Achievement;
 import com._42195km.msa.achievementservice.domain.repository.AchievementRepository;
 import com._42195km.msa.achievementservice.domain.repository.AchievementUserRepository;
-import com._42195km.msa.achievementservice.infrastructure.config.AchievementServiceCode;
+import com._42195km.msa.achievementservice.infrastructure.code.AchievementServiceCode;
 import lombok.RequiredArgsConstructor;
 
 @Service

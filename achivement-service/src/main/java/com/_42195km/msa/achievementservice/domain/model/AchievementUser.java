@@ -40,4 +40,9 @@ public class AchievementUser extends BaseEntity {
 
 	@Column(name = "user_id", nullable = false)
 	private UUID userId;
+
+	public AchievementUser(Achievement achievement, UUID userId) {
+		this.achievement = achievement;
+		this.userId = userId;
+	}
 }

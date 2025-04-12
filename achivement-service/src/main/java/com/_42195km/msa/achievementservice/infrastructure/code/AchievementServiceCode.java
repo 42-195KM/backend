@@ -1,4 +1,4 @@
-package com._42195km.msa.achievementservice.infrastructure.config;
+package com._42195km.msa.achievementservice.infrastructure.code;
 
 import org.springframework.http.HttpStatus;
 

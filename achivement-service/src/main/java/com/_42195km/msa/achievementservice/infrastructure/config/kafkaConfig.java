@@ -23,6 +23,7 @@ import org.springframework.kafka.listener.DefaultErrorHandler;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.springframework.util.backoff.FixedBackOff;
+// import com.fasterxml.jackson.databind.JsonDeserializer;
 
 @Configuration
 @EnableKafka
@@ -57,8 +58,7 @@ public class kafkaConfig {
 		configProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaBootstrapServers);
 		configProps.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
 		configProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-		// configProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
-		configProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+		configProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, CustomDeserializer.class);
 		// 모든 패키지의 클래스 역직렬화 허용 (보안에 주의)
 		configProps.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
 		// 타입 정보가 없는 경우 Map으로 변환
@@ -91,17 +91,18 @@ public class kafkaConfig {
 		// // 배치 리스너 비활성화 (개별 메시지 처리)
 		// //factory.setBatchListener(false);
 		//
-		// // 에러 핸들러 수정 - 재시도 없이 로깅만 하도록 설정
-		// DefaultErrorHandler errorHandler = new DefaultErrorHandler((record, exception) -> {
-		// 	log.error("메시지 처리 실패: {}", exception.getMessage());
-		// 	log.error("실패한 메시지: {}", record);
-		// 	// 필요한 추가 작업 수행 (예: 데드 레터 큐로 전송)
-		// }, new FixedBackOff(3L, 3L)); // 재시도 3회 반복
+		// 에러 핸들러 수정 - 재시도 없이 로깅만 하도록 설정
+		DefaultErrorHandler errorHandler = new DefaultErrorHandler((record, exception) -> {
+			log.error("메시지 처리 실패: {}", exception.getMessage());
+			log.error("실패한 메시지: {}", record);
+			// 필요한 추가 작업 수행 (예: 데드 레터 큐로 전송)
+		}, new FixedBackOff(3L, 3L)); // 재시도 3회 반복
+
+		// SerializationException도 처리하도록 설정
+		errorHandler.addNotRetryableExceptions(org.apache.kafka.common.errors.SerializationException.class);
+
 		//
-		// // SerializationException도 처리하도록 설정
-		// errorHandler.addNotRetryableExceptions(org.apache.kafka.common.errors.SerializationException.class);
-		//
-		// factory.setCommonErrorHandler(errorHandler);
+		factory.setCommonErrorHandler(errorHandler);
 
 		return factory;
 	}

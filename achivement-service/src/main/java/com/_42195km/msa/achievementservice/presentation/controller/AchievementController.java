@@ -20,7 +20,7 @@ import com._42195km.msa.common.api.ApiResponse;
 import com._42195km.msa.achievementservice.application.dto.request.CreateAchievementCommandDto;
 import com._42195km.msa.achievementservice.application.service.AchivementService;
 import com._42195km.msa.achievementservice.domain.model.Achievement;
-import com._42195km.msa.achievementservice.infrastructure.config.AchievementServiceCode;
+import com._42195km.msa.achievementservice.infrastructure.code.AchievementServiceCode;
 import com._42195km.msa.achievementservice.presentation.dto.request.CreateAchievementRequestDto;
 import com._42195km.msa.achievementservice.presentation.dto.response.CreateAchievementResponseDto;
 import com._42195km.msa.achievementservice.presentation.dto.response.DeleteAchievementResponseDto;
