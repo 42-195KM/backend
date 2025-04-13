@@ -65,6 +65,7 @@ public class AuthenticationFilter implements GlobalFilter {
 	// 인증 없이 통과시킬 경로
 	private boolean isAllowedPath(String path, String method) {
 		return path.equals("/api/v1/auth/login") ||    // 로그인
+			path.equals("/api/v1/auth/refresh") || // 토큰 재발행
 			path.equals("/api/v1/users") ||    // 회원가입
 			path.startsWith("/swagger-ui") || // Swagger UI
 			path.startsWith("/v3/api-docs"); // Swagger API Docs

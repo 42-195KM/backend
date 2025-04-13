@@ -19,7 +19,8 @@ public class SecurityConfig {
 		return http
 			.csrf(ServerHttpSecurity.CsrfSpec::disable)
 			.authorizeExchange(exchange -> exchange
-				.pathMatchers("/api/v1/auth/login", "/api/v1/users", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+				.pathMatchers("/api/v1/auth/login", "/api/v1/users", "/swagger-ui/**", "/v3/api-docs/**",
+					"/api/v1/auth/refresh").permitAll()
 				.anyExchange().permitAll()
 			)
 			.build();

@@ -36,7 +36,6 @@ public class AuthServiceImpl implements AuthService {
 	private final HttpServletRequest request;
 
 	@Override
-	// @Transactional
 	public UserLogInResponseDto logIn(UserLogInRequestDto userLogInRequestDto) {
 
 		Auth auth = authRepositoryImpl.findByUserName(userLogInRequestDto.getUsername())
@@ -53,45 +52,78 @@ public class AuthServiceImpl implements AuthService {
 		String accessToken = jwtUtil.createAccessToken(userId, userName, role);
 		String refreshToken = jwtUtil.createRefreshToken(userId);
 
-		// 토큰이 생성된 시점
+		// 리프레시 토큰 저장
 		long creationTokenTime = System.currentTimeMillis();
+		redisRepositoryImpl.saveRefreshToken(userId.toString(), refreshToken, creationTokenTime);
 
-		UserLogInResponseDto userLogInResponseDto = UserLogInResponseDto.
-			builder()
+		return UserLogInResponseDto.builder()
 			.accessToken(accessToken)
 			.refreshToken(refreshToken)
 			.build();
-
-		if (userLogInResponseDto != null) {
-			redisRepositoryImpl.saveRefreshToken(userId.toString(), refreshToken, creationTokenTime);
-		} else {
-			throw CustomBusinessException.from(AuthException.FAILED_SAVE_REFRESHTOKEN);
-		}
-
-		return userLogInResponseDto;
 	}
 
 	@Override
 	public AccessTokenReissueResponseDto refresh(RefreshTokenRequestDto refreshTokenRequestDto) {
 
-		// 토큰 유효성 검증
+		// 리프레시 토큰 유효성 검증
 		String refreshToken = refreshTokenRequestDto.getRefreshToken();
 		jwtUtil.validateToken(refreshToken);
 
-		// 헤더에 현재 토큰 뜯어와서 블랙리스트 처리
 		String accessToken = extractAccessTokenFromHeader(request);
+
+		// 액세스 토큰이 있으면 블랙리스트 체크 및 블랙리스트 처리
+		if (accessToken != null) {
+			handleAccessTokenBlackList(accessToken);
+		}
+
+		// 리프레시 토큰을 이용해 새 액세스 토큰 발급
+		return issueNewAccessTokenWithRefreshToken(refreshToken);
+	}
+
+	@Override
+	public void logOut(UUID userId) {
+
+		// 리프레시 토큰 삭제
+		if (!redisRepositoryImpl.isRefreshToken(userId)) {
+			throw CustomBusinessException.from(AuthException.NO_LOGIN_USER);
+		}
+		redisRepositoryImpl.deleteRefreshToken(userId);
+
+		// 액세스 토큰을 블랙리스트에 추가
+		String accessToken = extractAccessTokenFromHeader(request);
+		if (accessToken != null) {
+			handleAccessTokenBlackList(accessToken);
+		}
+
+	}
+
+	@Override
+	public void blackList(BlackListRequestDto blackListRequestDto) {
+
+		String accessToken = blackListRequestDto.getAccessToken();
+		jwtUtil.validateToken(accessToken);
+		handleAccessTokenBlackList(accessToken);
+	}
+
+	/// 액세스 토큰 블랙리스트 처리 메서드
+	private void handleAccessTokenBlackList(String accessToken) {
+
+		// 토큰 유효성 검증
 		jwtUtil.validateAccessToken(accessToken);
 
-		// 현재 헤더의 토큰에 블랙리스트가 있는지 확인
+		// 블랙리스트에 있는지 확인
 		if (redisRepositoryImpl.isBlackListedToken(accessToken)) {
 			throw CustomBusinessException.from(AuthException.ACCESS_TOKEN_BLACKLISTED);
 		}
 
-		if (accessToken != null) {
-			redisRepositoryImpl.blackListToken(accessToken, calculateExpires(accessToken));
-		}
+		// 블랙리스트에 없으면 블랙리스트 처리
+		redisRepositoryImpl.blackListToken(accessToken, calculateExpires(accessToken));
+	}
 
-		// 리프레쉬 토큰에서 UserUuId 조회해서 다시 토큰 생성
+	/// 리프레시 토큰으로 새로운 액세스 토큰을 발급하는 메서드
+	private AccessTokenReissueResponseDto issueNewAccessTokenWithRefreshToken(String refreshToken) {
+
+		// 리프레시 토큰에서 사용자 정보 추출 -> Auth DB에 저장된 정보로 새 토큰 발행
 		UUID userUuId = UUID.fromString(jwtUtil.parseClaims(refreshToken).getSubject());
 		Auth auth = authRepositoryImpl.findByUserUuid(userUuId)
 			.orElseThrow(() -> CustomBusinessException.from(AuthException.NOT_FOUND_AUTH_USER));
@@ -102,44 +134,9 @@ public class AuthServiceImpl implements AuthService {
 
 		String reissuedAccessToken = jwtUtil.createAccessToken(userId, userName, role);
 
-		AccessTokenReissueResponseDto accessTokenReissueResponseDto
-			= AccessTokenReissueResponseDto.builder()
+		return AccessTokenReissueResponseDto.builder()
 			.accessToken(reissuedAccessToken)
 			.build();
-
-		return accessTokenReissueResponseDto;
-	}
-
-	@Override
-	public void logOut(UUID userId) {
-
-		// 레디스에 해당 유저가 로그인 했는지 확인
-		if (!redisRepositoryImpl.isRefreshToken(userId)) {
-			throw CustomBusinessException.from(AuthException.NO_LOGIN_USER);
-		} else {
-			// 해당유저의 Refresh 토큰 삭제
-			redisRepositoryImpl.deleteRefreshToken(userId);
-		}
-
-		// 로그인 되있다면 해당 AccessToken을 블랙리스트 처리
-		String accessToken = extractAccessTokenFromHeader(request);
-		jwtUtil.validateToken(accessToken);
-
-		if (accessToken != null) {
-			redisRepositoryImpl.blackListToken(accessToken, calculateExpires(accessToken));
-		}
-
-	}
-
-	@Override
-	public void blackList(BlackListRequestDto blackListRequestDto) {
-
-		String accessToken = blackListRequestDto.getAccessToken();
-		jwtUtil.validateToken(accessToken);
-
-		if (accessToken != null) {
-			redisRepositoryImpl.blackListToken(accessToken, calculateExpires(accessToken));
-		}
 	}
 
 	private long calculateExpires(String accessToken) {
@@ -152,7 +149,12 @@ public class AuthServiceImpl implements AuthService {
 	}
 
 	private String extractAccessTokenFromHeader(HttpServletRequest request) {
+
 		String authHeader = request.getHeader("Authorization");
+
+		if (authHeader == null || authHeader.isEmpty()) {
+			return null;
+		}
 
 		return jwtUtil.removePrefix(authHeader);
 	}
