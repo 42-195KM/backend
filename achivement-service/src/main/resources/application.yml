@@ -13,6 +13,7 @@ spring:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
+    defer-datasource-initialization: true
 
   datasource:
     url: ${DB_ACHIEVEMENT_URL}
@@ -23,6 +24,10 @@ spring:
       minimum-idle: 1
       connection-timeout: 20000
       auto-commit: false
+  sql:
+    init:
+      mode: always
+
 
   kafka:
     url: localhost:9092
@@ -50,8 +55,6 @@ logging:
         transaction: debug
         orm:
           jpa: debug
-
-
 
 eureka:
   client:

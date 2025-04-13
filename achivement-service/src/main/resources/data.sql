@@ -1,0 +1,28 @@
+INSERT INTO p_achievement (id, title, description, criteria, criteria_value, criteria_inequality, is_deleted)
+VALUES
+    ('52fcaa2c-05d7-46b7-b989-2be6059e7500','위대한 첫 뛴걸음', '러닝 기록 거리가 1km 이상', 'distance', 1.0, 'MORE_THAN_OR_EQUAL_TO', false),
+    ('52fcaa2c-05d7-46b7-b989-2be6059e7501','5km 정복자', '러닝 기록 거리가 5km 이상', 'distance', 5.0, 'MORE_THAN_OR_EQUAL_TO', false),
+    ('52fcaa2c-05d7-46b7-b989-2be6059e7502','10km 정복자', '러닝 기록 거리가 10km 이상', 'distance', 10.0, 'MORE_THAN_OR_EQUAL_TO', false),
+    ('52fcaa2c-05d7-46b7-b989-2be6059e7503','하프 마라토너', '러닝 기록 거리가 21km 이상', 'distance', 21.0, 'MORE_THAN_OR_EQUAL_TO', false),
+    ('52fcaa2c-05d7-46b7-b989-2be6059e7504','더 리얼 마라토너 (거리)', '러닝 기록 거리가 42.195km 이상', 'distance', 42.195, 'MORE_THAN_OR_EQUAL_TO', false),
+    ('52fcaa2c-05d7-46b7-b989-2be6059e7505','사람이세요?', '러닝 기록 거리가 100km 이상', 'distance', 100.0, 'MORE_THAN_OR_EQUAL_TO', false),
+    ('52fcaa2c-05d7-46b7-b989-2be6059e7506','천리행군 기록자', '러닝 기록 거리가 400km 이상', 'distance', 400.0, 'MORE_THAN_OR_EQUAL_TO', false),
+    ('52fcaa2c-05d7-46b7-b989-2be6059e7507','동네 한 바퀴', '러닝 기록 시간이 30분 이상', 'timer', 30.0, 'MORE_THAN_OR_EQUAL_TO', false),
+    ('52fcaa2c-05d7-46b7-b989-2be6059e7508','쫌 치는 달리기', '러닝 기록 시간이 60분 이상', 'timer', 60.0, 'MORE_THAN_OR_EQUAL_TO', false),
+    ('52fcaa2c-05d7-46b7-b989-2be6059e7509','두 개의 심장', '러닝 기록 시간이 90분 이상', 'timer', 90.0, 'MORE_THAN_OR_EQUAL_TO', false),
+    ('52fcaa2c-05d7-46b7-b989-2be6059e7510','더 리얼 마라토너 (시간)', '러닝 기록 시간이 120분 이상', 'timer', 120.0, 'MORE_THAN_OR_EQUAL_TO', false),
+    ('52fcaa2c-05d7-46b7-b989-2be6059e7511','걷는 것부터가 뛰기의 시작', '러닝 기록 페이스가 1Km당 12분 이상', 'pace', 12.0, 'MORE_THAN_OR_EQUAL_TO', false),
+    ('52fcaa2c-05d7-46b7-b989-2be6059e7512','이제야 뛰기 시작하는 구만', '러닝 기록 페이스가 1Km당 12분 미만', 'pace', 12.0, 'LESS_THAN', false),
+    ('52fcaa2c-05d7-46b7-b989-2be6059e7513','아침 조회 뛴걸음 페이스', '러닝 기록 페이스가 1Km당 10분 미만', 'pace', 10.0, 'LESS_THAN', false),
+    ('52fcaa2c-05d7-46b7-b989-2be6059e7514','페이스 메이커', '러닝 기록 페이스가 1Km당 7분 미만', 'pace', 7.0, 'LESS_THAN', false),
+    ('52fcaa2c-05d7-46b7-b989-2be6059e7515','숙련된 페이스', '러닝 기록 페이스가 1Km당 5분 미만', 'pace', 5.0, 'LESS_THAN', false),
+    ('52fcaa2c-05d7-46b7-b989-2be6059e7516','더 리얼 마라토너 (페이스)', '러닝 기록 페이스가 1Km당 3분 미만', 'pace', 3.0, 'LESS_THAN', false),
+    ('52fcaa2c-05d7-46b7-b989-2be6059e7517','지역구 횡단자', '러닝 기록 누적 거리가 10km 이상', 'total_distance', 10.0, 'MORE_THAN_OR_EQUAL_TO', false),
+    ('52fcaa2c-05d7-46b7-b989-2be6059e7518','서울 횡단자', '러닝 기록 누적 거리가 100km 이상', 'total_distance', 100.0, 'MORE_THAN_OR_EQUAL_TO', false),
+    ('52fcaa2c-05d7-46b7-b989-2be6059e7519','대한민국 횡단자', '러닝 기록 누적 거리가 1000km 이상', 'total_distance', 1000.0, 'MORE_THAN_OR_EQUAL_TO', false),
+    ('52fcaa2c-05d7-46b7-b989-2be6059e7520','지구 횡단자', '러닝 기록 누적 거리가 10000km 이상', 'total_distance', 10000.0, 'MORE_THAN_OR_EQUAL_TO', false),
+    ('52fcaa2c-05d7-46b7-b989-2be6059e7521','100분 토론자만큼 뛰기', '러닝 기록 누적 시간이 100분 이상', 'total_timer', 100.0, 'MORE_THAN_OR_EQUAL_TO', false),
+    ('52fcaa2c-05d7-46b7-b989-2be6059e7522','하루종일 달리기', '러닝 기록 누적 시간이 1440분 이상', 'total_timer', 1440.0, 'MORE_THAN_OR_EQUAL_TO', false),
+    ('52fcaa2c-05d7-46b7-b989-2be6059e7523','한달을 달린 결과', '러닝 기록 누적 시간이 43200분 이상', 'total_timer', 43200.0, 'MORE_THAN_OR_EQUAL_TO', false),
+    ('52fcaa2c-05d7-46b7-b989-2be6059e7524','10000시간의 법칙을 증명한 자', '러닝 기록 누적 시간이 600000분 이상', 'total_timer', 600000.0, 'MORE_THAN_OR_EQUAL_TO', false)
+    ON CONFLICT (title) DO NOTHING;

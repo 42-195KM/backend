@@ -40,7 +40,7 @@ public class Achievement extends BaseEntity {
 	@Column(name = "id", nullable = false)
 	private UUID id;
 
-	@Column(name = "title", nullable = false)
+	@Column(name = "title", nullable = false, unique = true)
 	private String title;
 
 	@Column(name = "description", nullable = false)
