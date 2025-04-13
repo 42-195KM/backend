@@ -101,7 +101,7 @@ public class JwtUtil {
 			return token.substring(BEARER_PREFIX.length());
 		}
 
-		throw CustomBusinessException.from(JwtException.JWT_CLAIM_IS_EMPTY);
+		return token;
 	}
 
 }

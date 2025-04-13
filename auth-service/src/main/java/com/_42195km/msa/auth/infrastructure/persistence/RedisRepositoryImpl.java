@@ -62,4 +62,11 @@ public class RedisRepositoryImpl implements RedisRepository {
 			java.util.concurrent.TimeUnit.MILLISECONDS);
 	}
 
+	@Override
+	public boolean isBlackListedToken(String accessToken) {
+		String tokenHash = DigestUtils.sha256Hex(accessToken);
+		String key = "BlackList:" + tokenHash;
+		return Boolean.TRUE.equals(redisTemplate.hasKey(key));
+	}
+
 }

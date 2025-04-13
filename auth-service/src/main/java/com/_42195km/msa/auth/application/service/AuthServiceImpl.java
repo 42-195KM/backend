@@ -80,7 +80,13 @@ public class AuthServiceImpl implements AuthService {
 		// 헤더에 현재 토큰 뜯어와서 블랙리스트 처리
 		String accessToken = extractAccessTokenFromHeader(request);
 		jwtUtil.validateToken(accessToken);
-		if (accessToken == null) {
+
+		// 현재 헤더의 토큰에 블랙리스트가 있는지 확인
+		if (redisRepositoryImpl.isBlackListedToken(accessToken)) {
+			throw CustomBusinessException.from(AuthException.ACCESS_TOKEN_BLACKLISTED);
+		}
+
+		if (accessToken != null) {
 			redisRepositoryImpl.blackListToken(accessToken, calculateExpires(accessToken));
 		}
 
