@@ -14,7 +14,9 @@ public enum AuthException implements ServiceCode {
 	LOGIN_FAILED_WORNG_PASSWORD(HttpStatus.BAD_REQUEST, "잘못된 비밀번호 입니다.", "E_LOGIN_FAILED_WORNG_PASSWORD"),
 	FAILED_SAVE_REFRESHTOKEN(HttpStatus.UNPROCESSABLE_ENTITY, "리프레쉬 토큰 저장이 실패하였습니다.", "E_FAILED_SAVE_REFRESHTOKEN"),
 	ACCESS_TOKEN_BLACKLISTED(HttpStatus.UNAUTHORIZED, "해당 Access Token은 블랙리스트에 등록되어 사용할 수 없습니다.",
-		"E_ACCESS_TOKEN_BLACKLISTED");
+		"E_ACCESS_TOKEN_BLACKLISTED"),
+	NO_LOGIN_USER(HttpStatus.NOT_FOUND, "해당 유저는 로그인한 유저가 아닙니다.", "E_NO_LOGIN_USER"),
+	;
 
 	private final HttpStatus httpStatus;
 	private final String message;

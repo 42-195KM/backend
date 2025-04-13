@@ -1,9 +1,12 @@
 package com._42195km.msa.auth.presentation.controller;
 
+import java.util.UUID;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com._42195km.msa.auth.application.dto.request.RefreshTokenRequestDto;
@@ -65,6 +68,23 @@ public class AuthController {
 					.code(AuthSuccessCode.REFRESH_SUCCESS.getCode())
 					.message(AuthSuccessCode.REFRESH_SUCCESS.getMessage())
 					.data(accessTokenReissueResponseDto)
+					.build()
+			);
+	}
+
+	@PostMapping("/v1/auth/logout")
+	public ResponseEntity<ApiResponse<Void>> logout(@RequestParam UUID userId) {
+
+		authServiceimpl.logOut(userId);
+
+		return ResponseEntity
+			.ok(
+				ApiResponse
+					.<Void>builder()
+					.status(AuthSuccessCode.LOGOUT_SUCCESS.getStatus())
+					.code(AuthSuccessCode.LOGOUT_SUCCESS.getCode())
+					.message(AuthSuccessCode.LOGOUT_SUCCESS.getMessage())
+					.data(null)
 					.build()
 			);
 	}

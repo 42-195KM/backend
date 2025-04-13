@@ -109,6 +109,26 @@ public class AuthServiceImpl implements AuthService {
 		return accessTokenReissueResponseDto;
 	}
 
+	@Override
+	public void logOut(UUID userId) {
+
+		// 레디스에 해당 유저가 로그인 했는지 확인
+		if (!redisRepositoryImpl.isRefreshToken(userId)) {
+			throw CustomBusinessException.from(AuthException.NO_LOGIN_USER);
+		} else {
+			// 해당유저의 Refresh 토큰 삭제
+			redisRepositoryImpl.deleteRefreshToken(userId);
+		}
+
+		// 로그인 되있다면 해당 AccessToken을 블랙리스트 처리
+		String accessToken = extractAccessTokenFromHeader(request);
+		jwtUtil.validateToken(accessToken);
+		if (accessToken != null) {
+			redisRepositoryImpl.blackListToken(accessToken, calculateExpires(accessToken));
+		}
+
+	}
+
 	private long calculateExpires(String accessToken) {
 		long now = System.currentTimeMillis();
 		long expires = jwtUtil.parseClaims(accessToken).getExpiration().getTime();

@@ -1,5 +1,7 @@
 package com._42195km.msa.auth.infrastructure.persistence;
 
+import java.util.UUID;
+
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -64,9 +66,26 @@ public class RedisRepositoryImpl implements RedisRepository {
 
 	@Override
 	public boolean isBlackListedToken(String accessToken) {
+
 		String tokenHash = DigestUtils.sha256Hex(accessToken);
 		String key = "BlackList:" + tokenHash;
+
 		return Boolean.TRUE.equals(redisTemplate.hasKey(key));
+	}
+
+	@Override
+	public boolean isRefreshToken(UUID userId) {
+
+		String key = "Refresh:" + userId;
+
+		return Boolean.TRUE.equals(redisTemplate.hasKey(key));
+	}
+
+	@Override
+	public void deleteRefreshToken(UUID userId) {
+
+		String key = "Refresh:" + userId;
+		redisTemplate.delete(key);
 	}
 
 }
