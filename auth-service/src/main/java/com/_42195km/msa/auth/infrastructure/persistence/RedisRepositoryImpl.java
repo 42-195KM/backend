@@ -1,5 +1,6 @@
 package com._42195km.msa.auth.infrastructure.persistence;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
@@ -48,4 +49,17 @@ public class RedisRepositoryImpl implements RedisRepository {
 		}
 
 	}
+
+	@Override
+	public void blackListToken(String accessToken, long ttl) {
+
+		String tokenHash = DigestUtils.sha256Hex(accessToken);
+
+		redisTemplate.opsForValue().set(
+			"BlackList:" + tokenHash,
+			accessToken,
+			ttl,
+			java.util.concurrent.TimeUnit.MILLISECONDS);
+	}
+
 }

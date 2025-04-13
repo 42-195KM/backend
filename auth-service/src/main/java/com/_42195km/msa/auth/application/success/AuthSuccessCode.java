@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 public enum AuthSuccessCode implements ServiceCode {
 
 	LOGIN_SUCCESS(HttpStatus.OK, "로그인이 성공했습니다.", "S_LOGIN_SUCCESS"),
+	REFRESH_SUCCESS(HttpStatus.OK, "AccessToken 재발급이 성공했습니다.", "S_REFRESH_SUCCESS"),
 	;
 
 	private final HttpStatus httpStatus;
