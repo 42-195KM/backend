@@ -6,6 +6,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com._42195km.msa.auth.application.dto.request.BlackListRequestDto;
 import com._42195km.msa.auth.application.dto.request.RefreshTokenRequestDto;
 import com._42195km.msa.auth.application.dto.request.UserLogInRequestDto;
 import com._42195km.msa.auth.application.dto.response.AccessTokenReissueResponseDto;
@@ -123,10 +124,22 @@ public class AuthServiceImpl implements AuthService {
 		// 로그인 되있다면 해당 AccessToken을 블랙리스트 처리
 		String accessToken = extractAccessTokenFromHeader(request);
 		jwtUtil.validateToken(accessToken);
+		
 		if (accessToken != null) {
 			redisRepositoryImpl.blackListToken(accessToken, calculateExpires(accessToken));
 		}
 
+	}
+
+	@Override
+	public void blackList(BlackListRequestDto blackListRequestDto) {
+
+		String accessToken = blackListRequestDto.getAccessToken();
+		jwtUtil.validateToken(accessToken);
+
+		if (accessToken != null) {
+			redisRepositoryImpl.blackListToken(accessToken, calculateExpires(accessToken));
+		}
 	}
 
 	private long calculateExpires(String accessToken) {

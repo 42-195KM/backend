@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com._42195km.msa.auth.application.dto.request.BlackListRequestDto;
 import com._42195km.msa.auth.application.dto.request.RefreshTokenRequestDto;
 import com._42195km.msa.auth.application.dto.request.UserLogInRequestDto;
 import com._42195km.msa.auth.application.dto.response.AccessTokenReissueResponseDto;
@@ -84,6 +85,25 @@ public class AuthController {
 					.status(AuthSuccessCode.LOGOUT_SUCCESS.getStatus())
 					.code(AuthSuccessCode.LOGOUT_SUCCESS.getCode())
 					.message(AuthSuccessCode.LOGOUT_SUCCESS.getMessage())
+					.data(null)
+					.build()
+			);
+	}
+
+	@PostMapping("/v1/auth/blacklist")
+	public ResponseEntity<ApiResponse<Void>> blackList(
+		@RequestBody @Valid BlackListRequestDto blackListRequestDto
+	) {
+
+		authServiceimpl.blackList(blackListRequestDto);
+
+		return ResponseEntity
+			.ok(
+				ApiResponse
+					.<Void>builder()
+					.status(AuthSuccessCode.BLACK_LIST_SUCCESS.getStatus())
+					.code(AuthSuccessCode.BLACK_LIST_SUCCESS.getCode())
+					.message(AuthSuccessCode.BLACK_LIST_SUCCESS.getMessage())
 					.data(null)
 					.build()
 			);
