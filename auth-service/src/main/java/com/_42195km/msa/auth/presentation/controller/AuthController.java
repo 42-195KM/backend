@@ -64,6 +64,7 @@ public class AuthController {
 					.status(AuthSuccessCode.REFRESH_SUCCESS.getStatus())
 					.code(AuthSuccessCode.REFRESH_SUCCESS.getCode())
 					.message(AuthSuccessCode.REFRESH_SUCCESS.getMessage())
+					.data(accessTokenReissueResponseDto)
 					.build()
 			);
 	}
