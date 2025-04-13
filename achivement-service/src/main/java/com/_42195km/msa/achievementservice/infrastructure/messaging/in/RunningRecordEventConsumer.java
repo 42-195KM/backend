@@ -5,15 +5,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
-import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 
-import com._42195km.msa.achievementservice.application.dto.response.RunningRecordEventDto;
 import com._42195km.msa.achievementservice.domain.model.Achievement;
 import com._42195km.msa.achievementservice.domain.model.AchievementUser;
-import com._42195km.msa.achievementservice.domain.model.CriteriaInequality;
 import com._42195km.msa.achievementservice.infrastructure.config.AchievementRunningRecordEvaluator;
+import com._42195km.msa.achievementservice.infrastructure.messaging.out.AchieveEventProducer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com._42195km.msa.achievementservice.domain.repository.AchievementRepository;
@@ -29,13 +27,19 @@ public class RunningRecordEventConsumer {
 	private final ObjectMapper objectMapper;
 	private final AchievementRepository achievementRepository;
 	private final AchievementUserRepository achievementUserRepository;
+	private final AchieveEventProducer achieveEventProducer;
 
-	public RunningRecordEventConsumer(ObjectMapper objectMapper, AchievementUserRepository achievementUserRepository, AchievementRepository achievementRepository) {
+	public RunningRecordEventConsumer(ObjectMapper objectMapper,
+		AchievementUserRepository achievementUserRepository,
+		AchievementRepository achievementRepository,
+		AchieveEventProducer achieveEventProducer)
+	{
 		Logger logger = LoggerFactory.getLogger(RunningRecordEventConsumer.class);
 		logger.info("consumer created");
 		this.objectMapper = objectMapper;
 		this.achievementUserRepository = achievementUserRepository;
 		this.achievementRepository = achievementRepository;
+		this.achieveEventProducer = achieveEventProducer;
 	}
 
 	@KafkaListener(topics = "create-running-record",
@@ -62,6 +66,7 @@ public class RunningRecordEventConsumer {
 				AchievementUser achievementUser = new AchievementUser(achievement, runningRecordEventDto.getUserId());
 				achievement.getAchievementUsers().add(achievementUser);
 				achievementUserRepository.save(achievementUser);
+				achieveEventProducer.sendAchievementEvent(achievementUser);
 			}
 		}
 	}
@@ -76,14 +81,7 @@ public class RunningRecordEventConsumer {
 		logger.info("Timer: {}", runningRecordEventDto.getTimer());
 		logger.info("Pace: {}", runningRecordEventDto.getPace());
 		logger.info("Total Distance: {}", runningRecordEventDto.getTotalDistance());
-		logger.info("Total Duration: {}", runningRecordEventDto.getTotalDuration());
+		logger.info("Total Duration: {}", runningRecordEventDto.getTotalTimer());
 		logger.info("Avg Pace: {}", runningRecordEventDto.getAvgPace());
 	}
-
-	/**
-	 * user_id	UUID	사용자 id
-	 * distance	DECIMAL(10, 2)	거리
-	 * timer	Duration	시간
-	 * pace	DECIMAL(10, 2)	평균 페이스
-	 */
 }

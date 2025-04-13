@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
-import com._42195km.msa.runningrecordservice.application.dto.response.RunningRecordEventDto;
 import com._42195km.msa.runningrecordservice.domain.model.RunningRecord;
 import com._42195km.msa.runningrecordservice.domain.repository.RunningRecordRepository;
 
@@ -19,21 +18,22 @@ import lombok.extern.slf4j.Slf4j;
 public class RunningRecordEventProducer {
 	private final KafkaTemplate<String, Object> kafkaTemplate;
 	private final RunningRecordRepository runningRecordRepository;
+	private final Logger logger = LoggerFactory.getLogger(RunningRecordEventProducer.class);
 
 	public RunningRecordEventProducer(KafkaTemplate<String, Object> kafkaTemplate,
 		RunningRecordRepository runningRecordRepository) {
 		this.kafkaTemplate = kafkaTemplate;
 		this.runningRecordRepository = runningRecordRepository;
-		Logger logger = LoggerFactory.getLogger(RunningRecordEventProducer.class);
+
 		logger.info("RunningRecordEventProducer started");
-		logger.info("kafkaTemplate: {}", kafkaTemplate);
 	}
 
 	public void sendRunningRecordCreateEvent(RunningRecord runningRecord) {
-		Logger logger = LoggerFactory.getLogger(RunningRecordEventProducer.class);
 		logger.info("runningRecord: {}", runningRecord);
 
 		RunningRecordEventDto runningRecordEventDto = setRunningRecordEventDto(runningRecord);
+		logger.info("runningRecordEventDto: {}", runningRecordEventDto);
+
 		kafkaTemplate.send("create-running-record", runningRecordEventDto);
 	}
 
@@ -43,17 +43,17 @@ public class RunningRecordEventProducer {
 
 		double totalDistance = 0;
 		double sumPace = 0;
-		Duration totalDuration = Duration.ZERO;
+		Duration totalTimer = Duration.ZERO;
 
 		for(RunningRecord record : userRecords) {
 			totalDistance += record.getDistance();
 			sumPace += record.getPace();
-			totalDuration.plus(record.getTimer());
+			totalTimer.plus(record.getTimer());
 		}
 		double avgPace = sumPace / userRecords.size();
 
 		runningRecordEventDto.setTotalDistance(totalDistance);
-		runningRecordEventDto.setTotalDuration(totalDuration);
+		runningRecordEventDto.setTotalTimer(totalTimer);
 		runningRecordEventDto.setAvgPace(avgPace);
 
 		return runningRecordEventDto;

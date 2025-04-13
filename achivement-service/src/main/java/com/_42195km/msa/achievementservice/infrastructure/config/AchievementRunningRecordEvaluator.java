@@ -8,7 +8,7 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com._42195km.msa.achievementservice.application.dto.response.RunningRecordEventDto;
+import com._42195km.msa.achievementservice.infrastructure.messaging.in.RunningRecordEventDto;
 import com._42195km.msa.achievementservice.domain.model.Achievement;
 import com._42195km.msa.achievementservice.domain.model.AchievementUser;
 import com._42195km.msa.achievementservice.domain.model.CriteriaInequality;
@@ -31,14 +31,14 @@ public class AchievementRunningRecordEvaluator {
 			return (duration != null) ? duration.toMillis() / 1000.0 : 0.0;
 		});
 		criteriaExtractor.put("totalDuration", dto -> {
-			Duration duration = dto.getTotalDuration();
+			Duration duration = dto.getTotalTimer();
 			return (duration != null) ? duration.toMillis() / 1000.0 : 0.0;
 		});
 	}
 
 	public boolean isAlreadyAchieved(RunningRecordEventDto eventDto, Achievement achievement) {
 		Set<UUID> achievementUsers = achievement.getAchievementUsers().stream()
-			.map(achievementUser -> achievementUser.getUserId())
+			.map(AchievementUser::getUserId)
 			.collect(Collectors.toSet());
 
 		return achievementUsers.contains(eventDto.getUserId());

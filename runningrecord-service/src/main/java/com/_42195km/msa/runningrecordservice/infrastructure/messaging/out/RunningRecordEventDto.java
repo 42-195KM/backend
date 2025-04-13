@@ -1,4 +1,4 @@
-package com._42195km.msa.runningrecordservice.application.dto.response;
+package com._42195km.msa.runningrecordservice.infrastructure.messaging.out;
 
 import java.time.Duration;
 import java.util.UUID;
@@ -24,7 +24,7 @@ public class RunningRecordEventDto {
 	private double pace;
 
 	private double totalDistance = 0;
-	private Duration totalDuration = Duration.ZERO;
+	private Duration totalTimer = Duration.ZERO;
 	private double avgPace = 0;
 
 	public static RunningRecordEventDto from(RunningRecord runningRecord) {
