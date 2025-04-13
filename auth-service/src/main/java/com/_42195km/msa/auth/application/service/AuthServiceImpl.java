@@ -13,6 +13,7 @@ import com._42195km.msa.auth.domain.model.Auth;
 import com._42195km.msa.auth.domain.model.UserRole;
 import com._42195km.msa.auth.infrastructure.jwt.JwtUtil;
 import com._42195km.msa.auth.infrastructure.persistence.AuthRepositoryImpl;
+import com._42195km.msa.auth.infrastructure.persistence.RedisRepositoryImpl;
 import com._42195km.msa.common.exception.CustomBusinessException;
 
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ public class AuthServiceImpl implements AuthService {
 
 	private final JwtUtil jwtUtil;
 	private final AuthRepositoryImpl authRepositoryImpl;
+	private final RedisRepositoryImpl redisRepositoryImpl;
 	private final PasswordEncoder passwordEncoder;
 
 	@Override
@@ -46,13 +48,20 @@ public class AuthServiceImpl implements AuthService {
 		String accessToken = jwtUtil.createAccessToken(userId, userName, role);
 		String refreshToken = jwtUtil.createRefreshToken(userId);
 
+		// 토큰이 생성된 시점
+		long creationTokenTime = System.currentTimeMillis();
+
 		UserLogInResponseDto userLogInResponseDto = UserLogInResponseDto.
 			builder()
 			.accessToken(accessToken)
 			.refreshToken(refreshToken)
 			.build();
 
-		log.info("access token: {}", userLogInResponseDto.getAccessToken());
+		if (userLogInResponseDto != null) {
+			redisRepositoryImpl.saveRefreshToken(userId.toString(), refreshToken, creationTokenTime);
+		} else {
+			throw CustomBusinessException.from(AuthException.FAILED_SAVE_REFRESHTOKEN);
+		}
 
 		return userLogInResponseDto;
 	}
