@@ -1,7 +1,7 @@
 services:
   postgres:
     container_name: postgresdb
-    image: postgres:latest
+    image: ankane/pgvector:latest
     ports:
       - "5432:5432"
     environment:
