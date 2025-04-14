@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: auth-service
+  config:
+    import:
+      - file:.env[.properties]
+      - classpath:./properties/datasource.yml
+      - classpath:./properties/jpa.yml
+      - classpath:./properties/redis.yml
+  profiles:
+    group:
+      local: local, key
+    active: ${ACTIVE_VAL}
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_SERVER}  # Eureka 서버 URL
+server:
+  port: ${AUTH_SERVER}
+
+service:
+  jwt:
+    access-expiration: ${JWT_ACCESS_EXPIRATION}
+    refresh-expiration: ${JWT_REFRESH_EXPIRATION}
+    secret-key: ${JWT_SECRET_KEY}

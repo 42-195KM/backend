@@ -25,4 +25,8 @@ public interface UserService {
 	Page<SearchUserResponseDto> searchUserList(String keyword, Pageable pageable);
 
 	UpdateUserResponseDto updateUser(UUID userId, @Valid UpdateUserRequestDto updateUserRequestDto);
+
+	void deleteUser(UUID userId);
+
+	void banUser(UUID userId);
 }

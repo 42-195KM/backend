@@ -41,7 +41,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - app_network
-
+  
   kafka-ui:
     container_name: kafka-ui
     image: provectuslabs/kafka-ui:latest
@@ -54,6 +54,14 @@ services:
       - KAFKA_CLUSTERS_0_NAME=local
       - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:29092
       - KAFKA_CLUSTERS_0_ZOOKEEPER=zookeeper:2181
+    networks:
+      - app_network
+
+  redis:
+    container_name: redis
+    image: redis/redis-stack
+    ports:
+      - "6379:6379"
     networks:
       - app_network
 

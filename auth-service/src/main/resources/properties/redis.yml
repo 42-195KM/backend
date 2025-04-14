@@ -1,0 +1,7 @@
+spring:
+  data:
+    redis:
+      host: ${DB_REDIS_HOST}
+      port: ${DB_REDIS_PORT}
+      username: ${DB_REDIS_USERNAME}
+      password: ${DB_REDIS_PASSWORD}
