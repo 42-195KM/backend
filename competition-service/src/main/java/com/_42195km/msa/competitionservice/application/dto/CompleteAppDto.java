@@ -3,9 +3,15 @@ package com._42195km.msa.competitionservice.application.dto;
 import java.util.UUID;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Builder
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class CompleteAppDto {
 	@Schema(example = "872dd912-8616-4595-aa94-5737bf633012")
 	private UUID competitionId;
