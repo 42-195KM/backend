@@ -29,7 +29,7 @@ import com._42195km.msa.crew.presentation.dto.request.UpdateCommentRequestDto;
 import com._42195km.msa.crew.presentation.dto.request.UpdatePostRequestDto;
 import com._42195km.msa.crew.presentation.dto.response.PostResponseDto;
 import com._42195km.msa.crew.presentation.dto.response.PostWithCommentsResponseDto;
-import com._42195km.msa.crew.presentation.exception.BoardErrorCode;
+import com._42195km.msa.crew.application.exception.BoardServiceCode;
 
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -48,9 +48,9 @@ public class BoardController {
 	public ResponseEntity<?> createBoard(@RequestBody CreatePostRequestDto requestDto) {
 		boardService.createPost(requestDto.toCommandDto());
 		return ResponseEntity.ok(new ApiResponse<>(
-			BoardErrorCode.CREW_BOARD_CREATE_POST_SUCCESS.getCode(),
+			BoardServiceCode.CREW_BOARD_CREATE_POST_SUCCESS.getCode(),
 			"게시글 생성에 성공했습니다.",
-			BoardErrorCode.CREW_BOARD_CREATE_POST_SUCCESS.getMessage(),
+			BoardServiceCode.CREW_BOARD_CREATE_POST_SUCCESS.getMessage(),
 			HttpStatus.CREATED.value()));
 	}
 
@@ -60,9 +60,9 @@ public class BoardController {
 		@RequestBody UpdatePostRequestDto requestDto) {
 		boardService.updatePost(userId, requestDto.toCommandDto());
 		return ResponseEntity.ok(new ApiResponse<>(
-			BoardErrorCode.CREW_BOARD_UPDATE_POST_SUCCESS.getCode(),
+			BoardServiceCode.CREW_BOARD_UPDATE_POST_SUCCESS.getCode(),
 			"게시글 수정 성공했습니다.",
-			BoardErrorCode.CREW_BOARD_UPDATE_POST_SUCCESS.getMessage(),
+			BoardServiceCode.CREW_BOARD_UPDATE_POST_SUCCESS.getMessage(),
 			HttpStatus.ACCEPTED.value()));
 	}
 
@@ -72,9 +72,9 @@ public class BoardController {
 		Page<PostAppResponseDto> posts = boardService.getPosts(requestDto.toPageable());
 		Page<PostResponseDto> presentationPage = postMapper.toPresentationPage(posts);
 		return ResponseEntity.ok(new ApiResponse<>(
-			BoardErrorCode.CREW_BOARD_GET_POST_SUCCESS.getCode(),
+			BoardServiceCode.CREW_BOARD_GET_POST_SUCCESS.getCode(),
 			presentationPage,
-			BoardErrorCode.CREW_BOARD_GET_POST_SUCCESS.getMessage(),
+			BoardServiceCode.CREW_BOARD_GET_POST_SUCCESS.getMessage(),
 			HttpStatus.ACCEPTED.value()));
 	}
 
@@ -84,9 +84,9 @@ public class BoardController {
 		Page<PostAppResponseDto> posts = boardService.searchBoard(requestDto.keyword(), requestDto.toPageable());
 		Page<PostResponseDto> presentationPage = postMapper.toPresentationPage(posts);
 		return ResponseEntity.ok(new ApiResponse<>(
-			BoardErrorCode.CREW_BOARD_SEARCH_POST_SUCCESS.getCode(),
+			BoardServiceCode.CREW_BOARD_SEARCH_POST_SUCCESS.getCode(),
 			presentationPage,
-			BoardErrorCode.CREW_BOARD_SEARCH_POST_SUCCESS.getMessage(),
+			BoardServiceCode.CREW_BOARD_SEARCH_POST_SUCCESS.getMessage(),
 			HttpStatus.ACCEPTED.value()));
 	}
 
@@ -97,9 +97,9 @@ public class BoardController {
 		PostWithCommentsResponseDto presentationPost = PostWithCommentsResponseDto.fromApplicationDto(post);
 
 		return ResponseEntity.ok(new ApiResponse<>(
-			BoardErrorCode.CREW_BOARD_GET_POST_SUCCESS.getCode(),
+			BoardServiceCode.CREW_BOARD_GET_POST_SUCCESS.getCode(),
 			presentationPost,
-			BoardErrorCode.CREW_BOARD_GET_POST_SUCCESS.getMessage(),
+			BoardServiceCode.CREW_BOARD_GET_POST_SUCCESS.getMessage(),
 			HttpStatus.ACCEPTED.value()));
 	}
 
@@ -113,9 +113,9 @@ public class BoardController {
 	public ResponseEntity deleteBoard(@PathVariable("postId") UUID postId) {
 		boardService.deletePost(postId);
 		return ResponseEntity.ok(new ApiResponse<>(
-			BoardErrorCode.CREW_BOARD_GET_POST_SUCCESS.getCode(),
+			BoardServiceCode.CREW_BOARD_GET_POST_SUCCESS.getCode(),
 			"게시글 삭제 성공했습니다.",
-			BoardErrorCode.CREW_BOARD_GET_POST_SUCCESS.getMessage(),
+			BoardServiceCode.CREW_BOARD_GET_POST_SUCCESS.getMessage(),
 			HttpStatus.ACCEPTED.value()));
 	}
 
@@ -125,9 +125,9 @@ public class BoardController {
 		@RequestBody CreateCommentRequestDto requestDto) {
 		boardService.createComment(postId, requestDto.toCommandDto());
 		return ResponseEntity.ok(new ApiResponse<>(
-			BoardErrorCode.CREW_BOARD_CREATE_COMMENT_SUCCESS.getCode(),
+			BoardServiceCode.CREW_BOARD_CREATE_COMMENT_SUCCESS.getCode(),
 			"댓글 생성에 성공했습니다.",
-			BoardErrorCode.CREW_BOARD_CREATE_COMMENT_SUCCESS.getMessage(),
+			BoardServiceCode.CREW_BOARD_CREATE_COMMENT_SUCCESS.getMessage(),
 			HttpStatus.ACCEPTED.value()));
 	}
 
@@ -137,9 +137,9 @@ public class BoardController {
 		@RequestBody UpdateCommentRequestDto requestDto) {
 		boardService.updateComment(commentId, requestDto.toCommandDto());
 		return ResponseEntity.ok(new ApiResponse<>(
-			BoardErrorCode.CREW_BOARD_UPDATE_COMMENT_SUCCESS.getCode(),
+			BoardServiceCode.CREW_BOARD_UPDATE_COMMENT_SUCCESS.getCode(),
 			"댓글 수정에 성공했습니다.",
-			BoardErrorCode.CREW_BOARD_UPDATE_COMMENT_SUCCESS.getMessage(),
+			BoardServiceCode.CREW_BOARD_UPDATE_COMMENT_SUCCESS.getMessage(),
 			HttpStatus.ACCEPTED.value()));
 	}
 
