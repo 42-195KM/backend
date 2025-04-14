@@ -41,6 +41,27 @@ public class CompetitionParticipantMapping extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	private Status status = Status.APPLY;
 
+	@Column(name = "terms_agreed")
+	private Boolean termsAgreed;
+
+	@Column(name = "souvenir_selection")
+	private String souvenirSelection;
+
+	@Column(name = "shipping_address")
+	private String shippingAddress;
+
+	@Column(name = "payment_method")
+	private String paymentMethod;
+
+	@Column(name = "payment_status")
+	private String paymentStatus;
+
+	@Column(name = "payment_transaction_id")
+	private String paymentTransactionId;
+
+	@Column(name = "cancellation_reason")
+	private String cancellationReason;
+
 
 	@Builder
 	public CompetitionParticipantMapping(Competition competition, Participant participant) {
@@ -58,6 +79,29 @@ public class CompetitionParticipantMapping extends BaseEntity {
 
 	public void cancel() {
 		this.status = Status.CANCEL;
+	}
+
+	public void cancelWithReason(String reason) {
+		this.status = Status.CANCEL;
+		this.cancellationReason = reason;
+	}
+
+	public void updateTermsAgreement(Boolean termsAgreed) {
+		this.termsAgreed = termsAgreed;
+	}
+
+	public void updateSouvenirSelection(String souvenirSelection) {
+		this.souvenirSelection = souvenirSelection;
+	}
+
+	public void updateShippingAddress(String shippingAddress) {
+		this.shippingAddress = shippingAddress;
+	}
+
+	public void updatePaymentInfo(String paymentMethod, String paymentStatus, String paymentTransactionId) {
+		this.paymentMethod = paymentMethod;
+		this.paymentStatus = paymentStatus;
+		this.paymentTransactionId = paymentTransactionId;
 	}
 
 }

@@ -64,6 +64,22 @@ services:
       - "6379:6379"
     networks:
       - app_network
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes
+
+  # Redis 관리 UI 추가
+  redis-commander:
+    container_name: redis-commander
+    image: rediscommander/redis-commander:latest
+    ports:
+      - "8081:8081"
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    depends_on:
+      - redis
+    networks:
+      - app_network
 
 networks:
   app_network:

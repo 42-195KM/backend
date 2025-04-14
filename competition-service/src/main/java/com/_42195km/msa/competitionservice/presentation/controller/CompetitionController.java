@@ -173,22 +173,5 @@ public class CompetitionController {
 		));
 	}
 
-	@PostMapping("/cancel")
-	@Operation(summary = "대회 취소 Saga 시작")
-	public ResponseEntity<?> startCancellationSaga(@RequestBody CancelParticipantRequestDto requestDto) {
-		String sagaId = sagaOrchestrator.startCancellationSaga(
-			requestDto.getCompetitionId(),
-			requestDto.getParticipantId(),
-			requestDto.getReason(),
-			requestDto.isRefundRequired()
-		);
-
-		return ResponseEntity.ok(new ApiResponse<>(
-			CompetitionServiceCode.PARTICIPANT_CANCEL_SUCCESS.getCode(),
-			sagaId,
-			"대회 취소 Saga가 시작되었습니다.",
-			HttpStatus.OK.value()
-		));
-	}
 
 }

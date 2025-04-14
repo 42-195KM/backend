@@ -124,6 +124,27 @@ public class CompetitionService {
 		}
 	}
 
+	public boolean checkDuplicateApplication(UUID competitionId, UUID participantId){
+		return mappingRepository.checkIsParticipate(participantId, competitionId);
+	}
+
+	public boolean checkCompetitionCapacity(UUID competitionId){
+		Competition competition = competitionRepository.findById(competitionId);
+
+		if (competition.getReceptionType() == ReceptionType.FIRST) {
+			long ParticipantCount = mappingRepository.countByCompetition(competition);
+			log.error("참가자 수 확인 : {}", ParticipantCount);
+
+			if (ParticipantCount > competition.getParticipantsNum()) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+		return false;
+	}
+
+
 	@Transactional
 	public void applyCompetition(UUID competitionId, UUID participantId) {
 		try {
@@ -133,23 +154,6 @@ public class CompetitionService {
 			if (participant == null) {
 				participant = new Participant(participantId);
 				participantRepository.save(participant);
-			}
-
-			// 중복 참가 신청 확인
-			Boolean chekcDupl = mappingRepository.checkIsParticipate(participantId, competitionId);
-			log.error("중복 확인 : {}", chekcDupl);
-			if (chekcDupl) {
-				throw CustomBusinessException.from(CompetitionServiceCode.COMPETITION_APPLY_EXIST);
-			}
-
-			// 대회 신청 마감 확인 // 접수 유형이 선착순인 경우
-			if (competition.getReceptionType() == ReceptionType.FIRST) {
-				long ParticipantCount = mappingRepository.countByCompetition(competition);
-				log.error("참가자 수 확인 : {}", ParticipantCount);
-
-				if (ParticipantCount > competition.getParticipantsNum()) {
-					throw CustomBusinessException.from(CompetitionServiceCode.COMPETITION_APPLY_FIRST_FAIL);
-				}
 			}
 
 			CompetitionParticipantMapping apply = CompetitionParticipantMapping.create(competition, participant);
@@ -193,6 +197,22 @@ public class CompetitionService {
 		} catch (Exception e) {
 			log.error("추첨 실패: {}", e.getMessage());
 			throw CustomBusinessException.from(CompetitionServiceCode.COMPETITION_DRAW_FAIL);
+		}
+	}
+
+	@Transactional
+	public void cancelParticipantWithReason(UUID competitionId, UUID participantId, String reason) {
+		try {
+			CompetitionParticipantMapping participant = mappingRepository.findByCompetitionIdAndParticipantId(
+				competitionId, participantId);
+			if (participant != null) {
+				participant.cancelWithReason(reason);
+				log.info("Canceled participant with reason: competitionId={}, participantId={}, reason={}",
+					competitionId, participantId, reason);
+			}
+		} catch (Exception e) {
+			log.error("Failed to cancel participant: {}", e.getMessage(), e);
+			throw CustomBusinessException.from(CompetitionServiceCode.PARTICIPANT_CANCEL_FAIL);
 		}
 	}
 
