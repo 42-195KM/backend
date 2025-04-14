@@ -23,4 +23,6 @@ public interface UserJpaRepository extends JpaRepository<User, UUID> {
 		"u.phone LIKE CONCAT('%', :keyword, '%') OR " +
 		"u.mediaId LIKE CONCAT('%', :keyword, '%')")
 	Page<User> searchByKeyword(@Param("keyword") String keyword, Pageable pageable);
+
+	boolean existsByUsernameAndIsDeletedIsFalse(String username);
 }

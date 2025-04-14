@@ -29,6 +29,7 @@ public class SecurityConfig {
 				session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션을 STATELESS 모드로 설정
 			.authorizeHttpRequests(auth -> auth
 				.requestMatchers("/api/v1/auth/login", "/api/v1/auth/refresh", "/api/v1/auth/validate-token",
+					"/api/v1/auths",
 					"/swagger-ui/**", "/v3/api-docs/**")
 				.permitAll() // 로그인 및 토큰 갱신 API는 인증 없이 허용
 				.anyRequest()

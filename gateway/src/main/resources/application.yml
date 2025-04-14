@@ -24,7 +24,7 @@ spring:
         - id: auth-service
           uri: lb://auth-service
           predicates:
-            - Path=/api/v1/auth/**, /api/v1/app/auth/** , /auth-service/**
+            - Path=/api/v1/auth/**, /api/v1/auths/**, /api/v1/app/auths/** , /auth-service/**
           filters:
             - RewritePath=/auth-service/(?<segment>.*), /$\{segment}
         # 업적 서비스

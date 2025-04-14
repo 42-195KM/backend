@@ -3,7 +3,10 @@ package com._42195km.msa.auth.presentation.controller;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -16,7 +19,12 @@ import com._42195km.msa.auth.application.dto.response.AccessTokenReissueResponse
 import com._42195km.msa.auth.application.dto.response.UserLogInResponseDto;
 import com._42195km.msa.auth.application.service.AuthServiceImpl;
 import com._42195km.msa.auth.application.success.AuthSuccessCode;
+import com._42195km.msa.auth.presentation.dto.request.CreateAuthRequestDto;
 import com._42195km.msa.auth.presentation.dto.request.TokenRequestDto;
+import com._42195km.msa.auth.presentation.dto.request.UpdateAuthRequestDto;
+import com._42195km.msa.auth.presentation.dto.response.CreateAuthResponseDto;
+import com._42195km.msa.auth.presentation.dto.response.DeleteAuthResponseDto;
+import com._42195km.msa.auth.presentation.dto.response.UpdateAuthResponseDto;
 import com._42195km.msa.auth.presentation.dto.response.ValidateTokenResponse;
 import com._42195km.msa.common.api.ApiResponse;
 
@@ -126,6 +134,63 @@ public class AuthController {
 					.code(AuthSuccessCode.VALIDATE_TOKEN_SUCCESS.getCode())
 					.message(AuthSuccessCode.VALIDATE_TOKEN_SUCCESS.getMessage())
 					.data(validateTokenResponse)
+					.build()
+			);
+	}
+
+	@PostMapping("/v1/auths")
+	public ResponseEntity<ApiResponse<CreateAuthResponseDto>> createAuth(
+		@RequestBody @Valid CreateAuthRequestDto createAuthRequestDto
+	) {
+
+		CreateAuthResponseDto createAuthResponseDto = authServiceimpl.createAuth(createAuthRequestDto);
+
+		return ResponseEntity
+			.ok(
+				ApiResponse
+					.<CreateAuthResponseDto>builder()
+					.status(AuthSuccessCode.SYNC_SUCCESS.getStatus())
+					.code(AuthSuccessCode.SYNC_SUCCESS.getCode())
+					.message(AuthSuccessCode.SYNC_SUCCESS.getMessage())
+					.data(createAuthResponseDto)
+					.build()
+			);
+	}
+
+	@PutMapping("/v1/app/auths")
+	public ResponseEntity<ApiResponse<UpdateAuthResponseDto>> updateAuth(
+		@RequestBody @Valid UpdateAuthRequestDto updateAuthRequestDto
+	) {
+
+		UpdateAuthResponseDto updateAuthResponseDto = authServiceimpl.updateAuth(updateAuthRequestDto);
+
+		return ResponseEntity
+			.ok(
+				ApiResponse
+					.<UpdateAuthResponseDto>builder()
+					.status(AuthSuccessCode.SYNC_SUCCESS.getStatus())
+					.code(AuthSuccessCode.SYNC_SUCCESS.getCode())
+					.message(AuthSuccessCode.SYNC_SUCCESS.getMessage())
+					.data(updateAuthResponseDto)
+					.build()
+			);
+	}
+
+	@DeleteMapping("/v1/app/auths/{userId}")
+	public ResponseEntity<ApiResponse<DeleteAuthResponseDto>> deleteAuth(
+		@PathVariable UUID userId
+	) {
+
+		authServiceimpl.deleteAuth(userId);
+
+		return ResponseEntity
+			.ok(
+				ApiResponse
+					.<DeleteAuthResponseDto>builder()
+					.status(AuthSuccessCode.SYNC_SUCCESS.getStatus())
+					.code(AuthSuccessCode.SYNC_SUCCESS.getCode())
+					.message(AuthSuccessCode.SYNC_SUCCESS.getMessage())
+					.data(null)
 					.build()
 			);
 	}
