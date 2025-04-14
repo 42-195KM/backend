@@ -16,6 +16,8 @@ import com._42195km.msa.auth.application.dto.response.AccessTokenReissueResponse
 import com._42195km.msa.auth.application.dto.response.UserLogInResponseDto;
 import com._42195km.msa.auth.application.service.AuthServiceImpl;
 import com._42195km.msa.auth.application.success.AuthSuccessCode;
+import com._42195km.msa.auth.presentation.dto.request.TokenRequestDto;
+import com._42195km.msa.auth.presentation.dto.response.ValidateTokenResponse;
 import com._42195km.msa.common.api.ApiResponse;
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -108,4 +110,24 @@ public class AuthController {
 					.build()
 			);
 	}
+
+	@PostMapping("/v1/auth/validate-token")
+	public ResponseEntity<ApiResponse<ValidateTokenResponse>> validateToken(
+		@RequestBody @Valid TokenRequestDto tokenRequestDto
+	) {
+
+		ValidateTokenResponse validateTokenResponse = authServiceimpl.validateToken(tokenRequestDto);
+
+		return ResponseEntity
+			.ok(
+				ApiResponse
+					.<ValidateTokenResponse>builder()
+					.status(AuthSuccessCode.VALIDATE_TOKEN_SUCCESS.getStatus())
+					.code(AuthSuccessCode.VALIDATE_TOKEN_SUCCESS.getCode())
+					.message(AuthSuccessCode.VALIDATE_TOKEN_SUCCESS.getMessage())
+					.data(validateTokenResponse)
+					.build()
+			);
+	}
+
 }

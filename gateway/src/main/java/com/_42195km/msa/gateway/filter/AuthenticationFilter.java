@@ -4,11 +4,12 @@ import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ServerWebExchange;
 
-import com._42195km.msa.gateway.util.JwtUtil;
+import com._42195km.msa.gateway.dto.request.TokenRequestDto;
+import com._42195km.msa.gateway.dto.response.ValidateTokenResponseDto;
 
-import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
@@ -18,7 +19,8 @@ import reactor.core.publisher.Mono;
 @Slf4j
 public class AuthenticationFilter implements GlobalFilter {
 
-	private final JwtUtil jwtUtil;
+	// private final JwtUtil jwtUtil;
+	private final WebClient.Builder webClientBuilder;
 
 	@Override
 	public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
@@ -32,39 +34,56 @@ public class AuthenticationFilter implements GlobalFilter {
 			return chain.filter(exchange);
 		}
 
-		// 3) 헤더에서 JWT 추출
-		String token = jwtUtil.extractToken(exchange);
+		String token = exchange.getRequest().getHeaders().getFirst("Authorization");
 
-		// 4) JWT 검증 실패 시 401 반환
-		if (token == null || !jwtUtil.validateToken(token)) {
-			exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
-			return exchange.getResponse().setComplete();
-		}
+		// // 3) 헤더에서 JWT 추출
+		// String token = jwtUtil.extractToken(exchange);
+		//
+		// // 4) JWT 검증 실패 시 401 반환
+		// if (token == null || !jwtUtil.validateToken(token)) {
+		// 	exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+		// 	return exchange.getResponse().setComplete();
+		// }
 
-		// 5) Claims(유저 정보) 추출
-		Claims claims = jwtUtil.parseClaims(token);
-		String userId = claims.get("userId", String.class);
-		String userName = claims.get("userName", String.class);
-		String role = claims.get("role", String.class);
+		// Auth-Service로 책임 분리
+		// 트-슈 : OpenFeing -> 순환참조문제 발생 / WebFlux기반  비동기식 구현
+		return webClientBuilder.build()
+			.post()
+			.uri("lb://auth-service/api/v1/auth/validate-token")
+			.bodyValue(TokenRequestDto.builder()
+				.token(token)
+				.build()
+			)
+			.retrieve()
+			.bodyToMono(ValidateTokenResponseDto.class)
+			.flatMap(response -> {
+				log.info("검증 성공 - userId: {}, userName: {}, role: {}",
+					response.getData().getUserId(),
+					response.getData().getUserName(),
+					response.getData().getRole()
+				);
 
-		log.info("userId: {}, userName: {}, role: {}", userId, userName, role);
+				ServerWebExchange mutatedExchange = exchange.mutate()
+					.request(exchange.getRequest().mutate()
+						.header("X-User-Id", response.getData().getUserId())
+						.header("X-User-Name", response.getData().getUserName())
+						.header("X-User-Role", response.getData().getRole())
+						.build())
+					.build();
 
-		// 6) 내부 서비스로 전달할 사용자 정보 헤더에 추가 (exchange 객체 갱신)
-		exchange = exchange.mutate()
-			.request(exchange.getRequest().mutate()
-				.header("X-User-Id", userId)
-				.header("X-User-Name", userName)
-				.header("X-User-Role", role)
-				.build())
-			.build();
-
-		return chain.filter(exchange);
-
+				return chain.filter(mutatedExchange);
+			})
+			.onErrorResume(e -> {
+				log.warn("토큰 검증 실패: {}", e.getMessage());
+				exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+				return exchange.getResponse().setComplete();
+			});
 	}
 
 	// 인증 없이 통과시킬 경로
 	private boolean isAllowedPath(String path, String method) {
 		return path.equals("/api/v1/auth/login") ||    // 로그인
+			path.equals("/api/v1/auth/validate-token") || // 토큰검증
 			path.equals("/api/v1/auth/refresh") || // 토큰 재발행
 			path.equals("/api/v1/users") ||    // 회원가입
 			path.startsWith("/swagger-ui") || // Swagger UI

@@ -7,6 +7,8 @@ import com._42195km.msa.auth.application.dto.request.RefreshTokenRequestDto;
 import com._42195km.msa.auth.application.dto.request.UserLogInRequestDto;
 import com._42195km.msa.auth.application.dto.response.AccessTokenReissueResponseDto;
 import com._42195km.msa.auth.application.dto.response.UserLogInResponseDto;
+import com._42195km.msa.auth.presentation.dto.request.TokenRequestDto;
+import com._42195km.msa.auth.presentation.dto.response.ValidateTokenResponse;
 
 import jakarta.validation.Valid;
 
@@ -19,4 +21,6 @@ public interface AuthService {
 	void logOut(UUID userId);
 
 	void blackList(@Valid BlackListRequestDto blackListRequestDto);
+
+	ValidateTokenResponse validateToken(@Valid TokenRequestDto tokenRequestDto);
 }

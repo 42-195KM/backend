@@ -15,6 +15,7 @@ public enum AuthSuccessCode implements ServiceCode {
 	REFRESH_SUCCESS(HttpStatus.OK, "AccessToken 재발급이 성공했습니다.", "S_REFRESH_SUCCESS"),
 	LOGOUT_SUCCESS(HttpStatus.NO_CONTENT, "로그아웃을 성공했습니다.", "S_LOGOUT_SUCCESS"),
 	BLACK_LIST_SUCCESS(HttpStatus.NO_CONTENT, "블랙리스트 처리를 성공했습니다.", "S_BLACK_LIST_SUCCESS"),
+	VALIDATE_TOKEN_SUCCESS(HttpStatus.OK, "토큰 검증이 성공했습니다.", "S_VALIDATE_TOKEN_SUCCESS"),
 	;
 
 	private final HttpStatus httpStatus;

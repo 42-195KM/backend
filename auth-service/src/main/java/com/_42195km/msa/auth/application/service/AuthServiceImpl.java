@@ -17,6 +17,8 @@ import com._42195km.msa.auth.domain.model.UserRole;
 import com._42195km.msa.auth.infrastructure.jwt.JwtUtil;
 import com._42195km.msa.auth.infrastructure.persistence.AuthRepositoryImpl;
 import com._42195km.msa.auth.infrastructure.persistence.RedisRepositoryImpl;
+import com._42195km.msa.auth.presentation.dto.request.TokenRequestDto;
+import com._42195km.msa.auth.presentation.dto.response.ValidateTokenResponse;
 import com._42195km.msa.common.exception.CustomBusinessException;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -103,6 +105,27 @@ public class AuthServiceImpl implements AuthService {
 		String accessToken = blackListRequestDto.getAccessToken();
 		jwtUtil.validateToken(accessToken);
 		handleAccessTokenBlackList(accessToken);
+	}
+
+	@Override
+	public ValidateTokenResponse validateToken(TokenRequestDto tokenRequestDto) {
+
+		String token = tokenRequestDto.getToken();
+		if (redisRepositoryImpl.isBlackListedToken(token)) {
+			throw CustomBusinessException.from(AuthException.ACCESS_TOKEN_BLACKLISTED);
+		}
+
+		UUID userId = UUID.fromString(jwtUtil.parseClaims(token).getSubject());
+		Auth auth = authRepositoryImpl.findByUserUuid(userId)
+			.orElseThrow(() -> CustomBusinessException.from(AuthException.NOT_FOUND_AUTH_USER));
+
+		ValidateTokenResponse validateTokenResponse = ValidateTokenResponse.builder()
+			.userId(auth.getUserUuid())
+			.userName(auth.getUsername())
+			.role(auth.getRole())
+			.build();
+
+		return validateTokenResponse;
 	}
 
 	/// 액세스 토큰 블랙리스트 처리 메서드
