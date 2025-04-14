@@ -9,8 +9,6 @@ import com._42195km.msa.common.BaseEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -32,7 +30,6 @@ public class Participant extends BaseEntity {
 
 	@Column(name = "participant_user_id", unique = true, nullable = false)
 	private UUID participantId;
-
 
 	@OneToMany(mappedBy = "participant", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<CompetitionParticipantMapping> competitionMappings = new ArrayList<>();

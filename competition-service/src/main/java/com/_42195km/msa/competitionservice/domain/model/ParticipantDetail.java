@@ -3,7 +3,6 @@ package com._42195km.msa.competitionservice.domain.model;
 import java.util.UUID;
 
 import com._42195km.msa.common.BaseEntity;
-import com._42195km.msa.competitionservice.application.dto.request.UpdateCompetitionCommandDto;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -34,7 +33,8 @@ public class ParticipantDetail extends BaseEntity {
 	private String shippingAddress;
 
 	@Builder
-	public ParticipantDetail(UUID competitionId, UUID participantId, Boolean termsAgreed, String souvenirSelection, String shippingAddress) {
+	public ParticipantDetail(UUID competitionId, UUID participantId, Boolean termsAgreed, String souvenirSelection,
+		String shippingAddress) {
 		this.competitionId = competitionId;
 		this.participantId = participantId;
 		this.termsAgreed = termsAgreed;

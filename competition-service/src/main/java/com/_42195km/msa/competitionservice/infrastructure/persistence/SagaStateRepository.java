@@ -86,18 +86,4 @@ public class SagaStateRepository {
 		return null;
 	}
 
-
-	/**
-	 * 활성 Saga 조회 또는 생성
-	 * @param competitionId
-	 * @param participantId
-	 * @return
-	 */
-	public SagaState findActiveSagaStateOrNull(UUID competitionId, UUID participantId) {
-		String sagaId = findActiveSagaId(competitionId, participantId);
-		if (sagaId != null) {
-			return getSagaState(sagaId);
-		}
-		return null;
-	}
 }

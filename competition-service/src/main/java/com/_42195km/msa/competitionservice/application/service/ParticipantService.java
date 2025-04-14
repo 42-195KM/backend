@@ -13,9 +13,7 @@ import com._42195km.msa.competitionservice.application.dto.response.SearchPartic
 import com._42195km.msa.competitionservice.application.exception.CompetitionServiceCode;
 import com._42195km.msa.competitionservice.application.mapper.ParticipantMapper;
 import com._42195km.msa.competitionservice.domain.model.Competition;
-import com._42195km.msa.competitionservice.domain.model.CompetitionApplicationData;
 import com._42195km.msa.competitionservice.domain.model.CompetitionParticipantMapping;
-import com._42195km.msa.competitionservice.domain.model.Participant;
 import com._42195km.msa.competitionservice.infrastructure.persistence.CompetitionParticipantMappingRepositoryImpl;
 import com._42195km.msa.competitionservice.infrastructure.persistence.CompetitionRepositoryImpl;
 import com._42195km.msa.competitionservice.infrastructure.persistence.ParticipantRepositoryImpl;

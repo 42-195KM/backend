@@ -1,4 +1,4 @@
-package com._42195km.msa.competitionservice.application.service;
+package com._42195km.msa.competitionservice.infrastructure.messaging;
 
 import java.util.List;
 import java.util.UUID;
@@ -12,10 +12,10 @@ import com._42195km.msa.competitionservice.application.event.ApplicationSagaEven
 import com._42195km.msa.competitionservice.application.event.PaymentSagaEvent;
 import com._42195km.msa.competitionservice.application.event.SagaEvent;
 import com._42195km.msa.competitionservice.application.exception.CompetitionServiceCode;
+import com._42195km.msa.competitionservice.application.service.CompetitionService;
+import com._42195km.msa.competitionservice.application.service.ParticipantService;
 import com._42195km.msa.competitionservice.domain.model.SagaState;
 import com._42195km.msa.competitionservice.domain.model.SagaStep;
-import com._42195km.msa.competitionservice.infrastructure.persistence.CompetitionParticipantMappingRepositoryImpl;
-import com._42195km.msa.competitionservice.infrastructure.persistence.CompetitionRepositoryImpl;
 import com._42195km.msa.competitionservice.infrastructure.persistence.SagaStateRepository;
 import com._42195km.msa.competitionservice.presentation.dto.request.CancelParticipantRequestDto;
 
@@ -33,8 +33,6 @@ public class CompetitionSagaOrchestrator {
 	private final SagaStateRepository sagaStateRepository;
 	private final CompetitionService competitionService;
 	private final ParticipantService participantService;
-	private final CompetitionRepositoryImpl competitionRepository;
-	private final CompetitionParticipantMappingRepositoryImpl mappingRepository;
 
 	public String startApplicationSaga(UUID competitionId, UUID participantId) {
 		SagaState sagaState = new SagaState("APPLICATION", competitionId, participantId);
@@ -255,7 +253,7 @@ public class CompetitionSagaOrchestrator {
 		if (completedSteps.contains(SagaStep.PAYMENT_PROCESSED)) {
 			// 결제 완료 보상: 환불 처리
 			try {
-				// TODO: 실제 환불 처리 로직 구현
+				// 현재는 로그만 남김. 환불 처리 미구현
 				log.info("Compensated payment for saga: {}", sagaState.getSagaId());
 			} catch (Exception e) {
 				log.error("Failed to compensate payment: {}", e.getMessage());

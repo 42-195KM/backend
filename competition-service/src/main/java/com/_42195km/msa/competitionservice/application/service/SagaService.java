@@ -9,6 +9,7 @@ import com._42195km.msa.competitionservice.application.exception.CompetitionServ
 import com._42195km.msa.competitionservice.domain.model.SagaState;
 import com._42195km.msa.competitionservice.domain.model.SagaStatus;
 import com._42195km.msa.competitionservice.domain.model.SagaStep;
+import com._42195km.msa.competitionservice.infrastructure.messaging.CompetitionSagaOrchestrator;
 import com._42195km.msa.competitionservice.infrastructure.persistence.SagaStateRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -36,7 +37,7 @@ public class SagaService {
 		return sagaId;
 	}
 
-	// 전체 프로세스 자동 실행 메서드
+	// 전체 프로세스 메서드
 	public String processCompleteApplication(UUID competitionId, UUID participantId,
 		Boolean termsAgreed, String souvenirSelection, String shippingAddress, String paymentMethod,
 		String paymentStatus, String transactionId) {

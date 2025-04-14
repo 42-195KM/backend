@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import com._42195km.msa.common.BaseEntity;
-
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -55,6 +53,7 @@ public class SagaState implements Serializable {
 		this.createdAt = LocalDateTime.now();
 		this.updatedAt = LocalDateTime.now();
 	}
+
 	private void updateModifiedTime() {
 		this.updatedAt = LocalDateTime.now();
 	}

@@ -20,10 +20,9 @@ import com._42195km.msa.competitionservice.application.dto.CompleteAppDto;
 import com._42195km.msa.competitionservice.application.dto.response.CompetitionAppResponseDto;
 import com._42195km.msa.competitionservice.application.exception.CompetitionServiceCode;
 import com._42195km.msa.competitionservice.application.mapper.CompetitionMapper;
-import com._42195km.msa.competitionservice.application.service.CompetitionSagaOrchestrator;
 import com._42195km.msa.competitionservice.application.service.CompetitionService;
 import com._42195km.msa.competitionservice.application.service.SagaService;
-import com._42195km.msa.competitionservice.presentation.dto.request.CancelParticipantRequestDto;
+import com._42195km.msa.competitionservice.infrastructure.messaging.CompetitionSagaOrchestrator;
 import com._42195km.msa.competitionservice.presentation.dto.request.CreateCompetitionRequestDto;
 import com._42195km.msa.competitionservice.presentation.dto.request.GetRequestDto;
 import com._42195km.msa.competitionservice.presentation.dto.request.SearchRequestDto;
@@ -151,12 +150,12 @@ public class CompetitionController {
 			requestDto.getPaymentStatus(),
 			requestDto.getTransactionId());
 
-			return ResponseEntity.ok(new ApiResponse<>(
-				CompetitionServiceCode.COMPETITION_APPLY_SUCCESS.getCode(),
-				response,
-				CompetitionServiceCode.COMPETITION_APPLY_SUCCESS.getMessage(),
-				HttpStatus.OK.value()
-			));
+		return ResponseEntity.ok(new ApiResponse<>(
+			CompetitionServiceCode.COMPETITION_APPLY_SUCCESS.getCode(),
+			response,
+			CompetitionServiceCode.COMPETITION_APPLY_SUCCESS.getMessage(),
+			HttpStatus.OK.value()
+		));
 	}
 
 	@GetMapping("/{competitionId}/{participantId}/status")
@@ -172,6 +171,5 @@ public class CompetitionController {
 			HttpStatus.OK.value()
 		));
 	}
-
 
 }

@@ -20,6 +20,7 @@ import org.springframework.kafka.support.serializer.JsonSerializer;
 
 import com._42195km.msa.competitionservice.application.event.CompetitionApplicationEvent;
 import com._42195km.msa.competitionservice.application.event.SagaEvent;
+import com._42195km.msa.competitionservice.infrastructure.messaging.CompetitionApplyNotificationDto;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -87,5 +88,19 @@ public class KafkaConfig {
 		KafkaTemplate<String, CompetitionApplicationEvent> template = new KafkaTemplate<>(competitionApplicationProducerFactory());
 		log.info("Created KafkaTemplate for CompetitionApplicationEvent");
 		return template;
+	}
+
+	@Bean
+	public ProducerFactory<String, CompetitionApplyNotificationDto> notificationProducerFactory() {
+		Map<String, Object> configProps = new HashMap<>();
+		configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+		configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+		configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+		return new DefaultKafkaProducerFactory<>(configProps);
+	}
+
+	@Bean
+	public KafkaTemplate<String, CompetitionApplyNotificationDto> notificationKafkaTemplate() {
+		return new KafkaTemplate<>(notificationProducerFactory());
 	}
 }

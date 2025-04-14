@@ -11,7 +11,6 @@ import org.springframework.data.repository.query.Param;
 
 import com._42195km.msa.competitionservice.domain.model.Competition;
 import com._42195km.msa.competitionservice.domain.model.CompetitionParticipantMapping;
-import com._42195km.msa.competitionservice.domain.model.Participant;
 
 public interface CompetitionParticipantMappingJpaRepository extends JpaRepository<CompetitionParticipantMapping, UUID> {
 
@@ -31,7 +30,8 @@ public interface CompetitionParticipantMappingJpaRepository extends JpaRepositor
 	List<CompetitionParticipantMapping> findAllByCompetition(Competition competition);
 
 	@Query("SELECT p FROM CompetitionParticipantMapping p WHERE p.competition.id = :competitionId")
-	Page<CompetitionParticipantMapping> findParticipantsByCompetitionId(@Param("competitionId") UUID competitionId, Pageable pageable);
+	Page<CompetitionParticipantMapping> findParticipantsByCompetitionId(@Param("competitionId") UUID competitionId,
+		Pageable pageable);
 
 	@Query("SELECT c.id, c.title, c.type, c.receptionType, p.participantId, cpm.status FROM CompetitionParticipantMapping cpm JOIN cpm.competition c JOIN cpm.participant p WHERE LOWER(c.title) LIKE LOWER(CONCAT('%', :keyword, '%'))")
 	Page<Object> searchByTitle(@Param("keyword") String keyword, Pageable pageable);
@@ -60,5 +60,6 @@ public interface CompetitionParticipantMappingJpaRepository extends JpaRepositor
 	Page<Object> getByUuid(@Param("uuid") UUID uuid, Pageable pageable);
 
 	@Query("SELECT cpm FROM CompetitionParticipantMapping cpm WHERE cpm.competition.id = :competitionId AND cpm.participant.participantId = :participantId")
-	CompetitionParticipantMapping findByCompetitionIdAndParticipantId(@Param("competitionId")UUID competitionId,@Param("participantId") UUID participantId);
+	CompetitionParticipantMapping findByCompetitionIdAndParticipantId(@Param("competitionId") UUID competitionId,
+		@Param("participantId") UUID participantId);
 }

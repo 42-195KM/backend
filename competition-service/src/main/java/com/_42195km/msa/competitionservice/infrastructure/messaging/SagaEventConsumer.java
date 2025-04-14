@@ -5,6 +5,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com._42195km.msa.competitionservice.application.dto.response.CompetitionAppResponseDto;
 import com._42195km.msa.competitionservice.application.event.ApplicationSagaEvent;
 import com._42195km.msa.competitionservice.application.event.CancellationSagaEvent;
 import com._42195km.msa.competitionservice.application.event.PaymentSagaEvent;
@@ -13,7 +14,6 @@ import com._42195km.msa.competitionservice.application.service.CompetitionServic
 import com._42195km.msa.competitionservice.domain.model.ParticipantDetail;
 import com._42195km.msa.competitionservice.domain.model.SagaState;
 import com._42195km.msa.competitionservice.domain.model.SagaStep;
-import com._42195km.msa.competitionservice.domain.repository.ParticipantDetailRepository;
 import com._42195km.msa.competitionservice.infrastructure.persistence.ParticipantDetailRepositoryImpl;
 import com._42195km.msa.competitionservice.infrastructure.persistence.SagaStateRepository;
 
@@ -29,6 +29,7 @@ public class SagaEventConsumer {
 	private final CompetitionService competitionService;
 	private final ParticipantDetailRepositoryImpl participantDetailRepository;
 	private final KafkaTemplate<String, SagaEvent> kafkaTemplate;
+	private final NotificationEventProducer notificationEventProducer;
 
 	@KafkaListener(
 		topics = "competition_saga",
@@ -208,12 +209,22 @@ public class SagaEventConsumer {
 	 */
 	private void sendNotification(SagaState sagaState) {
 		try {
-			// TODO : 알림 발송 로직 구현
-			log.info("Sending notification for saga: {}", sagaState.getSagaId());
+			CompetitionAppResponseDto competitionDto = competitionService.getCompetition(sagaState.getCompetitionId());
+
+			CompetitionApplyNotificationDto notificationEvent = CompetitionApplyNotificationDto.builder()
+				.userId(sagaState.getParticipantId())
+				/* TODO : mediaId 불러오는 기능 구현*/
+				.mediaId("U087R317SMN")
+				.title(competitionDto.getTitle())
+				.build();
+
+			// 알림 이벤트 발행
+			notificationEventProducer.sendNotification(notificationEvent);
 
 			// 알림 발송 완료 상태 업데이트
 			sagaState.markStepAsCompleted(SagaStep.NOTIFICATION_SENT);
 			sagaStateRepository.saveSagaState(sagaState);
+			log.info("Notification sent for saga: {}", sagaState.getSagaId());
 		} catch (Exception e) {
 			log.warn("Failed to send notification, but continuing: {}", e.getMessage());
 		}
@@ -339,11 +350,11 @@ public class SagaEventConsumer {
 
 			detail.update(state);
 
-
 			participantDetailRepository.save(detail);
 			log.info("ParticipantDetail saved for saga: {}", state.getSagaId());
 		} catch (Exception e) {
 			log.error("Failed to persist ParticipantDetail for saga {}: {}", state.getSagaId(), e.getMessage(), e);
 		}
 	}
+
 }

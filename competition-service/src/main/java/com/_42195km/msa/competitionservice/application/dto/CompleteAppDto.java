@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Data
 public class CompleteAppDto {
-	@Schema(example = "9191cce5-4e4a-49ed-bf6e-56616e2c8be4")
+	@Schema(example = "872dd912-8616-4595-aa94-5737bf633012")
 	private UUID competitionId;
 
 	@Schema(example = "1845b196-7132-47c8-a233-193a6ebf5278")
