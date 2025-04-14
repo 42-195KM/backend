@@ -100,6 +100,24 @@ public class UserServiceImpl implements UserService {
 		return UpdateUserResponseDto.fromUser(targetUser);
 	}
 
+	@Transactional
+	@Override
+	public void deleteUser(UUID userId) {
+
+		User targetUser = findUserById(userId);
+
+		targetUser.setDeleted();
+	}
+
+	@Transactional
+	@Override
+	public void banUser(UUID userId) {
+
+		User targetUser = findUserById(userId);
+
+		targetUser.setDeleted();
+	}
+
 	private User findUserById(UUID userId) {
 
 		User targetUser = userRepositoryImpl.findByIdAndIsDeletedIsFalse(userId)
