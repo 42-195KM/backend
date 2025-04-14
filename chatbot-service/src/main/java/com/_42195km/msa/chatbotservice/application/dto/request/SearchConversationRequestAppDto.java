@@ -8,7 +8,7 @@ import java.util.UUID;
 
 @Builder
 @Getter
-public class SearchConversationAppDto {
+public class SearchConversationRequestAppDto {
 
     private UUID userId;
     private LocalDateTime createdAt;
