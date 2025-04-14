@@ -17,8 +17,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class AchieveEventDto {
 	private UUID userId;
-	// TODO: user의 mediaId 추가 필요
-
+	private String userMediaId;
 	private UUID achievementId;
 	private String achievementTitle;
 	private String achievementDescription;
