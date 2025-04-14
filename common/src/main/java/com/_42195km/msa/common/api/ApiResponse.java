@@ -5,11 +5,13 @@ import java.util.List;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import com._42195km.msa.common.code.CommonServiceCode;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.Builder;
 
 public record ApiResponse<T>(
 	String code,
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	T data,
 	String message,
 	int status
@@ -34,4 +36,21 @@ public record ApiResponse<T>(
 			.status(CommonServiceCode.METHOD_ARGUMENT_NOT_VALID.getStatus())
 			.build();
 	}
+
+	public static <T> ApiResponse<T> success(T data){
+		return ApiResponse.<T>builder()
+				.code(CommonServiceCode.SUCCESS.getCode())
+				.message(CommonServiceCode.SUCCESS.getMessage())
+				.data(data)
+				.build();
+	}
+
+	public static <T> ApiResponse<T> success(T data, String message){
+		return ApiResponse.<T>builder()
+				.code(CommonServiceCode.SUCCESS.getCode())
+				.data(data)
+				.message(message)
+				.build();
+	}
+
 }

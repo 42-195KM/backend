@@ -26,7 +26,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import com._42195km.msa.common.exception.CustomBusinessException;
-import com._42195km.msa.common.exception.code.CommonErrorCode;
+import com._42195km.msa.crew.application.exception.BoardServiceCode;
 import com._42195km.msa.crew.application.dto.request.CreateCommentCommandDto;
 import com._42195km.msa.crew.application.dto.request.CreatePostCommandDto;
 import com._42195km.msa.crew.application.dto.request.UpdateCommentCommandDto;
@@ -133,7 +133,7 @@ class BoardServiceTest {
 			// When & Then
 			CustomBusinessException exception = assertThrows(CustomBusinessException.class,
 				() -> boardService.createPost(createPostCommandDto));
-			assertEquals(CommonErrorCode.CREW_BOARD_CREATE_POST_FAILED, exception.getCode());
+			assertEquals(BoardServiceCode.CREW_BOARD_CREATE_POST_FAILED, exception.getCode());
 		}
 	}
 
@@ -160,7 +160,7 @@ class BoardServiceTest {
 		// When & Then
 		CustomBusinessException exception = assertThrows(CustomBusinessException.class,
 			() -> boardService.updatePost(userId, updatePostCommandDto));
-		assertEquals(CommonErrorCode.CREW_BOARD_GET_POST_FAILED, exception.getCode());
+		assertEquals(BoardServiceCode.CREW_BOARD_GET_POST_FAILED, exception.getCode());
 	}
 
 	@Test
@@ -173,7 +173,7 @@ class BoardServiceTest {
 		// When & Then
 		CustomBusinessException exception = assertThrows(CustomBusinessException.class,
 			() -> boardService.updatePost(userId, updatePostCommandDto));
-		assertEquals(CommonErrorCode.CREW_BOARD_UPDATE_POST_FAILED, exception.getCode());
+		assertEquals(BoardServiceCode.CREW_BOARD_UPDATE_POST_FAILED, exception.getCode());
 	}
 
 	@Test
@@ -207,7 +207,7 @@ class BoardServiceTest {
 		// When & Then
 		CustomBusinessException exception = assertThrows(CustomBusinessException.class,
 			() -> boardService.getPosts(pageable));
-		assertEquals(CommonErrorCode.CREW_BOARD_GET_POST_FAILED, exception.getCode());
+		assertEquals(BoardServiceCode.CREW_BOARD_GET_POST_FAILED, exception.getCode());
 	}
 
 	@Test
@@ -243,7 +243,7 @@ class BoardServiceTest {
 		// When & Then
 		CustomBusinessException exception = assertThrows(CustomBusinessException.class,
 			() -> boardService.searchBoard(keyword, pageable));
-		assertEquals(CommonErrorCode.CREW_BOARD_SEARCH_POST_FAILED, exception.getCode());
+		assertEquals(BoardServiceCode.CREW_BOARD_SEARCH_POST_FAILED, exception.getCode());
 	}
 
 	@Test
@@ -282,7 +282,7 @@ class BoardServiceTest {
 		// When & Then
 		CustomBusinessException exception = assertThrows(CustomBusinessException.class,
 			() -> boardService.getPost(postId));
-		assertEquals(CommonErrorCode.CREW_BOARD_GET_POST_FAILED, exception.getCode());
+		assertEquals(BoardServiceCode.CREW_BOARD_GET_POST_FAILED, exception.getCode());
 	}
 
 	@Test
@@ -308,7 +308,7 @@ class BoardServiceTest {
 		// When & Then
 		CustomBusinessException exception = assertThrows(CustomBusinessException.class,
 			() -> boardService.deletePost(postId));
-		assertEquals(CommonErrorCode.CREW_BOARD_GET_POST_FAILED, exception.getCode());
+		assertEquals(BoardServiceCode.CREW_BOARD_GET_POST_FAILED, exception.getCode());
 	}
 
 	@Test
@@ -340,7 +340,7 @@ class BoardServiceTest {
 		// When & Then
 		CustomBusinessException exception = assertThrows(CustomBusinessException.class,
 			() -> boardService.createComment(postId, createCommentCommandDto));
-		assertEquals(CommonErrorCode.CREW_BOARD_GET_POST_FAILED, exception.getCode());
+		assertEquals(BoardServiceCode.CREW_BOARD_GET_POST_FAILED, exception.getCode());
 	}
 
 	@Test
@@ -385,7 +385,7 @@ class BoardServiceTest {
 		// When & Then
 		CustomBusinessException exception = assertThrows(CustomBusinessException.class,
 			() -> boardService.updateComment(commentId, updateCommentCommandDto));
-		assertEquals(CommonErrorCode.CREW_BOARD_GET_COMMENT_FAILED, exception.getCode());
+		assertEquals(BoardServiceCode.CREW_BOARD_GET_COMMENT_FAILED, exception.getCode());
 	}
 
 	@Test
@@ -398,7 +398,7 @@ class BoardServiceTest {
 		// When & Then
 		CustomBusinessException exception = assertThrows(CustomBusinessException.class,
 			() -> boardService.updateComment(commentId, updateCommentCommandDto));
-		assertEquals(CommonErrorCode.CREW_BOARD_UPDATE_COMMENT_FAILED, exception.getCode());
+		assertEquals(BoardServiceCode.CREW_BOARD_UPDATE_COMMENT_FAILED, exception.getCode());
 	}
 
 	@Test
@@ -424,6 +424,6 @@ class BoardServiceTest {
 		// When & Then
 		CustomBusinessException exception = assertThrows(CustomBusinessException.class,
 			() -> boardService.deleteComment(commentId));
-		assertEquals(CommonErrorCode.CREW_BOARD_GET_COMMENT_FAILED, exception.getCode());
+		assertEquals(BoardServiceCode.CREW_BOARD_GET_COMMENT_FAILED, exception.getCode());
 	}
 }
