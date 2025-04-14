@@ -9,5 +9,7 @@ import com._42195km.msa.auth.domain.model.Auth;
 
 public interface AuthJpaRepository extends JpaRepository<Auth, UUID> {
 
-	Optional<Auth> findByUsername(String username);
+	Optional<Auth> findByUsernameAndIsDeletedIsFalse(String username);
+
+	Optional<Auth> findByUserUuidAndIsDeletedIsFalse(UUID userUuId);
 }

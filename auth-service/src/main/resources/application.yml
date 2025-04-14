@@ -6,6 +6,7 @@ spring:
       - file:.env[.properties]
       - classpath:./properties/datasource.yml
       - classpath:./properties/jpa.yml
+      - classpath:./properties/redis.yml
   profiles:
     group:
       local: local, key

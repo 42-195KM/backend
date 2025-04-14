@@ -1,6 +1,7 @@
 package com._42195km.msa.auth.infrastructure.persistence;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.stereotype.Repository;
 
@@ -17,6 +18,11 @@ public class AuthRepositoryImpl implements AuthRepository {
 
 	@Override
 	public Optional<Auth> findByUserName(String username) {
-		return authJpaRepository.findByUsername(username);
+		return authJpaRepository.findByUsernameAndIsDeletedIsFalse(username);
+	}
+
+	@Override
+	public Optional<Auth> findByUserUuid(UUID userUuId) {
+		return authJpaRepository.findByUserUuidAndIsDeletedIsFalse(userUuId);
 	}
 }

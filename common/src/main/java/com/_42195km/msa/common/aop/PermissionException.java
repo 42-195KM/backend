@@ -1,4 +1,4 @@
-package com._42195km.msa.auth.infrastructure.filter.success;
+package com._42195km.msa.common.aop;
 
 import org.springframework.http.HttpStatus;
 
@@ -9,9 +9,10 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum FilterSuccess implements ServiceCode {
+public enum PermissionException implements ServiceCode {
 
-	LOGIN_SUCCESS(HttpStatus.OK, "로그인 성공", "S_LOGIN_SUCCESS"),
+	ACCESS_DENIED(HttpStatus.UNAUTHORIZED, "접근이 거부되었습니다.", "E_ACCESS_DENIED"),
+	DIFFERNT_PERMISSION(HttpStatus.FORBIDDEN, "요구된 권한과 일치하지 않습니다.", "E_DIFFERNT_PERMISSION"),
 	;
 
 	private final HttpStatus httpStatus;
@@ -33,3 +34,4 @@ public enum FilterSuccess implements ServiceCode {
 		return this.httpStatus.value();
 	}
 }
+
