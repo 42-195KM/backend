@@ -10,6 +10,12 @@ spring:
     group:
       local: local, key
     active: ${ACTIVE_VAL}
+  kafka:
+    url: localhost:9092
+    bootstrap-servers: localhost:9092
+    consumer:
+      auto-offset-reset: earliest
+      group-id: user-group
 eureka:
   client:
     service-url:
