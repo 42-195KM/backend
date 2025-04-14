@@ -23,7 +23,9 @@ public class AchieveEventProducer {
 	public void sendAchievementEvent(AchievementUser achievementUser) {
 		logger.info("AchievementUser: {}", achievementUser);
 
+		// TODO: producer에서 user 정보 API를 feignClient로 요청해서 mediaId를 받아오기
 		AchieveEventDto achieveEventDto = AchieveEventDto.from(achievementUser);
+
 		logger.info("AchieveEventDto: {}", achieveEventDto);
 
 		kafkaTemplate.send("achieve-achievement", achieveEventDto);

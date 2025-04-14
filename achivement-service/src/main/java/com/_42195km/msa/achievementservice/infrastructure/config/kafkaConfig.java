@@ -23,6 +23,8 @@ import org.springframework.kafka.listener.DefaultErrorHandler;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.springframework.util.backoff.FixedBackOff;
+
+import com._42195km.msa.common.config.CustomDeserializer;
 // import com.fasterxml.jackson.databind.JsonDeserializer;
 
 @Configuration

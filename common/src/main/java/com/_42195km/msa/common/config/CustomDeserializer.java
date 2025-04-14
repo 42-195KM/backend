@@ -1,4 +1,4 @@
-package com._42195km.msa.achievementservice.infrastructure.config;
+package com._42195km.msa.common.config;
 
 import org.apache.kafka.common.errors.SerializationException;
 import org.apache.kafka.common.serialization.Deserializer;
