@@ -29,7 +29,7 @@ public class Conversation extends BaseEntity {
     private UUID userId;
     @Column(name="question",nullable = false)
     private String question;
-    @Column(name="answer",nullable = false)
+    @Column(name="answer",nullable = false, columnDefinition = "TEXT")
     private String answer;
 
 

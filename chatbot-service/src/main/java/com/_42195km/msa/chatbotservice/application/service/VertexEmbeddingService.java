@@ -3,7 +3,6 @@ package com._42195km.msa.chatbotservice.application.service;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.ai.document.Document;
-import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.stereotype.Service;
