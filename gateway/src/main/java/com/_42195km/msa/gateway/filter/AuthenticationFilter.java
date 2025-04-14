@@ -71,6 +71,8 @@ public class AuthenticationFilter implements GlobalFilter {
 						.build())
 					.build();
 
+				log.info("Mutated Exchange Headers: {}", mutatedExchange.getRequest().getHeaders());
+
 				return chain.filter(mutatedExchange);
 			})
 			.onErrorResume(e -> {
