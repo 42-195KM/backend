@@ -21,17 +21,17 @@ public class QBaseEntity extends EntityPathBase<BaseEntity> {
 
     public final DateTimePath<java.time.LocalDateTime> createdAt = createDateTime("createdAt", java.time.LocalDateTime.class);
 
-    public final NumberPath<Long> createdBy = createNumber("createdBy", Long.class);
+    public final ComparablePath<java.util.UUID> createdBy = createComparable("createdBy", java.util.UUID.class);
 
     public final DateTimePath<java.time.LocalDateTime> deletedAt = createDateTime("deletedAt", java.time.LocalDateTime.class);
 
-    public final NumberPath<Long> deletedBy = createNumber("deletedBy", Long.class);
+    public final ComparablePath<java.util.UUID> deletedBy = createComparable("deletedBy", java.util.UUID.class);
 
     public final BooleanPath isDeleted = createBoolean("isDeleted");
 
     public final DateTimePath<java.time.LocalDateTime> updatedAt = createDateTime("updatedAt", java.time.LocalDateTime.class);
 
-    public final NumberPath<Long> updatedBy = createNumber("updatedBy", Long.class);
+    public final ComparablePath<java.util.UUID> updatedBy = createComparable("updatedBy", java.util.UUID.class);
 
     public QBaseEntity(String variable) {
         super(BaseEntity.class, forVariable(variable));
