@@ -16,7 +16,8 @@ public enum CrewServiceCode implements ServiceCode {
 	CREW_MEMBER_ALREADY_JOINED("CREW_006", "이미 이 크루에 가입된 사용자입니다.", HttpStatus.BAD_REQUEST),
 	CREW_SEARCH_GET_SUCCESS("CREW_007", "크루 검색 성공", HttpStatus.OK),
 	CREW_SPECIFIC_GET_SUCCESS("CREW_008", "크루 상세 조회 성공", HttpStatus.OK),
-	CREW_UPDATE_PATCH_SUCCESS("CREW_009", "크루 정보 수정 성공", HttpStatus.OK);
+	CREW_UPDATE_PATCH_SUCCESS("CREW_009", "크루 정보 수정 성공", HttpStatus.OK),
+	CREW_DELETE_DELETE_SUCCESS("CREW_010","크루 정보 삭제 성공" , HttpStatus.NO_CONTENT);
 
 	private final String code;
 	private final String message;

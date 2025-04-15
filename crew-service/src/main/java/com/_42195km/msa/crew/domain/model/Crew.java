@@ -80,4 +80,24 @@ public class Crew extends BaseEntity {
 		}
 
 	}
+
+	public void setDeletedCrewMeetings() {
+		if (!crewMeetings.isEmpty()) {
+			crewMeetings.forEach(CrewMeeting::setDeleted);
+		}
+	}
+
+	public void setDeletedCrewMember() {
+		List<CrewMember> members = crewMemberMappings.stream()
+			.map(CrewMemberMapping::getCrewMember)
+			.toList();
+
+		if (!members.isEmpty()) {
+			members.forEach(CrewMember::setDeleted);
+		}
+
+		if (!crewMemberMappings.isEmpty()) {
+			crewMemberMappings.forEach(CrewMemberMapping::setDeleted);
+		}
+	}
 }

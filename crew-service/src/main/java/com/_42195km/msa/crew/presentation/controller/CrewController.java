@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -99,5 +100,17 @@ public class CrewController {
 		);
 	}
 
+	@DeleteMapping("/{crewId}")
+	public ResponseEntity<ApiResponse<?>> deleteCrew(@PathVariable(name = "crewId") UUID crewId) {
+		crewService.deleteCrew(crewId);
+		return ResponseEntity.ok(
+			new ApiResponse<>(
+				CrewServiceCode.CREW_DELETE_DELETE_SUCCESS.getCode(),
+				null,
+				CrewServiceCode.CREW_DELETE_DELETE_SUCCESS.getMessage(),
+				CrewServiceCode.CREW_DELETE_DELETE_SUCCESS.getStatus()
+			)
+		);
+	}
 
 }

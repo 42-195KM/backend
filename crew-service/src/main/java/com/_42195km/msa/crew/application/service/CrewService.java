@@ -110,7 +110,7 @@ public class CrewService {
 		Crew crew = crewRepository.findById(crewId)
 			.orElseThrow(() -> CrewBusinessException.from(CrewServiceCode.CREW_NOT_FOUND));
 
-		crew.update(dto.description(), dto.capacity(), dto.isAutoAgree();
+		crew.update(dto.description(), dto.capacity(), dto.isAutoAgree());
 
 		return new UpdateCrewAppResponseDto(
 			crew.getId(),
@@ -122,4 +122,12 @@ public class CrewService {
 		);
 	}
 
+	public void deleteCrew(UUID crewId) {
+		Crew crew = crewRepository.findById(crewId)
+			.orElseThrow(() -> CrewBusinessException.from(CrewServiceCode.CREW_NOT_FOUND));
+
+		crew.setDeletedCrewMeetings();
+		crew.setDeletedCrewMember();
+		crew.setDeleted();
+	}
 }
