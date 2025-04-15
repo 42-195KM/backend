@@ -1,5 +1,6 @@
 package com._42195km.msa.crew.domain.model;
 
+import java.util.Objects;
 import java.util.UUID;
 
 import org.hibernate.annotations.UuidGenerator;
@@ -47,5 +48,19 @@ public class CrewMemberMapping extends BaseEntity {
 
 	public enum CrewMemberStatus {
 		PENDING, APPROVED, REJECTED, BLACKLIST
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (!(o instanceof CrewMemberMapping that))
+			return false;
+		return Objects.equals(id, that.id);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hashCode(id);
 	}
 }

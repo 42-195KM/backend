@@ -2,6 +2,7 @@ package com._42195km.msa.crew.domain.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 import org.hibernate.annotations.UuidGenerator;
@@ -37,4 +38,17 @@ public class CrewMember extends BaseEntity {
 	@OneToMany(mappedBy = "crewMember", orphanRemoval = true, cascade = CascadeType.ALL)
 	private List<CrewMemberMapping> crewMemberMappings = new ArrayList<>();
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (!(o instanceof CrewMember that))
+			return false;
+		return Objects.equals(id, that.id);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hashCode(id);
+	}
 }

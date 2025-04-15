@@ -1,5 +1,6 @@
 package com._42195km.msa.crew.domain.model;
 
+import java.util.Objects;
 import java.util.UUID;
 
 import org.hibernate.annotations.UuidGenerator;
@@ -29,5 +30,17 @@ public class CrewMeetingMember extends BaseEntity {
 	@Column(name = "user_id", nullable = false)
 	private UUID userId;
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (!(o instanceof CrewMeetingMember that))
+			return false;
+		return Objects.equals(id, that.id);
+	}
 
+	@Override
+	public int hashCode() {
+		return Objects.hashCode(id);
+	}
 }

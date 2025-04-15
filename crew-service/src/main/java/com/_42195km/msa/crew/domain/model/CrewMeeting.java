@@ -3,6 +3,7 @@ package com._42195km.msa.crew.domain.model;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 import org.hibernate.annotations.UuidGenerator;
@@ -71,4 +72,17 @@ public class CrewMeeting extends BaseEntity {
 		crewMeetingMemberMapping.setMeeting(this);
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (!(o instanceof CrewMeeting that))
+			return false;
+		return Objects.equals(id, that.id);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hashCode(id);
+	}
 }

@@ -2,6 +2,7 @@ package com._42195km.msa.crew.domain.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 import org.hibernate.annotations.UuidGenerator;
@@ -99,5 +100,27 @@ public class Crew extends BaseEntity {
 		if (!crewMemberMappings.isEmpty()) {
 			crewMemberMappings.forEach(CrewMemberMapping::setDeleted);
 		}
+	}
+
+	public boolean isNotCaptain(UUID userId) {
+		return !isCaptain(userId);
+	}
+
+	public boolean isCaptain(UUID userId) {
+		return captainId.equals(userId);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (!(o instanceof Crew crew))
+			return false;
+		return Objects.equals(id, crew.id);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hashCode(id);
 	}
 }
