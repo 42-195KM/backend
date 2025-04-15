@@ -1,0 +1,62 @@
+spring:
+  application:
+    name: achivement-service
+
+  config:
+    import: optional:file:.env[.properties]
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    defer-datasource-initialization: true
+
+  datasource:
+    url: ${DB_ACHIEVEMENT_URL}
+    username: ${DB_ACHIEVEMENT_USERNAME}
+    password: ${DB_ACHIEVEMENT_PASSWORD}
+    hikari:
+      maximum-pool-size: 3
+      minimum-idle: 1
+      connection-timeout: 20000
+      auto-commit: false
+  sql:
+    init:
+      mode: always
+
+
+  kafka:
+    url: localhost:9092
+    bootstrap-servers: localhost:9092
+    consumer:
+      auto-offset-reset: earliest
+      group-id: achievement-group
+
+server:
+  port: ${ACHIEVEMENT_SERVER}
+
+logging:
+  level:
+    root: info
+    com_42195km:
+      msa: debug
+    org:
+      hibernate:
+        SQL: debug
+        type:
+          descriptor:
+            sql:
+              BasicBinder: debug
+      springframework:
+        transaction: debug
+        orm:
+          jpa: debug
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_SERVER}

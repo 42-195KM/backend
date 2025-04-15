@@ -9,6 +9,8 @@ import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import com._42195km.msa.common.config.AuditorAwareImpl;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
@@ -33,28 +35,24 @@ public abstract class BaseEntity {
 
 	@CreatedBy
 	@Column(updatable = false)
-	private Long createdBy;
+	private UUID createdBy;
 
 	@LastModifiedBy
-	private Long updatedBy;
+	private UUID updatedBy;
 
-	private Long deletedBy;
+	private UUID deletedBy;
 
-	// @PreUpdate
-	// public void setDeleted() {
-	// 	if (isDeleted) {
-	// 		deletedAt = LocalDateTime.now();
-	// 		deletedBy = getAuthenticatedUsername();
-	// 	}
-	// }
-	//
-	// private String getAuthenticatedUsername() {
-	// 	Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-	// 	if (authentication == null || !authentication.isAuthenticated()) {
-	// 		return "SYSTEM";
-	// 	}
-	// 	Object principal = authentication.getPrincipal();
-	// 	return (principal instanceof UserDetails) ? ((UserDetails) principal).getUsername() : "UNKNOWN";
-	// }
+	public void setDeleted() {
+		if (!isDeleted) {
+			this.isDeleted = true;
+			this.deletedAt = LocalDateTime.now();
+			System.out.println("Deleted by: " + getCurrentAuditor());
+			this.deletedBy = getCurrentAuditor();
+		}
+	}
+
+	private UUID getCurrentAuditor() {
+		return new AuditorAwareImpl().getCurrentAuditor().orElse(null);
+	}
 
 }
