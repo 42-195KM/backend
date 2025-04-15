@@ -23,7 +23,10 @@ public enum CrewServiceCode implements ServiceCode {
 	UNAUTHORIZED_CREW_ACCESS("CREW_013", "이 크루의 크루장이 아닙니다", HttpStatus.FORBIDDEN),
 	CREW_MEMBER_NOT_FOUND("CREW_014", "이 크루에 가입 신청이 되어있지 않은 사용자입니다", HttpStatus.NOT_FOUND),
 	CREW_MEMBER_SEARCH_GET_SUCCESS("CREW_015", "크루원 검색 성공", HttpStatus.OK),
-	CREW_MEMBER_SPECIFIC_GET_SUCCESS("CREW_016", "크루원 상세 조회 성공", HttpStatus.OK);
+	CREW_MEMBER_SPECIFIC_GET_SUCCESS("CREW_016", "크루원 상세 조회 성공", HttpStatus.OK),
+	CREW_MEMBER_IN_BLACK_LIST("CREW_017", "크루에서 추방되어 재가입 할 수 없습니다", HttpStatus.FORBIDDEN),
+	CREW_EXPEL_DELETE_SUCCESS("CREW_018", "크루원을 추방했습니다.", HttpStatus.OK),
+	CREW_LEAVE_DELETE_SUCCESS("CREW_019", "크루를 탈퇴했습니다", HttpStatus.NO_CONTENT);
 
 	private final String code;
 	private final String message;

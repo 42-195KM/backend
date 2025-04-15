@@ -9,10 +9,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com._42195km.msa.common.code.CommonServiceCode;
 import com._42195km.msa.crew.application.dto.request.CreateCrewAppRequestDto;
 import com._42195km.msa.crew.application.dto.request.HandleCrewJoinAppRequestDto;
 import com._42195km.msa.crew.application.dto.request.UpdateCrewAppRequestDto;
 import com._42195km.msa.crew.application.dto.response.CreateCrewAppResponseDto;
+import com._42195km.msa.crew.application.dto.response.ExpelCrewMemberAppResponseDto;
 import com._42195km.msa.crew.application.dto.response.GetSpecificCrewAppResponseDto;
 import com._42195km.msa.crew.application.dto.response.GetSpecificCrewMemberAppResponseDto;
 import com._42195km.msa.crew.application.dto.response.HandleCrewJoinAppResponseDto;
@@ -61,7 +63,7 @@ public class CrewService {
 	}
 
 	public JoinCrewAppResponseDto applyJoiningCrew(UUID crewId, UUID userId) {
-		Crew crew = crewRepository.findById(crewId)
+		Crew crew = crewRepository.findByIdAndDeletedAtIsNull(crewId)
 			.orElseThrow(() -> CrewBusinessException.from(CrewServiceCode.CREW_NOT_FOUND));
 
 		if (crew.isFull()) {
@@ -70,6 +72,10 @@ public class CrewService {
 
 		if (crew.isAlreadyJoined(userId)) {
 			throw CrewBusinessException.from(CrewServiceCode.CREW_MEMBER_ALREADY_JOINED);
+		}
+
+		if (crew.isInBlackList(userId)) {
+			throw CrewBusinessException.from(CrewServiceCode.CREW_MEMBER_IN_BLACK_LIST);
 		}
 
 		CrewMember crewMember = CrewMember.builder()
@@ -99,25 +105,25 @@ public class CrewService {
 
 	public SearchCrewAppPagingResponseDto searchCrew(String keyword, Pageable pageable) {
 		if (keyword == null) {
-			Page<Crew> crews = crewRepository.findAll(pageable);
+			Page<Crew> crews = crewRepository.findAllByDeletedAtIsNull(pageable);
 			return SearchCrewAppPagingResponseDto.from(crews);
 		}
 
-		Page<Crew> crews = crewRepository.findAllByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
+		Page<Crew> crews = crewRepository.findAllByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndDeletedAtIsNull(
 			keyword, keyword, pageable);
 
 		return SearchCrewAppPagingResponseDto.from(crews);
 	}
 
 	public GetSpecificCrewAppResponseDto getSpecificCrew(UUID crewId) {
-		Crew crew = crewRepository.findById(crewId)
+		Crew crew = crewRepository.findByIdAndDeletedAtIsNull(crewId)
 			.orElseThrow(() -> CrewBusinessException.from(CrewServiceCode.CREW_NOT_FOUND));
 
 		return GetSpecificCrewAppResponseDto.from(crew);
 	}
 
 	public UpdateCrewAppResponseDto updateCrew(UUID crewId, UUID userId, UpdateCrewAppRequestDto dto) {
-		Crew crew = crewRepository.findById(crewId)
+		Crew crew = crewRepository.findByIdAndDeletedAtIsNull(crewId)
 			.orElseThrow(() -> CrewBusinessException.from(CrewServiceCode.CREW_NOT_FOUND));
 
 		if (crew.isNotCaptain(userId)) {
@@ -137,7 +143,7 @@ public class CrewService {
 	}
 
 	public void deleteCrew(UUID crewId, UUID userId) {
-		Crew crew = crewRepository.findById(crewId)
+		Crew crew = crewRepository.findByIdAndDeletedAtIsNull(crewId)
 			.orElseThrow(() -> CrewBusinessException.from(CrewServiceCode.CREW_NOT_FOUND));
 
 		if (crew.isNotCaptain(userId)) {
@@ -150,7 +156,7 @@ public class CrewService {
 	}
 
 	public HandleCrewJoinAppResponseDto agreeJoiningCrew(HandleCrewJoinAppRequestDto dto, UUID crewId, UUID captainId) {
-		Crew crew = crewRepository.findById(crewId)
+		Crew crew = crewRepository.findByIdAndDeletedAtIsNull(crewId)
 			.orElseThrow(() -> CrewBusinessException.from(CrewServiceCode.CREW_NOT_FOUND));
 
 		if (crew.isNotCaptain(captainId)) {
@@ -164,7 +170,7 @@ public class CrewService {
 
 	public HandleCrewJoinAppResponseDto rejectJoiningCrew(HandleCrewJoinAppRequestDto dto, UUID crewId,
 		UUID captainId) {
-		Crew crew = crewRepository.findById(crewId)
+		Crew crew = crewRepository.findByIdAndDeletedAtIsNull(crewId)
 			.orElseThrow(() -> CrewBusinessException.from(CrewServiceCode.CREW_NOT_FOUND));
 
 		if (crew.isNotCaptain(captainId)) {
@@ -177,7 +183,7 @@ public class CrewService {
 	}
 
 	public GetSpecificCrewMemberAppResponseDto getSpecificCrewMember(UUID crewId, UUID memberId) {
-		Crew crew = crewRepository.findById(crewId)
+		Crew crew = crewRepository.findByIdAndDeletedAtIsNull(crewId)
 			.orElseThrow(() -> CrewBusinessException.from(CrewServiceCode.CREW_NOT_FOUND));
 
 		return GetSpecificCrewMemberAppResponseDto.from(
@@ -189,5 +195,30 @@ public class CrewService {
 		return SearchCrewMemberAppPagingResponseDto.from(
 			crewRepository.findAllCrewMemberMappingByCrewId(crewId, pageable)
 		);
+	}
+
+	public ExpelCrewMemberAppResponseDto expel(UUID crewId, UUID memberId, UUID captainId) {
+		// 크루장이 강퇴하는 지 검증
+		Crew crew = crewRepository.findByIdAndDeletedAtIsNull(crewId)
+			.orElseThrow(() -> CrewBusinessException.from(CrewServiceCode.CREW_NOT_FOUND));
+
+		if (crew.isNotCaptain(captainId)) {
+			throw CrewBusinessException.from(CrewServiceCode.UNAUTHORIZED_CREW_ACCESS);
+		}
+
+		return ExpelCrewMemberAppResponseDto.from(crew.expel(memberId));
+
+	}
+
+	public void leaveCrew(UUID crewId, UUID memberId, UUID userId) {
+		// 유저 본인 요청인지 검증
+		if (!memberId.equals(userId)) {
+			throw CrewBusinessException.from(CommonServiceCode.FORBIDDEN);
+		}
+
+		Crew crew = crewRepository.findByIdAndDeletedAtIsNull(crewId)
+			.orElseThrow(() -> CrewBusinessException.from(CrewServiceCode.CREW_NOT_FOUND));
+
+		crew.removeCrewMemberMapping(memberId);
 	}
 }

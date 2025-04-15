@@ -61,6 +61,22 @@ public class CrewMemberMapping extends BaseEntity {
 		throw new IllegalStateException("이미 거절된 크루입니다.");
 	}
 
+	public boolean isAlreadyJoined() {
+		return this.status == CrewMemberStatus.APPROVED;
+	}
+
+	public boolean isInBlackList() {
+		return this.status == CrewMemberStatus.BLACKLIST;
+	}
+
+	public void expel() {
+		if (this.status == CrewMemberStatus.APPROVED) {
+			this.status = CrewMemberStatus.BLACKLIST;
+		}
+
+		throw new IllegalStateException("크루원이 아닌 사용자에게 적용할 수 없습니다");
+	}
+
 	public enum CrewMemberStatus {
 		PENDING, APPROVED, REJECTED, BLACKLIST
 	}

@@ -30,20 +30,23 @@ public class CrewRepositoryImpl implements CrewRepository {
 	}
 
 	@Override
-	public Optional<Crew> findById(UUID crewId) {
-		return crewJpaRepository.findById(crewId);
+	public Optional<Crew> findByIdAndDeletedAtIsNull(UUID crewId) {
+		return crewJpaRepository.findByIdAndDeletedAtIsNull(crewId);
 	}
 
+
 	@Override
-	public Page<Crew> findAllByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(String nameKeyword,
+	public Page<Crew> findAllByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndDeletedAtIsNull(
+		String nameKeyword,
 		String descriptionKeyword, Pageable pageable) {
-		return crewJpaRepository.findAllByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(nameKeyword,
+		return crewJpaRepository.findAllByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndDeletedAtIsNull(
+			nameKeyword,
 			descriptionKeyword, pageable);
 	}
 
 	@Override
-	public Page<Crew> findAll(Pageable pageable) {
-		return crewJpaRepository.findAll(pageable);
+	public Page<Crew> findAllByDeletedAtIsNull(Pageable pageable) {
+		return crewJpaRepository.findAllByDeletedAtIsNull(pageable);
 	}
 
 	@Override

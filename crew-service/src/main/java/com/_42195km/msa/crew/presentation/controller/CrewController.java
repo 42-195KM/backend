@@ -25,6 +25,7 @@ import com._42195km.msa.crew.presentation.dto.request.CreateCrewRequestDto;
 import com._42195km.msa.crew.presentation.dto.request.HandleCrewJoinRequestDto;
 import com._42195km.msa.crew.presentation.dto.request.UpdateCrewRequestDto;
 import com._42195km.msa.crew.presentation.dto.response.CreateCrewResponseDto;
+import com._42195km.msa.crew.presentation.dto.response.ExpelCrewMemberResponseDto;
 import com._42195km.msa.crew.presentation.dto.response.GetSpecificCrewMemberResponseDto;
 import com._42195km.msa.crew.presentation.dto.response.GetSpecificCrewResponseDto;
 import com._42195km.msa.crew.presentation.dto.response.HandleCrewJoinResponseDto;
@@ -186,6 +187,35 @@ public class CrewController {
 				GetSpecificCrewMemberResponseDto.from(crewService.getSpecificCrewMember(crewId, memberId)),
 				CrewServiceCode.CREW_MEMBER_SPECIFIC_GET_SUCCESS.getMessage(),
 				CrewServiceCode.CREW_MEMBER_SPECIFIC_GET_SUCCESS.getStatus()
+			)
+		);
+	}
+
+	@DeleteMapping("/{crewId}/members/{memberId}")
+	public ResponseEntity<ApiResponse<?>> expelMember(@PathVariable(name = "crewId") UUID crewId,
+		@PathVariable(name = "memberId") UUID memberId,
+		@UserInfo UserInfoDto userInfoDto) {
+		return ResponseEntity.ok(
+			new ApiResponse<>(
+				CrewServiceCode.CREW_EXPEL_DELETE_SUCCESS.getCode(),
+				ExpelCrewMemberResponseDto.from(crewService.expel(crewId, memberId, userInfoDto.userId())),
+				CrewServiceCode.CREW_EXPEL_DELETE_SUCCESS.getMessage(),
+				CrewServiceCode.CREW_EXPEL_DELETE_SUCCESS.getStatus()
+			)
+		);
+	}
+
+	@DeleteMapping("/{crewId}/members/{memberId}/leave")
+	public ResponseEntity<ApiResponse<?>> leaveMember(@PathVariable(name = "crewId") UUID crewId,
+		@PathVariable(name = "memberId") UUID memberId,
+		@UserInfo UserInfoDto userInfoDto) {
+		crewService.leaveCrew(crewId, memberId, userInfoDto.userId());
+		return ResponseEntity.ok(
+			new ApiResponse<>(
+				CrewServiceCode.CREW_LEAVE_DELETE_SUCCESS.getCode(),
+				null,
+				CrewServiceCode.CREW_LEAVE_DELETE_SUCCESS.getMessage(),
+				CrewServiceCode.CREW_LEAVE_DELETE_SUCCESS.getStatus()
 			)
 		);
 	}

@@ -66,7 +66,14 @@ public class Crew extends BaseEntity {
 
 	public boolean isAlreadyJoined(UUID userId) {
 		return crewMemberMappings.stream()
-			.anyMatch(crewMemberMapping -> crewMemberMapping.getCrewMember().getUserId().equals(userId));
+			.anyMatch(crewMemberMapping -> crewMemberMapping.getCrewMember().getUserId().equals(userId)
+			&& crewMemberMapping.isAlreadyJoined() );
+	}
+
+	public boolean isInBlackList(UUID userId) {
+		return crewMemberMappings.stream()
+			.anyMatch(crewMemberMapping -> crewMemberMapping.getCrewMember().getUserId().equals(userId)
+			&& crewMemberMapping.isInBlackList() );
 	}
 
 	public void update(String description, Integer capacity, Boolean isAutoAgree) {
@@ -118,12 +125,24 @@ public class Crew extends BaseEntity {
 
 	public CrewMemberMapping reject(UUID userId) {
 		CrewMemberMapping memberMapping = findCrewMemberMappingByUserId(userId);
-
 		memberMapping.reject();
 
 		return memberMapping;
 	}
 
+
+	public CrewMemberMapping expel(UUID memberId) {
+		CrewMemberMapping memberMapping = findCrewMemberMappingByUserId(memberId);
+		memberMapping.expel();
+
+		return memberMapping;
+	}
+
+	public void removeCrewMemberMapping(UUID memberId) {
+		CrewMemberMapping crewMemberMapping = findCrewMemberMappingByUserId(memberId);
+		crewMemberMappings.remove(crewMemberMapping);
+		crewMemberMapping.setCrew(null);
+	}
 
 	public CrewMemberMapping findCrewMemberMappingByUserId(UUID userId) {
 		return this.crewMemberMappings.stream()

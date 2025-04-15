@@ -15,12 +15,12 @@ public interface CrewRepository {
 
 	boolean existsByName(String name);
 
-	Optional<Crew> findById(UUID crewId);
+	Optional<Crew> findByIdAndDeletedAtIsNull(UUID crewId);
 
-	Page<Crew> findAllByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(String nameKeyword,
+	Page<Crew> findAllByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndDeletedAtIsNull(String nameKeyword,
 		String descriptionKeyword, Pageable pageable);
 
-	Page<Crew> findAll(Pageable pageable);
+	Page<Crew> findAllByDeletedAtIsNull(Pageable pageable);
 
 	Page<CrewMemberMapping> findAllCrewMemberMappingByCrewId(@Param(value = "crewId") UUID crewId, Pageable pageable);
 }
