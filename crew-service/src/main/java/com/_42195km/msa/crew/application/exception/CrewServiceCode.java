@@ -21,12 +21,16 @@ public enum CrewServiceCode implements ServiceCode {
 	CREW_AGREE_JOIN_PATCH_SUCCESS("CREW_011","크루장이 가입 신청을 승인하였습니다", HttpStatus.OK),
 	CREW_REJECT_JOIN_PATCH_SUCCESS("CREW_012","크루장이 가입 신청을 거절하였습니다", HttpStatus.OK),
 	UNAUTHORIZED_CREW_ACCESS("CREW_013", "이 크루의 크루장이 아닙니다", HttpStatus.FORBIDDEN),
-	CREW_MEMBER_NOT_FOUND("CREW_014", "이 크루에 가입 신청이 되어있지 않은 사용자입니다", HttpStatus.NOT_FOUND),
+	CREW_MEMBER_NOT_FOUND("CREW_014", "이 크루에서 사용자를 찾을 수 없습니다", HttpStatus.NOT_FOUND),
 	CREW_MEMBER_SEARCH_GET_SUCCESS("CREW_015", "크루원 검색 성공", HttpStatus.OK),
 	CREW_MEMBER_SPECIFIC_GET_SUCCESS("CREW_016", "크루원 상세 조회 성공", HttpStatus.OK),
 	CREW_MEMBER_IN_BLACK_LIST("CREW_017", "크루에서 추방되어 재가입 할 수 없습니다", HttpStatus.FORBIDDEN),
 	CREW_EXPEL_DELETE_SUCCESS("CREW_018", "크루원을 추방했습니다.", HttpStatus.OK),
-	CREW_LEAVE_DELETE_SUCCESS("CREW_019", "크루를 탈퇴했습니다", HttpStatus.NO_CONTENT);
+	CREW_LEAVE_DELETE_SUCCESS("CREW_019", "크루를 탈퇴했습니다", HttpStatus.NO_CONTENT),
+	CREW_CREATE_MEETING_POST_SUCCESS("CREW_060","모임 생성 성공" , HttpStatus.OK),
+	CREW_PARTICIPATE_MEETING_POST_SUCCESS("CREW_061", "크루 모임 신청 성공", HttpStatus.OK),
+	CREW_MEETING_ALREADY_PARTICIPATED("CREW_062", "이미 이 모임에 참여한 사용자입니다" , HttpStatus.BAD_REQUEST),
+	CREW_REGULAR_MEETING_IS_FULL("CREW_063", "정규 모임이 마감되었습니다" , HttpStatus.FORBIDDEN);
 
 	private final String code;
 	private final String message;

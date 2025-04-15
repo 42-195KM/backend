@@ -1,9 +1,7 @@
 package com._42195km.msa.crew.application.dto.response;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
-import com._42195km.msa.crew.domain.model.Crew;
 import com._42195km.msa.crew.domain.model.CrewMemberMapping;
 
 public record HandleCrewJoinAppResponseDto(
@@ -11,13 +9,6 @@ public record HandleCrewJoinAppResponseDto(
 	UUID crewId,
 	CrewMemberAppInfo crewMember
 ) {
-	public record CrewMemberAppInfo(
-		UUID id,
-		UUID userId,
-		String status
-	) {
-	}
-
 	public static HandleCrewJoinAppResponseDto from(CrewMemberMapping crewMemberMapping) {
 		return new HandleCrewJoinAppResponseDto(
 			crewMemberMapping.getId(),
@@ -28,5 +19,12 @@ public record HandleCrewJoinAppResponseDto(
 				crewMemberMapping.getStatus().name()
 			)
 		);
+	}
+
+	public record CrewMemberAppInfo(
+		UUID id,
+		UUID userId,
+		String status
+	) {
 	}
 }
