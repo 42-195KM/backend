@@ -36,11 +36,12 @@ public class SlackMessageService implements MessageService {
                     .channel(mediaId)
                     .text(message)
                     .build());
-
+            log.info("ChatPostMessageResponse: {}", response);
             if (response.isOk()) {
                 Message postedMessage = response.getMessage();
             } else {
                 String errorCode = response.getError(); // e.g., "invalid_auth", "channel_not_found"
+                throw CustomBusinessException.from(AlertCode.ALERT_ERROR);
             }
 
 
