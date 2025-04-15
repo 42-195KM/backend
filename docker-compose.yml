@@ -81,6 +81,14 @@ services:
     networks:
       - app_network
 
+  zipkin:
+    container_name: zipkin
+    image: openzipkin/zipkin
+    ports:
+      - "9411:9411"
+    networks:
+      - app_network
+
 networks:
   app_network:
     driver: bridge

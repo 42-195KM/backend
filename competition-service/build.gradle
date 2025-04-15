@@ -28,17 +28,30 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.kafka:spring-kafka'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'com.github.loki4j:loki-logback-appender:1.5.1'
+    implementation project(':common')
 
-    compileOnly 'org.projectlombok:lombok'
-    runtimeOnly 'org.postgresql:postgresql'
+    // swagger
+    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5"
+
+    // zipkin
+    implementation 'io.micrometer:micrometer-observation'
+    implementation 'io.micrometer:micrometer-tracing'
+    implementation 'io.micrometer:micrometer-tracing-bridge-brave'
+    implementation 'io.micrometer:micrometer-registry-prometheus'
+    implementation 'io.zipkin.reporter2:zipkin-sender-urlconnection'
+    implementation 'io.zipkin.reporter2:zipkin-reporter-brave'
+
     annotationProcessor 'org.projectlombok:lombok'
+    compileOnly 'org.projectlombok:lombok'
+
+    runtimeOnly 'org.postgresql:postgresql'
+    runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
+
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.kafka:spring-kafka-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-
-    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5"
-
-    implementation project(':common')
 }
 
 tasks.named('test') {
