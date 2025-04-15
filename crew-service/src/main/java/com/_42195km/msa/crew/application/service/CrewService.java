@@ -10,10 +10,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com._42195km.msa.crew.application.dto.request.CreateCrewAppRequestDto;
+import com._42195km.msa.crew.application.dto.request.UpdateCrewAppRequestDto;
 import com._42195km.msa.crew.application.dto.response.CreateCrewAppResponseDto;
 import com._42195km.msa.crew.application.dto.response.GetSpecificCrewAppResponseDto;
 import com._42195km.msa.crew.application.dto.response.JoinCrewAppResponseDto;
 import com._42195km.msa.crew.application.dto.response.SearchCrewAppPagingResponseDto;
+import com._42195km.msa.crew.application.dto.response.UpdateCrewAppResponseDto;
 import com._42195km.msa.crew.application.exception.CrewBusinessException;
 import com._42195km.msa.crew.application.exception.CrewServiceCode;
 import com._42195km.msa.crew.domain.model.Crew;
@@ -103,4 +105,21 @@ public class CrewService {
 
 		return GetSpecificCrewAppResponseDto.from(crew);
 	}
+
+	public UpdateCrewAppResponseDto updateCrew(UUID crewId, UpdateCrewAppRequestDto dto) {
+		Crew crew = crewRepository.findById(crewId)
+			.orElseThrow(() -> CrewBusinessException.from(CrewServiceCode.CREW_NOT_FOUND));
+
+		crew.update(dto.description(), dto.capacity(), dto.isAutoAgree();
+
+		return new UpdateCrewAppResponseDto(
+			crew.getId(),
+			crew.getName(),
+			crew.getDescription(),
+			crew.getCaptainId(),
+			crew.getCapacity(),
+			crew.getIsAutoAgree()
+		);
+	}
+
 }

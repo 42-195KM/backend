@@ -67,4 +67,17 @@ public class Crew extends BaseEntity {
 		return crewMemberMappings.stream()
 			.anyMatch(crewMemberMapping -> crewMemberMapping.getCrewMember().getUserId().equals(userId));
 	}
+
+	public void update(String description, Integer capacity, Boolean isAutoAgree) {
+		if (description != null) {
+			this.description = description;
+		}
+		if (capacity != null) {
+			this.capacity = capacity;
+		}
+		if (isAutoAgree != null) {
+			this.isAutoAgree = isAutoAgree;
+		}
+
+	}
 }

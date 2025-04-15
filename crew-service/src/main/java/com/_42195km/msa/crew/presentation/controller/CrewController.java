@@ -24,6 +24,7 @@ import com._42195km.msa.crew.presentation.dto.response.CreateCrewResponseDto;
 import com._42195km.msa.crew.presentation.dto.response.GetSpecificCrewResponseDto;
 import com._42195km.msa.crew.presentation.dto.response.JoinCrewResponseDto;
 import com._42195km.msa.crew.presentation.dto.response.SearchCrewPagingResponseDto;
+import com._42195km.msa.crew.presentation.dto.response.UpdateCrewResponseDto;
 
 import lombok.RequiredArgsConstructor;
 
@@ -85,12 +86,13 @@ public class CrewController {
 		);
 	}
 
-	@PatchMapping
-	public ResponseEntity<ApiResponse<?>> updateCrew(@RequestBody UpdateCrewRequestDto dto) {
+	@PatchMapping("/{crewId}")
+	public ResponseEntity<ApiResponse<?>> updateCrew(@PathVariable(name = "crewId") UUID crewId,
+		@RequestBody UpdateCrewRequestDto dto) {
 		return ResponseEntity.ok(
 			new ApiResponse<>(
 				CrewServiceCode.CREW_UPDATE_PATCH_SUCCESS.getCode(),
-				null,
+				UpdateCrewResponseDto.from(crewService.updateCrew(crewId, dto.toAppDto())),
 				CrewServiceCode.CREW_UPDATE_PATCH_SUCCESS.getMessage(),
 				CrewServiceCode.CREW_UPDATE_PATCH_SUCCESS.getStatus()
 			)
