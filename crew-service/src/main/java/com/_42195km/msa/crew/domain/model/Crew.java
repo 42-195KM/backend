@@ -52,4 +52,19 @@ public class Crew extends BaseEntity {
 	@OneToMany(mappedBy = "crew", orphanRemoval = true, cascade = CascadeType.ALL)
 	private List<CrewMeeting> crewMeetings = new ArrayList<>();
 
+	public void addCrewMemberMapping(CrewMemberMapping crewMemberMapping) {
+		crewMemberMappings.add(crewMemberMapping);
+		if (crewMemberMapping.getCrew() == null) {
+			crewMemberMapping.setCrew(this);
+		}
+	}
+
+	public boolean isFull() {
+		return crewMemberMappings.size() >= capacity;
+	}
+
+	public boolean isAlreadyJoined(UUID userId) {
+		return crewMemberMappings.stream()
+			.anyMatch(crewMemberMapping -> crewMemberMapping.getCrewMember().getUserId().equals(userId));
+	}
 }

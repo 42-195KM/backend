@@ -6,4 +6,7 @@ public interface CrewRepository {
 	Crew save(Crew crew);
 
 	boolean existsByName(String name);
+
+	Optional<Crew> findById(UUID crewId);
+
 }

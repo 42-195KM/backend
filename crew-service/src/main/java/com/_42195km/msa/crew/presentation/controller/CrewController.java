@@ -31,4 +31,16 @@ public class CrewController {
 			)
 		);
 	}
+
+	@PostMapping("/{crewId}/join")
+	public ResponseEntity<ApiResponse<?>> applyJoiningCrew(@PathVariable(name = "crewId") UUID crewId) {
+		return ResponseEntity.ok(
+			new ApiResponse<>(
+				CrewServiceCode.CREW_APPLY_JOIN_POST_SUCCESS.getCode(),
+				JoinCrewResponseDto.from(crewService.applyJoiningCrew(crewId, null)),
+				CrewServiceCode.CREW_APPLY_JOIN_POST_SUCCESS.getMessage(),
+				CrewServiceCode.CREW_APPLY_JOIN_POST_SUCCESS.getStatus()
+			)
+		);
+
 }
