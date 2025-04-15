@@ -46,6 +46,21 @@ public class CrewMemberMapping extends BaseEntity {
 	@Column(name = "status", length = 50, nullable = false)
 	private CrewMemberStatus status;
 
+	public void approve() {
+		if (this.status == CrewMemberStatus.PENDING) {
+			this.status = CrewMemberStatus.APPROVED;
+		}
+
+		throw new IllegalStateException("이미 승인된 크루입니다.");
+	}
+
+	public void reject() {
+		if (this.status == CrewMemberStatus.PENDING) {
+			this.status = CrewMemberStatus.REJECTED;
+		}
+		throw new IllegalStateException("이미 거절된 크루입니다.");
+	}
+
 	public enum CrewMemberStatus {
 		PENDING, APPROVED, REJECTED, BLACKLIST
 	}

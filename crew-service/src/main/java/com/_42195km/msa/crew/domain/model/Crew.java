@@ -89,9 +89,7 @@ public class Crew extends BaseEntity {
 	}
 
 	public void setDeletedCrewMember() {
-		List<CrewMember> members = crewMemberMappings.stream()
-			.map(CrewMemberMapping::getCrewMember)
-			.toList();
+		List<CrewMember> members = crewMemberMappings.stream().map(CrewMemberMapping::getCrewMember).toList();
 
 		if (!members.isEmpty()) {
 			members.forEach(CrewMember::setDeleted);
@@ -108,6 +106,28 @@ public class Crew extends BaseEntity {
 
 	public boolean isCaptain(UUID userId) {
 		return captainId.equals(userId);
+	}
+
+	public CrewMemberMapping approve(UUID userId) {
+		CrewMemberMapping memberMapping = this.crewMemberMappings.stream()
+			.filter(m -> m.getCrewMember().getUserId().equals(userId))
+			.findFirst()
+			.orElseThrow(IllegalArgumentException::new);
+
+		memberMapping.approve();
+
+		return memberMapping;
+	}
+
+	public CrewMemberMapping reject(UUID userId) {
+		CrewMemberMapping memberMapping = this.crewMemberMappings.stream()
+			.filter(m -> m.getCrewMember().getUserId().equals(userId))
+			.findFirst()
+			.orElseThrow(IllegalArgumentException::new);
+
+		memberMapping.reject();
+
+		return memberMapping;
 	}
 
 	@Override

@@ -7,8 +7,7 @@ import com._42195km.msa.crew.application.dto.response.HandleCrewJoinAppResponseD
 public record HandleCrewJoinResponseDto(
 	UUID id,
 	UUID crewId,
-	UUID crewMemberMappingId,
-	CrewMemberInfo crewMember,
+	CrewMemberInfo crewMember
 ) {
 	public record CrewMemberInfo(
 		UUID id,
@@ -21,12 +20,11 @@ public record HandleCrewJoinResponseDto(
 		return new HandleCrewJoinResponseDto(
 				dto.id(),
 				dto.crewId(),
-				dto.crewMemberMappingId(),
 				new CrewMemberInfo(
-						dto.crewMember().id()
+						dto.crewMember().id(),
 						dto.crewMember().userId(),
 						dto.crewMember().status()
-				),
+				)
 		);
 	}
 }

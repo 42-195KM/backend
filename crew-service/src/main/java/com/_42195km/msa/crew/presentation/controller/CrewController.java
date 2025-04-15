@@ -17,12 +17,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com._42195km.msa.common.api.ApiResponse;
+import com._42195km.msa.common.resolver.UserInfo;
+import com._42195km.msa.common.resolver.UserInfoDto;
 import com._42195km.msa.crew.application.exception.CrewServiceCode;
 import com._42195km.msa.crew.application.service.CrewService;
 import com._42195km.msa.crew.presentation.dto.request.CreateCrewRequestDto;
+import com._42195km.msa.crew.presentation.dto.request.HandleCrewJoinRequestDto;
 import com._42195km.msa.crew.presentation.dto.request.UpdateCrewRequestDto;
 import com._42195km.msa.crew.presentation.dto.response.CreateCrewResponseDto;
 import com._42195km.msa.crew.presentation.dto.response.GetSpecificCrewResponseDto;
+import com._42195km.msa.crew.presentation.dto.response.HandleCrewJoinResponseDto;
 import com._42195km.msa.crew.presentation.dto.response.JoinCrewResponseDto;
 import com._42195km.msa.crew.presentation.dto.response.SearchCrewPagingResponseDto;
 import com._42195km.msa.crew.presentation.dto.response.UpdateCrewResponseDto;
@@ -36,11 +40,13 @@ public class CrewController {
 	private final CrewService crewService;
 
 	@PostMapping
-	public ResponseEntity<ApiResponse<?>> createCrew(@RequestBody CreateCrewRequestDto dto) {
+	public ResponseEntity<ApiResponse<?>> createCrew(@RequestBody CreateCrewRequestDto dto,
+		@UserInfo UserInfoDto userInfoDto) {
 		return ResponseEntity.ok(
 			new ApiResponse<>(
 				CrewServiceCode.CREW_CREATE_POST_SUCCESS.getCode(),
-				CreateCrewResponseDto.from(crewService.createCrew(dto.toAppDto())),
+				CreateCrewResponseDto.from(crewService.createCrew(dto.toAppDto(),
+					userInfoDto.userId())),
 				CrewServiceCode.CREW_CREATE_POST_SUCCESS.getMessage(),
 				CrewServiceCode.CREW_CREATE_POST_SUCCESS.getStatus()
 			)
@@ -48,11 +54,12 @@ public class CrewController {
 	}
 
 	@PostMapping("/{crewId}/join")
-	public ResponseEntity<ApiResponse<?>> applyJoiningCrew(@PathVariable(name = "crewId") UUID crewId) {
+	public ResponseEntity<ApiResponse<?>> applyJoiningCrew(@PathVariable(name = "crewId") UUID crewId,
+		@UserInfo UserInfoDto userInfoDto) {
 		return ResponseEntity.ok(
 			new ApiResponse<>(
 				CrewServiceCode.CREW_APPLY_JOIN_POST_SUCCESS.getCode(),
-				JoinCrewResponseDto.from(crewService.applyJoiningCrew(crewId, null)),
+				JoinCrewResponseDto.from(crewService.applyJoiningCrew(crewId, userInfoDto.userId())),
 				CrewServiceCode.CREW_APPLY_JOIN_POST_SUCCESS.getMessage(),
 				CrewServiceCode.CREW_APPLY_JOIN_POST_SUCCESS.getStatus()
 			)
@@ -89,11 +96,12 @@ public class CrewController {
 
 	@PatchMapping("/{crewId}")
 	public ResponseEntity<ApiResponse<?>> updateCrew(@PathVariable(name = "crewId") UUID crewId,
+		@UserInfo UserInfoDto userInfoDto,
 		@RequestBody UpdateCrewRequestDto dto) {
 		return ResponseEntity.ok(
 			new ApiResponse<>(
 				CrewServiceCode.CREW_UPDATE_PATCH_SUCCESS.getCode(),
-				UpdateCrewResponseDto.from(crewService.updateCrew(crewId, dto.toAppDto())),
+				UpdateCrewResponseDto.from(crewService.updateCrew(crewId, userInfoDto.userId(), dto.toAppDto())),
 				CrewServiceCode.CREW_UPDATE_PATCH_SUCCESS.getMessage(),
 				CrewServiceCode.CREW_UPDATE_PATCH_SUCCESS.getStatus()
 			)
@@ -101,8 +109,9 @@ public class CrewController {
 	}
 
 	@DeleteMapping("/{crewId}")
-	public ResponseEntity<ApiResponse<?>> deleteCrew(@PathVariable(name = "crewId") UUID crewId) {
-		crewService.deleteCrew(crewId);
+	public ResponseEntity<ApiResponse<?>> deleteCrew(@PathVariable(name = "crewId") UUID crewId,
+		@UserInfo UserInfoDto userInfoDto) {
+		crewService.deleteCrew(crewId, userInfoDto.userId());
 		return ResponseEntity.ok(
 			new ApiResponse<>(
 				CrewServiceCode.CREW_DELETE_DELETE_SUCCESS.getCode(),
@@ -114,11 +123,17 @@ public class CrewController {
 	}
 
 	@PatchMapping("/{crewId}/agree")
-	public ResponseEntity<ApiResponse<?>> agreeJoiningCrew(@PathVariable(name = "crewId") UUID crewId) {
+	public ResponseEntity<ApiResponse<?>> agreeJoiningCrew(
+		@RequestBody HandleCrewJoinRequestDto dto,
+		@PathVariable(name = "crewId") UUID crewId,
+		@UserInfo UserInfoDto userInfoDto) {
 		return ResponseEntity.ok(
 			new ApiResponse<>(
 				CrewServiceCode.CREW_AGREE_JOIN_PATCH_SUCCESS.getCode(),
-				JoinCrewResponseDto.from(crewService.agreeJoiningCrew(crewId)),
+				HandleCrewJoinResponseDto.from(crewService.agreeJoiningCrew(
+					dto.toAppDto(),
+					crewId,
+					userInfoDto.userId())),
 				CrewServiceCode.CREW_AGREE_JOIN_PATCH_SUCCESS.getMessage(),
 				CrewServiceCode.CREW_AGREE_JOIN_PATCH_SUCCESS.getStatus()
 			)
@@ -126,15 +141,20 @@ public class CrewController {
 	}
 
 	@PatchMapping("/{crewId}/reject")
-	public ResponseEntity<ApiResponse<?>> rejectJoiningCrew(@PathVariable(name = "crewId") UUID crewId) {
+	public ResponseEntity<ApiResponse<?>> rejectJoiningCrew(
+		@RequestBody HandleCrewJoinRequestDto dto,
+		@PathVariable(name = "crewId") UUID crewId,
+		@UserInfo UserInfoDto userInfoDto) {
 		return ResponseEntity.ok(
 			new ApiResponse<>(
 				CrewServiceCode.CREW_REJECT_JOIN_PATCH_SUCCESS.getCode(),
-				JoinCrewResponseDto.from(crewService.rejectJoiningCrew(crewId)),
+				HandleCrewJoinResponseDto.from(crewService.rejectJoiningCrew(
+					dto.toAppDto(),
+					crewId,
+					userInfoDto.userId())),
 				CrewServiceCode.CREW_REJECT_JOIN_PATCH_SUCCESS.getMessage(),
 				CrewServiceCode.CREW_REJECT_JOIN_PATCH_SUCCESS.getStatus()
 			)
 		);
 	}
-
 }

@@ -10,9 +10,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com._42195km.msa.crew.application.dto.request.CreateCrewAppRequestDto;
+import com._42195km.msa.crew.application.dto.request.HandleCrewJoinAppRequestDto;
 import com._42195km.msa.crew.application.dto.request.UpdateCrewAppRequestDto;
 import com._42195km.msa.crew.application.dto.response.CreateCrewAppResponseDto;
 import com._42195km.msa.crew.application.dto.response.GetSpecificCrewAppResponseDto;
+import com._42195km.msa.crew.application.dto.response.HandleCrewJoinAppResponseDto;
 import com._42195km.msa.crew.application.dto.response.JoinCrewAppResponseDto;
 import com._42195km.msa.crew.application.dto.response.SearchCrewAppPagingResponseDto;
 import com._42195km.msa.crew.application.dto.response.UpdateCrewAppResponseDto;
@@ -31,7 +33,7 @@ public class CrewService {
 	private final CrewRepository crewRepository;
 
 	@Transactional
-	public CreateCrewAppResponseDto createCrew(CreateCrewAppRequestDto dto) {
+	public CreateCrewAppResponseDto createCrew(CreateCrewAppRequestDto dto, UUID userId) {
 		if (crewRepository.existsByName(dto.name())) {
 			throw CrewBusinessException.from(CrewServiceCode.CREW_NAME_DUPLICATED);
 		}
@@ -40,6 +42,7 @@ public class CrewService {
 			.name(dto.name())
 			.description(dto.description())
 			.capacity(dto.capacity())
+			.captainId(userId)
 			.isAutoAgree(dto.isAutoAgree())
 			.build();
 
@@ -68,7 +71,7 @@ public class CrewService {
 		}
 
 		CrewMember crewMember = CrewMember.builder()
-			.userId(null)
+			.userId(userId)
 			.build();
 
 		CrewMemberMapping crewMemberMapping = CrewMemberMapping.builder()
@@ -106,9 +109,13 @@ public class CrewService {
 		return GetSpecificCrewAppResponseDto.from(crew);
 	}
 
-	public UpdateCrewAppResponseDto updateCrew(UUID crewId, UpdateCrewAppRequestDto dto) {
+	public UpdateCrewAppResponseDto updateCrew(UUID crewId, UUID userId, UpdateCrewAppRequestDto dto) {
 		Crew crew = crewRepository.findById(crewId)
 			.orElseThrow(() -> CrewBusinessException.from(CrewServiceCode.CREW_NOT_FOUND));
+
+		if (crew.isNotCaptain(userId)) {
+			throw CrewBusinessException.from(CrewServiceCode.UNAUTHORIZED_CREW_ACCESS);
+		}
 
 		crew.update(dto.description(), dto.capacity(), dto.isAutoAgree());
 
@@ -122,20 +129,43 @@ public class CrewService {
 		);
 	}
 
-	public void deleteCrew(UUID crewId) {
+	public void deleteCrew(UUID crewId, UUID userId) {
 		Crew crew = crewRepository.findById(crewId)
 			.orElseThrow(() -> CrewBusinessException.from(CrewServiceCode.CREW_NOT_FOUND));
+
+		if (crew.isNotCaptain(userId)) {
+			throw CrewBusinessException.from(CrewServiceCode.UNAUTHORIZED_CREW_ACCESS);
+		}
 
 		crew.setDeletedCrewMeetings();
 		crew.setDeletedCrewMember();
 		crew.setDeleted();
 	}
 
-	public JoinCrewAppResponseDto agreeJoiningCrew(UUID crewId) {
-		return null;
+	public HandleCrewJoinAppResponseDto agreeJoiningCrew(HandleCrewJoinAppRequestDto dto, UUID crewId, UUID captainId) {
+		Crew crew = crewRepository.findById(crewId)
+			.orElseThrow(() -> CrewBusinessException.from(CrewServiceCode.CREW_NOT_FOUND));
+
+		if (crew.isNotCaptain(captainId)) {
+			throw CrewBusinessException.from(CrewServiceCode.UNAUTHORIZED_CREW_ACCESS);
+		}
+
+		CrewMemberMapping result = crew.approve(dto.userId());
+
+		return HandleCrewJoinAppResponseDto.from(result);
 	}
 
-	public JoinCrewAppResponseDto rejectJoiningCrew(UUID crewId) {
-		return null;
+	public HandleCrewJoinAppResponseDto rejectJoiningCrew(HandleCrewJoinAppRequestDto dto, UUID crewId,
+		UUID captainId) {
+		Crew crew = crewRepository.findById(crewId)
+			.orElseThrow(() -> CrewBusinessException.from(CrewServiceCode.CREW_NOT_FOUND));
+
+		if (crew.isNotCaptain(captainId)) {
+			throw CrewBusinessException.from(CrewServiceCode.UNAUTHORIZED_CREW_ACCESS);
+		}
+
+		CrewMemberMapping result = crew.reject(dto.userId());
+
+		return HandleCrewJoinAppResponseDto.from(result);
 	}
 }
