@@ -31,7 +31,7 @@ public class Crew extends BaseEntity {
 	@UuidGenerator
 	private UUID id;
 
-	@Column(name = "name", length = 100, nullable = false)
+	@Column(name = "name", length = 100, nullable = false, unique = true)
 	private String name;
 
 	@Column(name = "description", length = 100)
