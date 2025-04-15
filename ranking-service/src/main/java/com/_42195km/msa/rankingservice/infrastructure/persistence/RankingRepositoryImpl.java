@@ -37,4 +37,9 @@ public class RankingRepositoryImpl implements RankingRepository {
 		return rankingJpaRepository.finWithDetails(identifierId);
 	}
 
+	@Override
+	public Optional<Ranking> findByUserId(UUID individualRankingId) {
+		return rankingJpaRepository.findByIdentifierIdAndIsDeletedFalse(individualRankingId);
+	}
+
 }

@@ -117,6 +117,22 @@ public class RankingServiceImpl implements RankingService {
 		return keywordRankingPage;
 	}
 
+	@Override
+	@Transactional
+	public void deleteRanking(UUID individualRankingId) {
+
+		Ranking targetRanking = rankingRepositoryImpl.findByUserId(individualRankingId)
+			.orElseThrow(() -> CustomBusinessException.from(RankingException.NOT_FOUND_PERSONAL_RANKING));
+
+		List<RankingDetail> rankingDetails = targetRanking.getDetails();
+
+		for (RankingDetail rankingDetail : rankingDetails) {
+			rankingDetail.setDeleted();
+		}
+
+		targetRanking.setDeleted();
+	}
+
 	private List<RunningRecordResponseDto.RunningRecordData> getAllRecord(String header) {
 
 		List<RunningRecordResponseDto.RunningRecordData> allRecords = new ArrayList<>();

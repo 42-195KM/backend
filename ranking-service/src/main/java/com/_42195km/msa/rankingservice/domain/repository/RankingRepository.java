@@ -17,4 +17,5 @@ public interface RankingRepository {
 
 	Optional<Ranking> findWithDetails(UUID individualRankingId);
 
+	Optional<Ranking> findByUserId(UUID individualRankingId);
 }

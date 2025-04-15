@@ -19,4 +19,6 @@ public interface RankingService {
 	GetPersonalRankingResponseDto getRanking(UUID individualRankingId);
 
 	Page<RankingDetailResponseDto> searchRankings(String keyword, Pageable pageable);
+
+	void deleteRanking(UUID individualRankingId);
 }

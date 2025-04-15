@@ -21,4 +21,5 @@ public interface RankingJpaRepository extends JpaRepository<Ranking, UUID> {
 	@Query("SELECT r FROM Ranking r LEFT JOIN FETCH r.details WHERE r.identifierId = :identifierId AND r.isDeleted = false")
 	Optional<Ranking> finWithDetails(UUID identifierId);
 
+	Optional<Ranking> findByIdentifierIdAndIsDeletedFalse(UUID individualRankingId);
 }
