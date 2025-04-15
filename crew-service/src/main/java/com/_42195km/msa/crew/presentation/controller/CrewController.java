@@ -25,9 +25,11 @@ import com._42195km.msa.crew.presentation.dto.request.CreateCrewRequestDto;
 import com._42195km.msa.crew.presentation.dto.request.HandleCrewJoinRequestDto;
 import com._42195km.msa.crew.presentation.dto.request.UpdateCrewRequestDto;
 import com._42195km.msa.crew.presentation.dto.response.CreateCrewResponseDto;
+import com._42195km.msa.crew.presentation.dto.response.GetSpecificCrewMemberResponseDto;
 import com._42195km.msa.crew.presentation.dto.response.GetSpecificCrewResponseDto;
 import com._42195km.msa.crew.presentation.dto.response.HandleCrewJoinResponseDto;
 import com._42195km.msa.crew.presentation.dto.response.JoinCrewResponseDto;
+import com._42195km.msa.crew.presentation.dto.response.SearchCrewMemberPagingResponseDto;
 import com._42195km.msa.crew.presentation.dto.response.SearchCrewPagingResponseDto;
 import com._42195km.msa.crew.presentation.dto.response.UpdateCrewResponseDto;
 
@@ -154,6 +156,36 @@ public class CrewController {
 					userInfoDto.userId())),
 				CrewServiceCode.CREW_REJECT_JOIN_PATCH_SUCCESS.getMessage(),
 				CrewServiceCode.CREW_REJECT_JOIN_PATCH_SUCCESS.getStatus()
+			)
+		);
+	}
+
+	@GetMapping("/{crewId}/members/search")
+	public ResponseEntity<ApiResponse<?>> searchMembers(
+		@PathVariable(name = "crewId") UUID crewId,
+		@PageableDefault(size = 30, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
+	) {
+		//  TODO : 크루원 프로필이나 닉네임을 추가
+
+		return ResponseEntity.ok(
+			new ApiResponse<>(
+				CrewServiceCode.CREW_MEMBER_SEARCH_GET_SUCCESS.getCode(),
+				SearchCrewMemberPagingResponseDto.from(crewService.searchCrewMember(crewId, pageable)),
+				CrewServiceCode.CREW_MEMBER_SEARCH_GET_SUCCESS.getMessage(),
+				CrewServiceCode.CREW_MEMBER_SEARCH_GET_SUCCESS.getStatus()
+			)
+		);
+	}
+
+	@GetMapping("/{crewId}/members/{memberId}")
+	public ResponseEntity<ApiResponse<?>> getMember(@PathVariable(name = "crewId") UUID crewId,
+		@PathVariable(name = "memberId") UUID memberId) {
+		return ResponseEntity.ok(
+			new ApiResponse<>(
+				CrewServiceCode.CREW_MEMBER_SPECIFIC_GET_SUCCESS.getCode(),
+				GetSpecificCrewMemberResponseDto.from(crewService.getSpecificCrewMember(crewId, memberId)),
+				CrewServiceCode.CREW_MEMBER_SPECIFIC_GET_SUCCESS.getMessage(),
+				CrewServiceCode.CREW_MEMBER_SPECIFIC_GET_SUCCESS.getStatus()
 			)
 		);
 	}

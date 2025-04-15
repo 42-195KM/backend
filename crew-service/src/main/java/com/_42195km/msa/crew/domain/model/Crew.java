@@ -109,10 +109,7 @@ public class Crew extends BaseEntity {
 	}
 
 	public CrewMemberMapping approve(UUID userId) {
-		CrewMemberMapping memberMapping = this.crewMemberMappings.stream()
-			.filter(m -> m.getCrewMember().getUserId().equals(userId))
-			.findFirst()
-			.orElseThrow(IllegalArgumentException::new);
+		CrewMemberMapping memberMapping = findCrewMemberMappingByUserId(userId);
 
 		memberMapping.approve();
 
@@ -120,14 +117,19 @@ public class Crew extends BaseEntity {
 	}
 
 	public CrewMemberMapping reject(UUID userId) {
-		CrewMemberMapping memberMapping = this.crewMemberMappings.stream()
-			.filter(m -> m.getCrewMember().getUserId().equals(userId))
-			.findFirst()
-			.orElseThrow(IllegalArgumentException::new);
+		CrewMemberMapping memberMapping = findCrewMemberMappingByUserId(userId);
 
 		memberMapping.reject();
 
 		return memberMapping;
+	}
+
+
+	public CrewMemberMapping findCrewMemberMappingByUserId(UUID userId) {
+		return this.crewMemberMappings.stream()
+			.filter(m -> m.getCrewMember().getUserId().equals(userId))
+			.findFirst()
+			.orElseThrow(() -> new IllegalArgumentException("해당 사용자는 크루에 가입되어 있지 않습니다."));
 	}
 
 	@Override

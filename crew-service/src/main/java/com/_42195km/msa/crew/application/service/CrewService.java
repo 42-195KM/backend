@@ -14,9 +14,11 @@ import com._42195km.msa.crew.application.dto.request.HandleCrewJoinAppRequestDto
 import com._42195km.msa.crew.application.dto.request.UpdateCrewAppRequestDto;
 import com._42195km.msa.crew.application.dto.response.CreateCrewAppResponseDto;
 import com._42195km.msa.crew.application.dto.response.GetSpecificCrewAppResponseDto;
+import com._42195km.msa.crew.application.dto.response.GetSpecificCrewMemberAppResponseDto;
 import com._42195km.msa.crew.application.dto.response.HandleCrewJoinAppResponseDto;
 import com._42195km.msa.crew.application.dto.response.JoinCrewAppResponseDto;
 import com._42195km.msa.crew.application.dto.response.SearchCrewAppPagingResponseDto;
+import com._42195km.msa.crew.application.dto.response.SearchCrewMemberAppPagingResponseDto;
 import com._42195km.msa.crew.application.dto.response.UpdateCrewAppResponseDto;
 import com._42195km.msa.crew.application.exception.CrewBusinessException;
 import com._42195km.msa.crew.application.exception.CrewServiceCode;
@@ -96,6 +98,11 @@ public class CrewService {
 	}
 
 	public SearchCrewAppPagingResponseDto searchCrew(String keyword, Pageable pageable) {
+		if (keyword == null) {
+			Page<Crew> crews = crewRepository.findAll(pageable);
+			return SearchCrewAppPagingResponseDto.from(crews);
+		}
+
 		Page<Crew> crews = crewRepository.findAllByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
 			keyword, keyword, pageable);
 
@@ -167,5 +174,20 @@ public class CrewService {
 		CrewMemberMapping result = crew.reject(dto.userId());
 
 		return HandleCrewJoinAppResponseDto.from(result);
+	}
+
+	public GetSpecificCrewMemberAppResponseDto getSpecificCrewMember(UUID crewId, UUID memberId) {
+		Crew crew = crewRepository.findById(crewId)
+			.orElseThrow(() -> CrewBusinessException.from(CrewServiceCode.CREW_NOT_FOUND));
+
+		return GetSpecificCrewMemberAppResponseDto.from(
+			crew.findCrewMemberMappingByUserId(memberId)
+		);
+	}
+
+	public SearchCrewMemberAppPagingResponseDto searchCrewMember(UUID crewId, Pageable pageable) {
+		return SearchCrewMemberAppPagingResponseDto.from(
+			crewRepository.findAllCrewMemberMappingByCrewId(crewId, pageable)
+		);
 	}
 }
