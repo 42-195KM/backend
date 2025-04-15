@@ -113,9 +113,9 @@ public class BoardController {
 	public ResponseEntity deleteBoard(@PathVariable("postId") UUID postId) {
 		boardService.deletePost(postId);
 		return ResponseEntity.ok(new ApiResponse<>(
-			BoardServiceCode.CREW_BOARD_GET_POST_SUCCESS.getCode(),
+			BoardServiceCode.CREW_BOARD_DELETE_POST_SUCCESS.getCode(),
 			"게시글 삭제 성공했습니다.",
-			BoardServiceCode.CREW_BOARD_GET_POST_SUCCESS.getMessage(),
+			BoardServiceCode.CREW_BOARD_DELETE_POST_SUCCESS.getMessage(),
 			HttpStatus.ACCEPTED.value()));
 	}
 
