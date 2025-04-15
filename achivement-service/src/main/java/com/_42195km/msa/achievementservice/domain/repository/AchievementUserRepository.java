@@ -1,5 +1,6 @@
 package com._42195km.msa.achievementservice.domain.repository;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -11,4 +12,5 @@ import com._42195km.msa.achievementservice.domain.model.AchievementUser;
 public interface AchievementUserRepository {
 	Page<Achievement> search(UUID userId, Pageable pageable);
 	AchievementUser save(AchievementUser achievementUser);
+	List<AchievementUser> findByUserId(UUID userId);
 }
