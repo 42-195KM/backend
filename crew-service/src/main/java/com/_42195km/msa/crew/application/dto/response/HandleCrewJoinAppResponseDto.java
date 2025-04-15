@@ -9,7 +9,7 @@ import com._42195km.msa.crew.domain.model.CrewMemberMapping;
 public record HandleCrewJoinAppResponseDto(
 	UUID id,
 	UUID crewId,
-	CrewMemberAppInfo crewMember,
+	CrewMemberAppInfo crewMember
 ) {
 	public record CrewMemberAppInfo(
 		UUID id,
