@@ -137,7 +137,7 @@ public class RankingServiceImpl implements RankingService {
 		List<Ranking> rankings = divide.entrySet().stream()
 			.map(user -> Ranking.builder()
 				.identifierId(user.getKey())
-				.domainType(DomainType.USER)
+				.domainType(DomainType.valueOf(DOMAIN_TYPE_USER))
 				.details(new ArrayList<>())
 				.build())
 			.collect(Collectors.toList()
