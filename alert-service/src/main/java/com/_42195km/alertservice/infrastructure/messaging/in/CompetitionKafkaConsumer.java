@@ -1,6 +1,8 @@
 package com._42195km.alertservice.infrastructure.messaging.in;
 
 import com._42195km.alertservice.application.service.MessageService;
+import com._42195km.alertservice.code.AlertCode;
+import com._42195km.msa.common.exception.CustomBusinessException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,12 +22,16 @@ public class CompetitionKafkaConsumer {
 
     @KafkaListener(topics = "competition_notification", groupId = "competition-group")
     public void AlertCompetition(Map<String, Object> eventMap) {
-        CompetitionEventDto competitionEventDto = objectMapper.convertValue(eventMap, CompetitionEventDto.class);
+        try{
+            CompetitionEventDto competitionEventDto = objectMapper.convertValue(eventMap, CompetitionEventDto.class);
 
-        log.info("AchieveEventDto: {}", competitionEventDto);
-        String message = competitionEventDto.getTitle() +" 신청이 완료되었습니다.";
+            String message = competitionEventDto.getTitle() +" 신청이 완료되었습니다.";
 
-        messageService.sendMessage(message,competitionEventDto.getMediaId());
+            messageService.sendMessage(message,competitionEventDto.getMediaId());
+        } catch (Exception e) {
+            log.error("대회 이벤트 처리 중 오류 발생: {}", e.getMessage(), e);
+            throw CustomBusinessException.from(AlertCode.COMPETITION_CONSUMER_ERROR);
+        }
 
     }
 
