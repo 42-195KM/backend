@@ -1,3 +1,22 @@
 spring:
   application:
     name: userrecap-service
+  datasource:
+    url: jdbc:postgresql://localhost:5432/userrecap
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+  batch:
+    job:
+      enabled: true
+    jdbc:
+      initialize-schema: always
+
+server:
+  port:
+    19024
+
