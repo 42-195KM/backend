@@ -83,4 +83,12 @@ public class CrewService {
 			)
 		);
 	}
+
+	public SearchCrewAppPagingResponseDto searchCrew(String keyword, Pageable pageable) {
+		Page<Crew> crews = crewRepository.findAllByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
+			keyword, keyword, pageable);
+
+		return SearchCrewAppPagingResponseDto.from(crews);
+	}
+
 }

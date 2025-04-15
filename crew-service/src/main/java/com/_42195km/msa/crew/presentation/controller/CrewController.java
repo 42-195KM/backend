@@ -43,4 +43,18 @@ public class CrewController {
 			)
 		);
 
+	@GetMapping("/search")
+	public ResponseEntity<ApiResponse<?>> searchCrew(
+		@RequestParam(name = "keyword", required = false) String keyword,
+		@PageableDefault(size = 30, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
+	) {
+		return ResponseEntity.ok(
+			new ApiResponse<>(
+				CrewServiceCode.CREW_SEARCH_GET_SUCCESS.getCode(),
+				SearchCrewPagingResponseDto.from(crewService.searchCrew(keyword, pageable)),
+				CrewServiceCode.CREW_SEARCH_GET_SUCCESS.getMessage(),
+				CrewServiceCode.CREW_SEARCH_GET_SUCCESS.getStatus()
+			)
+		);
+	}
 }
