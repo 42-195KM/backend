@@ -13,6 +13,7 @@ public enum RankingSuccessCode implements ServiceCode {
 
 	PERSONAL_RANKING_SCHEDULING(HttpStatus.CREATED, "개인 랭킹 스케쥴링 완료", "S_PERSONAL_RANKING_SCHEDULING"),
 	PERSONAL_RANKING_ALL_SEARCH_SUCCESS(HttpStatus.OK, "모든 랭킹 조회 완료", "S_PERSONAL_RANKING_ALL_SEARCH_SUCCESS"),
+	PERSONAL_RANKING_SEARCH_SUCCESS(HttpStatus.OK, "단건 랭킹 조회 완료", "S_PERSONAL_RANKING_SEARCH_SUCCESS"),
 	;
 
 	private final HttpStatus httpStatus;

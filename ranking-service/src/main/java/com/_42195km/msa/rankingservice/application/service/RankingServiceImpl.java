@@ -18,8 +18,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com._42195km.msa.common.exception.CustomBusinessException;
 import com._42195km.msa.rankingservice.application.dto.response.CreatePersonalRanking;
 import com._42195km.msa.rankingservice.application.dto.response.GetAllPersonalRankingResponseDto;
+import com._42195km.msa.rankingservice.application.dto.response.GetPersonalRankingResponseDto;
+import com._42195km.msa.rankingservice.application.exception.RankingException;
 import com._42195km.msa.rankingservice.domain.model.DividePersonal;
 import com._42195km.msa.rankingservice.domain.model.DomainType;
 import com._42195km.msa.rankingservice.domain.model.Ranking;
@@ -81,6 +84,15 @@ public class RankingServiceImpl implements RankingService {
 		);
 
 		return rankingPage;
+	}
+
+	@Override
+	public GetPersonalRankingResponseDto getRanking(UUID identifierId) {
+
+		Ranking ranking = rankingRepositoryImpl.findWithDetails(identifierId)
+			.orElseThrow(() -> CustomBusinessException.from(RankingException.NOT_FOUND_PERSONAL_RANKING));
+
+		return GetPersonalRankingResponseDto.from(ranking);
 	}
 
 	private List<RunningRecordResponseDto.RunningRecordData> getAllRecord(String header) {

@@ -1,6 +1,8 @@
 package com._42195km.msa.rankingservice.infrastructure.persistence;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,6 +30,11 @@ public class RankingRepositoryImpl implements RankingRepository {
 	@Override
 	public Page<Ranking> findAllWithDetails(Pageable pageable) {
 		return rankingJpaRepository.findAllWithDetalis(pageable);
+	}
+
+	@Override
+	public Optional<Ranking> findWithDetails(UUID identifierId) {
+		return rankingJpaRepository.finWithDetails(identifierId);
 	}
 
 }
