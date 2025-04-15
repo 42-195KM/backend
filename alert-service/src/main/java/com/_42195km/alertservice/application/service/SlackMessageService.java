@@ -31,19 +31,14 @@ public class SlackMessageService implements MessageService {
         MethodsClient methods = slack.methods(slackBotToken);
 
         try {
-
             ChatPostMessageResponse response = methods.chatPostMessage(ChatPostMessageRequest.builder()
                     .channel(mediaId)
                     .text(message)
                     .build());
             log.info("ChatPostMessageResponse: {}", response);
-            if (response.isOk()) {
-                Message postedMessage = response.getMessage();
-            } else {
-                String errorCode = response.getError(); // e.g., "invalid_auth", "channel_not_found"
+            if (!response.isOk()) {
                 throw CustomBusinessException.from(AlertCode.ALERT_ERROR);
             }
-
 
         } catch (IOException | SlackApiException e) {
             throw CustomBusinessException.from(AlertCode.ALERT_ERROR);

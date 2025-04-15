@@ -11,8 +11,8 @@ public enum AlertCode implements ServiceCode {
 
     SUCCESS("Alert000", "성공적으로 처리되었습니다.", HttpStatus.OK),
     ALERT_ERROR("Alert001","알림 서버연결이 실패했습니다", HttpStatus.INTERNAL_SERVER_ERROR),
-
-
+    ACHIEVEMENT_CONSUMER_ERROR("Alert002","업적 이벤트 처리 중 오류 발생", HttpStatus.INTERNAL_SERVER_ERROR),
+    COMPETITION_CONSUMER_ERROR("Alert003","대회 이벤트 처리 중 오류 발생:", HttpStatus.INTERNAL_SERVER_ERROR),
 
     ;
 

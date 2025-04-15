@@ -32,7 +32,7 @@ spring:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       auto-offset-reset: earliest  # 컨슈머가 처음 시작할 때 어떤 오프셋부터 읽을지 설정 (earliest: 가장 오래된 메시지부터, latest: 최신 메시지부터)
-      group-id: alert-group
+
 slack:
   token: ${SLACK_BOT_TOKEN}
 
