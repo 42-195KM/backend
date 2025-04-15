@@ -24,6 +24,7 @@ import com._42195km.msa.crew.application.service.CrewService;
 import com._42195km.msa.crew.presentation.dto.request.CreateCrewMeetingRequestDto;
 import com._42195km.msa.crew.presentation.dto.request.CreateCrewRequestDto;
 import com._42195km.msa.crew.presentation.dto.request.HandleCrewJoinRequestDto;
+import com._42195km.msa.crew.presentation.dto.request.UpdateCrewMeetingRequestDto;
 import com._42195km.msa.crew.presentation.dto.request.UpdateCrewRequestDto;
 import com._42195km.msa.crew.presentation.dto.response.CreateCrewMeetingResponseDto;
 import com._42195km.msa.crew.presentation.dto.response.CreateCrewResponseDto;
@@ -35,6 +36,7 @@ import com._42195km.msa.crew.presentation.dto.response.JoinCrewResponseDto;
 import com._42195km.msa.crew.presentation.dto.response.ParticipateCrewMeetingResponseDto;
 import com._42195km.msa.crew.presentation.dto.response.SearchCrewMemberPagingResponseDto;
 import com._42195km.msa.crew.presentation.dto.response.SearchCrewPagingResponseDto;
+import com._42195km.msa.crew.presentation.dto.response.UpdateCrewMeetingResponseDto;
 import com._42195km.msa.crew.presentation.dto.response.UpdateCrewResponseDto;
 
 import lombok.RequiredArgsConstructor;
@@ -257,4 +259,23 @@ public class CrewController {
 		);
 	}
 
+	@PatchMapping("/{crewId}/meetings/{meetingId}")
+	public ResponseEntity<ApiResponse<?>> updateCrewMeeting(
+		@PathVariable(name = "crewId") UUID crewId,
+		@PathVariable(name = "meetingId") UUID meetingId,
+		@UserInfo UserInfoDto userInfoDto,
+		@RequestBody UpdateCrewMeetingRequestDto dto) {
+		return ResponseEntity.ok(
+			new ApiResponse<>(
+				CrewServiceCode.CREW_UPDATE_MEETING_SUCCESS.getCode(),
+				UpdateCrewMeetingResponseDto.from(crewService.updateCrewMeeting(
+					dto.toAppDto(), crewId, meetingId, userInfoDto.userId()
+				)),
+				CrewServiceCode.CREW_UPDATE_MEETING_SUCCESS.getMessage(),
+				CrewServiceCode.CREW_UPDATE_MEETING_SUCCESS.getStatus()
+			)
+		);
+	}
+
 }
+

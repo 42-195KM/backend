@@ -14,6 +14,7 @@ import com._42195km.msa.crew.application.dto.request.CreateCrewAppRequestDto;
 import com._42195km.msa.crew.application.dto.request.CreateCrewMeetingAppRequestDto;
 import com._42195km.msa.crew.application.dto.request.HandleCrewJoinAppRequestDto;
 import com._42195km.msa.crew.application.dto.request.UpdateCrewAppRequestDto;
+import com._42195km.msa.crew.application.dto.request.UpdateCrewMeetingAppRequestDto;
 import com._42195km.msa.crew.application.dto.response.CreateCrewAppResponseDto;
 import com._42195km.msa.crew.application.dto.response.CreateCrewMeetingAppResponseDto;
 import com._42195km.msa.crew.application.dto.response.ExpelCrewMemberAppResponseDto;
@@ -25,6 +26,7 @@ import com._42195km.msa.crew.application.dto.response.ParticipateCrewMeetingAppR
 import com._42195km.msa.crew.application.dto.response.SearchCrewAppPagingResponseDto;
 import com._42195km.msa.crew.application.dto.response.SearchCrewMemberAppPagingResponseDto;
 import com._42195km.msa.crew.application.dto.response.UpdateCrewAppResponseDto;
+import com._42195km.msa.crew.application.dto.response.UpdateCrewMeetingAppResponseDto;
 import com._42195km.msa.crew.application.exception.CrewBusinessException;
 import com._42195km.msa.crew.application.exception.CrewServiceCode;
 import com._42195km.msa.crew.domain.model.Crew;
@@ -320,6 +322,40 @@ public class CrewService {
 				crewMeetingMember.getUserId(),
 				crewMeetingMemberMapping.getStatus().name()
 			)
+		);
+	}
+
+	@Transactional
+	public UpdateCrewMeetingAppResponseDto updateCrewMeeting(
+		UpdateCrewMeetingAppRequestDto dto, UUID crewId, UUID meetingId, UUID userId
+	) {
+		Crew crew = crewRepository.findByIdAndDeletedAtIsNull(crewId)
+			.orElseThrow(() -> CrewBusinessException.from(CrewServiceCode.CREW_NOT_FOUND));
+
+		CrewMeeting crewMeeting = crew.findCrewMeeting(meetingId);
+
+		if (crewMeeting.getCreatedBy() != userId) {
+			throw CrewBusinessException.from(CrewServiceCode.UNAUTHORIZED_CREW_MEETING_ACCESS);
+		}
+
+		crewMeeting.update(
+			dto.name(),
+			dto.hour(),
+			dto.description(),
+			dto.capacity()
+		);
+
+		crewRepository.save(crew);
+
+		return new UpdateCrewMeetingAppResponseDto(
+			crewMeeting.getId(),
+			crew.getId(),
+			crewMeeting.getName(),
+			crewMeeting.getMeetingDateTime(),
+			crewMeeting.getHour(),
+			crewMeeting.getDescription(),
+			crewMeeting.getType().name(),
+			crewMeeting.getCapacity()
 		);
 	}
 

@@ -62,6 +62,17 @@ public class CrewMeeting extends BaseEntity {
 	@OneToMany(mappedBy = "meeting", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<CrewMeetingMemberMapping> crewMeetingMemberMappings = new ArrayList<>();
 
+	@Builder
+	public CrewMeeting(String name, LocalDateTime meetingDateTime, Integer hour, String description, String type,
+		Integer capacity) {
+		this.name = name;
+		this.meetingDateTime = meetingDateTime;
+		this.hour = hour;
+		this.description = description;
+		this.type = parseTypeLiteral(type);
+		this.capacity = capacity;
+	}
+
 	public static boolean isRegularMeetingRequest(String type) {
 		return MeetingType.REGULAR.name().equalsIgnoreCase(type);
 	}
@@ -78,7 +89,7 @@ public class CrewMeeting extends BaseEntity {
 		return crewMeetingMemberMappings.stream()
 			.anyMatch(
 				crewMeetingMemberMapping -> crewMeetingMemberMapping.getMeetingMember().getUserId().equals(userId)
-			&& crewMeetingMemberMapping.getDeletedAt() == null);
+					&& crewMeetingMemberMapping.getDeletedAt() == null);
 	}
 
 	public void addCrewMeetingMemberMapping(CrewMeetingMemberMapping crewMeetingMemberMapping) {
@@ -96,15 +107,19 @@ public class CrewMeeting extends BaseEntity {
 			.count() >= capacity;
 	}
 
-	@Builder
-	public CrewMeeting(String name, LocalDateTime meetingDateTime, Integer hour, String description, String type,
-		Integer capacity) {
-		this.name = name;
-		this.meetingDateTime = meetingDateTime;
-		this.hour = hour;
-		this.description = description;
-		this.type = parseTypeLiteral(type);
-		this.capacity = capacity;
+	public void update(String name, Integer hour, String description, Integer capacity) {
+		if (name != null) {
+			this.name = name;
+		}
+		if (hour != null) {
+			this.hour = hour;
+		}
+		if (description != null) {
+			this.description = description;
+		}
+		if (capacity != null) {
+			this.capacity = capacity;
+		}
 	}
 
 	@Override

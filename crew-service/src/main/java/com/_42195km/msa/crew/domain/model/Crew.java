@@ -61,12 +61,6 @@ public class Crew extends BaseEntity {
 
 	public void addCrewMeeting(CrewMeeting crewMeeting) {
 		crewMeetings.add(crewMeeting);
-		crewMeeting.setCrew(this);
-
-	}
-
-	public void addCrewMeeting(CrewMeeting crewMeeting) {
-		crewMeetings.add(crewMeeting);
 		if (crewMeeting.getCrew() == null) {
 			crewMeeting.setCrew(this);
 		}
@@ -148,11 +142,6 @@ public class Crew extends BaseEntity {
 				&& crewMemberMapping.getDeletedAt() == null);
 	}
 
-	public boolean isNotMember(UUID userId) {
-		return crewMemberMappings.stream()
-			.noneMatch(crewMemberMapping -> crewMemberMapping.getCrewMember().getUserId().equals(userId)
-			&& crewMemberMapping.getDeletedAt() == null);
-	}
 
 	public CrewMemberMapping expel(UUID memberId) {
 		CrewMemberMapping memberMapping = findCrewMemberMappingByUserId(memberId);
