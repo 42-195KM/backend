@@ -13,10 +13,13 @@ import java.util.TreeSet;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com._42195km.msa.rankingservice.application.dto.response.CreatePersonalRanking;
+import com._42195km.msa.rankingservice.application.dto.response.GetAllPersonalRankingResponseDto;
 import com._42195km.msa.rankingservice.domain.model.DividePersonal;
 import com._42195km.msa.rankingservice.domain.model.DomainType;
 import com._42195km.msa.rankingservice.domain.model.Ranking;
@@ -63,8 +66,21 @@ public class RankingServiceImpl implements RankingService {
 		// TODO : 데이터가 많아지면 ? bulk insert 고려
 		// 랭킹 산정 후 DB에 저장 -> saveall
 		startToRanking(divide);
+		log.info("=========개인 랭킹 생성 종료=========");
 
 		return CreatePersonalRanking.builder().build();
+	}
+
+	@Override
+	public Page<GetAllPersonalRankingResponseDto> getAllrankings(Pageable pageable) {
+
+		Page<Ranking> rankings = rankingRepositoryImpl.findAllWithDetails(pageable);
+
+		Page<GetAllPersonalRankingResponseDto> rankingPage = rankings.map(
+			GetAllPersonalRankingResponseDto::fromRanking
+		);
+
+		return rankingPage;
 	}
 
 	private List<RunningRecordResponseDto.RunningRecordData> getAllRecord(String header) {

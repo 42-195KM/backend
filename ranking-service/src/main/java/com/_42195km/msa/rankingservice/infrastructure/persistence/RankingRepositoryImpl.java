@@ -2,6 +2,8 @@ package com._42195km.msa.rankingservice.infrastructure.persistence;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,4 +24,10 @@ public class RankingRepositoryImpl implements RankingRepository {
 
 		rankingJpaRepository.saveAll(rankings);
 	}
+
+	@Override
+	public Page<Ranking> findAllWithDetails(Pageable pageable) {
+		return rankingJpaRepository.findAllWithDetalis(pageable);
+	}
+
 }

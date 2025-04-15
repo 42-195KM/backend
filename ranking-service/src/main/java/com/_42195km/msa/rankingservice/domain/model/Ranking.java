@@ -39,6 +39,8 @@ public class Ranking extends BaseEntity {
 	private DomainType domainType;
 
 	@OneToMany(mappedBy = "ranking", cascade = CascadeType.ALL, orphanRemoval = true)
+	// 부모 객체에서 자식 객체 직렬화 -> 양방향 매핑 무한 참조 차단 -> Dto로 만들어서 제공...으로 수정
+	// @JsonBackReference
 	private List<RankingDetail> details = new ArrayList<>();
 
 	@Builder
