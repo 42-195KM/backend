@@ -1,0 +1,55 @@
+package com._42195km.msa.crew.domain.model;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+import org.hibernate.annotations.UuidGenerator;
+
+import com._42195km.msa.common.BaseEntity;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Entity
+@Table(name = "p_crew")
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
+public class Crew extends BaseEntity {
+	@Id
+	@UuidGenerator
+	private UUID id;
+
+	@Column(name = "name", length = 100, nullable = false)
+	private String name;
+
+	@Column(name = "description", length = 100)
+	private String description;
+
+	@Column(name = "captain_id", nullable = false)
+	private UUID captainId;
+
+	@Column(name = "capacity", nullable = false)
+	private Integer capacity;
+
+	@Column(name = "is_autoAgree")
+	private Boolean isAutoAgree;
+
+	@OneToMany(mappedBy = "crew", orphanRemoval = true, cascade = CascadeType.ALL)
+	private List<CrewMemberMapping> crewMemberMappings = new ArrayList<>();
+
+	@OneToMany(mappedBy = "crew", orphanRemoval = true, cascade = CascadeType.ALL)
+	private List<CrewMeeting> crewMeetings = new ArrayList<>();
+
+}
