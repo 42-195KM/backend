@@ -17,7 +17,7 @@ public class AchievementKafkaConsumer {
 
     private final MessageService messageService;
     private final ObjectMapper objectMapper;
-    @KafkaListener(topics = "achieve-achievement", groupId = "ahieve-group")
+    @KafkaListener(topics = "achieve-achievement", groupId = "achieve-group")
     public void AlertAchievement(Map<String, Object> eventMap) {
         AchieveEventDto achieveEventDto = objectMapper.convertValue(eventMap, AchieveEventDto.class);
 
