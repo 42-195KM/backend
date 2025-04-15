@@ -30,6 +30,12 @@ public class CrewMeetingMember extends BaseEntity {
 	@Column(name = "user_id", nullable = false)
 	private UUID userId;
 
+	public void addCrewMeetingMemberMapping(CrewMeetingMemberMapping crewMeetingMemberMapping) {
+		if (crewMeetingMemberMapping.getCrewMeeting() != this) {
+			crewMeetingMemberMapping.setCrewMeeting(this);
+		}
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o)

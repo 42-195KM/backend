@@ -41,6 +41,7 @@ public class CrewMeetingMemberMapping extends BaseEntity {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "crew_meeting_member_id", nullable = false)
+	@Setter
 	private CrewMeetingMember meetingMember;
 
 	@Enumerated(EnumType.STRING)

@@ -40,6 +40,7 @@ public class CrewMemberMapping extends BaseEntity {
 
 	@ManyToOne
 	@JoinColumn(name = "crew_member_id", nullable = false)
+	@Setter
 	private CrewMember crewMember;
 
 	@Enumerated(EnumType.STRING)

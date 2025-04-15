@@ -21,15 +21,18 @@ import com._42195km.msa.common.resolver.UserInfo;
 import com._42195km.msa.common.resolver.UserInfoDto;
 import com._42195km.msa.crew.application.exception.CrewServiceCode;
 import com._42195km.msa.crew.application.service.CrewService;
+import com._42195km.msa.crew.presentation.dto.request.CreateCrewMeetingRequestDto;
 import com._42195km.msa.crew.presentation.dto.request.CreateCrewRequestDto;
 import com._42195km.msa.crew.presentation.dto.request.HandleCrewJoinRequestDto;
 import com._42195km.msa.crew.presentation.dto.request.UpdateCrewRequestDto;
+import com._42195km.msa.crew.presentation.dto.response.CreateCrewMeetingResponseDto;
 import com._42195km.msa.crew.presentation.dto.response.CreateCrewResponseDto;
 import com._42195km.msa.crew.presentation.dto.response.ExpelCrewMemberResponseDto;
 import com._42195km.msa.crew.presentation.dto.response.GetSpecificCrewMemberResponseDto;
 import com._42195km.msa.crew.presentation.dto.response.GetSpecificCrewResponseDto;
 import com._42195km.msa.crew.presentation.dto.response.HandleCrewJoinResponseDto;
 import com._42195km.msa.crew.presentation.dto.response.JoinCrewResponseDto;
+import com._42195km.msa.crew.presentation.dto.response.ParticipateCrewMeetingResponseDto;
 import com._42195km.msa.crew.presentation.dto.response.SearchCrewMemberPagingResponseDto;
 import com._42195km.msa.crew.presentation.dto.response.SearchCrewPagingResponseDto;
 import com._42195km.msa.crew.presentation.dto.response.UpdateCrewResponseDto;
@@ -219,4 +222,39 @@ public class CrewController {
 			)
 		);
 	}
+
+	@PostMapping("/{crewId}/meetings")
+	public ResponseEntity<ApiResponse<?>> createCrewMeeting(@RequestBody CreateCrewMeetingRequestDto dto,
+		@PathVariable(name = "crewId") UUID crewId,
+		@UserInfo UserInfoDto userInfoDto) {
+		return ResponseEntity.ok(
+			new ApiResponse<>(
+				CrewServiceCode.CREW_CREATE_MEETING_POST_SUCCESS.getCode(),
+				CreateCrewMeetingResponseDto.from(
+					crewService.createCrewMeeting(dto.toAppDto(), crewId, userInfoDto.userId())),
+				CrewServiceCode.CREW_CREATE_MEETING_POST_SUCCESS.getMessage(),
+				CrewServiceCode.CREW_CREATE_MEETING_POST_SUCCESS.getStatus()
+			)
+		);
+	}
+
+	@PostMapping("/{crewId}/meetings/{meetingId}/participate")
+	public ResponseEntity<ApiResponse<?>> participateCrewMeeting(
+		@PathVariable(name = "crewId") UUID crewId,
+		@PathVariable(name = "meetingId") UUID meetingId,
+		@UserInfo UserInfoDto userInfoDto) {
+		return ResponseEntity.ok(
+			new ApiResponse<>(
+				CrewServiceCode.CREW_PARTICIPATE_MEETING_POST_SUCCESS.getCode(),
+				ParticipateCrewMeetingResponseDto.from(crewService.participateCrewMeeting(
+					crewId,
+					meetingId,
+					userInfoDto.userId()
+				)),
+				CrewServiceCode.CREW_PARTICIPATE_MEETING_POST_SUCCESS.getMessage(),
+				CrewServiceCode.CREW_PARTICIPATE_MEETING_POST_SUCCESS.getStatus()
+			)
+		);
+	}
+
 }

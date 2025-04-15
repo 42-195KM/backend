@@ -38,6 +38,11 @@ public class CrewMember extends BaseEntity {
 	@OneToMany(mappedBy = "crewMember", orphanRemoval = true, cascade = CascadeType.ALL)
 	private List<CrewMemberMapping> crewMemberMappings = new ArrayList<>();
 
+	public void addCrewMemberMapping(CrewMemberMapping crewMemberMapping) {
+		crewMemberMappings.add(crewMemberMapping);
+		crewMemberMapping.setCrewMember(this);
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o)

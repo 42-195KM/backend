@@ -20,17 +20,15 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "p_crew_meeting")
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class CrewMeeting extends BaseEntity {
 
 	@Id
@@ -58,18 +56,55 @@ public class CrewMeeting extends BaseEntity {
 
 	@ManyToOne
 	@JoinColumn(name = "crew_id", nullable = false)
+	@Setter
 	private Crew crew;
 
 	@OneToMany(mappedBy = "meeting", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<CrewMeetingMemberMapping> crewMeetingMemberMappings = new ArrayList<>();
 
-	public enum MeetingType {
-		REGULAR, IRREGULAR
+	public static boolean isRegularMeetingRequest(String type) {
+		return MeetingType.REGULAR.name().equalsIgnoreCase(type);
+	}
+
+	private MeetingType parseTypeLiteral(String type) {
+		try {
+			return MeetingType.valueOf(type.toUpperCase());
+		} catch (IllegalArgumentException e) {
+			throw new IllegalArgumentException("Invalid meeting type: " + type);
+		}
+	}
+
+	public boolean isAlreadyParticipated(UUID userId) {
+		return crewMeetingMemberMappings.stream()
+			.anyMatch(
+				crewMeetingMemberMapping -> crewMeetingMemberMapping.getMeetingMember().getUserId().equals(userId)
+			&& crewMeetingMemberMapping.getDeletedAt() == null);
 	}
 
 	public void addCrewMeetingMemberMapping(CrewMeetingMemberMapping crewMeetingMemberMapping) {
 		crewMeetingMemberMappings.add(crewMeetingMemberMapping);
 		crewMeetingMemberMapping.setMeeting(this);
+	}
+
+	public boolean isRegularMeeting() {
+		return type == MeetingType.REGULAR;
+	}
+
+	public boolean isFull() {
+		return crewMeetingMemberMappings.stream()
+			.filter(crewMeetingMemberMapping -> crewMeetingMemberMapping.getDeletedAt() == null)
+			.count() >= capacity;
+	}
+
+	@Builder
+	public CrewMeeting(String name, LocalDateTime meetingDateTime, Integer hour, String description, String type,
+		Integer capacity) {
+		this.name = name;
+		this.meetingDateTime = meetingDateTime;
+		this.hour = hour;
+		this.description = description;
+		this.type = parseTypeLiteral(type);
+		this.capacity = capacity;
 	}
 
 	@Override
@@ -84,5 +119,9 @@ public class CrewMeeting extends BaseEntity {
 	@Override
 	public int hashCode() {
 		return Objects.hashCode(id);
+	}
+
+	public enum MeetingType {
+		REGULAR, IRREGULAR
 	}
 }

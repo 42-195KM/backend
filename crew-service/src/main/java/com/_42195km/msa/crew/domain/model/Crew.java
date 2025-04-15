@@ -60,6 +60,13 @@ public class Crew extends BaseEntity {
 		}
 	}
 
+	public void addCrewMeeting(CrewMeeting crewMeeting) {
+		crewMeetings.add(crewMeeting);
+		if (crewMeeting.getCrew() == null) {
+			crewMeeting.setCrew(this);
+		}
+	}
+
 	public boolean isFull() {
 		return crewMemberMappings.size() >= capacity;
 	}
@@ -131,6 +138,12 @@ public class Crew extends BaseEntity {
 	}
 
 
+	public boolean isNotMember(UUID userId) {
+		return crewMemberMappings.stream()
+			.noneMatch(crewMemberMapping -> crewMemberMapping.getCrewMember().getUserId().equals(userId)
+			&& crewMemberMapping.getDeletedAt() == null);
+	}
+
 	public CrewMemberMapping expel(UUID memberId) {
 		CrewMemberMapping memberMapping = findCrewMemberMappingByUserId(memberId);
 		memberMapping.expel();
@@ -146,9 +159,16 @@ public class Crew extends BaseEntity {
 
 	public CrewMemberMapping findCrewMemberMappingByUserId(UUID userId) {
 		return this.crewMemberMappings.stream()
-			.filter(m -> m.getCrewMember().getUserId().equals(userId))
+			.filter(m -> m.getCrewMember().getUserId().equals(userId) && m.getDeletedAt() == null)
 			.findFirst()
 			.orElseThrow(() -> new IllegalArgumentException("해당 사용자는 크루에 가입되어 있지 않습니다."));
+	}
+
+	public CrewMeeting findCrewMeeting(UUID meetingId) {
+		return this.crewMeetings.stream()
+			.filter(m -> m.getId().equals(meetingId) && m.getDeletedAt() == null)
+			.findFirst()
+			.orElseThrow(() -> new IllegalArgumentException("해당 모임은 크루에 존재하지 않습니다."));
 	}
 
 	@Override
