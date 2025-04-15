@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com._42195km.msa.common.aop.CheckPermission;
@@ -18,6 +19,7 @@ import com._42195km.msa.common.api.ApiResponse;
 import com._42195km.msa.rankingservice.application.dto.response.CreatePersonalRanking;
 import com._42195km.msa.rankingservice.application.dto.response.GetAllPersonalRankingResponseDto;
 import com._42195km.msa.rankingservice.application.dto.response.GetPersonalRankingResponseDto;
+import com._42195km.msa.rankingservice.application.dto.response.RankingDetailResponseDto;
 import com._42195km.msa.rankingservice.application.service.RankingServiceImpl;
 import com._42195km.msa.rankingservice.application.success.RankingSuccessCode;
 
@@ -89,6 +91,27 @@ public class RankingController {
 				.message(RankingSuccessCode.PERSONAL_RANKING_SEARCH_SUCCESS.getMessage())
 				.status(RankingSuccessCode.PERSONAL_RANKING_SEARCH_SUCCESS.getStatus())
 				.data(getPersonalRankingResponseDto)
+				.build()
+		);
+	}
+
+	@GetMapping("/v1/indiviudal-rankings/search")
+	@Operation(summary = "랭킹 키워드 검색", description = "랭킹 조회는 'MASTER' 만 가능'")
+	@CheckPermission(roles = {"MASTER"}, mode = CheckPermission.Mode.ALL)
+	public ResponseEntity<ApiResponse<Page<RankingDetailResponseDto>>> getAllPersonalRankings(
+		@RequestParam String keyword,
+		@PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.ASC) Pageable pageable
+	) {
+
+		Page<RankingDetailResponseDto> searchAllRankings = rankingServiceImpl.searchRankings(keyword, pageable);
+
+		return ResponseEntity.ok(
+			ApiResponse
+				.<Page<RankingDetailResponseDto>>builder()
+				.code(RankingSuccessCode.KEYWORD_PERSONAL_RANKING_SEARCH_SUCCESS.getCode())
+				.message(RankingSuccessCode.KEYWORD_PERSONAL_RANKING_SEARCH_SUCCESS.getMessage())
+				.status(RankingSuccessCode.KEYWORD_PERSONAL_RANKING_SEARCH_SUCCESS.getStatus())
+				.data(searchAllRankings)
 				.build()
 		);
 	}

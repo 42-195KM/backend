@@ -22,6 +22,7 @@ import com._42195km.msa.common.exception.CustomBusinessException;
 import com._42195km.msa.rankingservice.application.dto.response.CreatePersonalRanking;
 import com._42195km.msa.rankingservice.application.dto.response.GetAllPersonalRankingResponseDto;
 import com._42195km.msa.rankingservice.application.dto.response.GetPersonalRankingResponseDto;
+import com._42195km.msa.rankingservice.application.dto.response.RankingDetailResponseDto;
 import com._42195km.msa.rankingservice.application.exception.RankingException;
 import com._42195km.msa.rankingservice.domain.model.DividePersonal;
 import com._42195km.msa.rankingservice.domain.model.DomainType;
@@ -79,6 +80,10 @@ public class RankingServiceImpl implements RankingService {
 
 		Page<Ranking> rankings = rankingRepositoryImpl.findAllWithDetails(pageable);
 
+		if (rankings.isEmpty()) {
+			throw CustomBusinessException.from(RankingException.RANKING_EMPTY);
+		}
+
 		Page<GetAllPersonalRankingResponseDto> rankingPage = rankings.map(
 			GetAllPersonalRankingResponseDto::fromRanking
 		);
@@ -93,6 +98,23 @@ public class RankingServiceImpl implements RankingService {
 			.orElseThrow(() -> CustomBusinessException.from(RankingException.NOT_FOUND_PERSONAL_RANKING));
 
 		return GetPersonalRankingResponseDto.from(ranking);
+	}
+
+	@Override
+	public Page<RankingDetailResponseDto> searchRankings(String keyword, Pageable pageable) {
+
+		Page<RankingDetail> keywordRankings = rankingDetailRepositoryImpl.findByMetricNameOrderByRank(keyword,
+			pageable);
+
+		if (keywordRankings.isEmpty()) {
+			throw CustomBusinessException.from(RankingException.RANKING_EMPTY);
+		}
+
+		Page<RankingDetailResponseDto> keywordRankingPage = keywordRankings.map(
+			RankingDetailResponseDto::from
+		);
+
+		return keywordRankingPage;
 	}
 
 	private List<RunningRecordResponseDto.RunningRecordData> getAllRecord(String header) {

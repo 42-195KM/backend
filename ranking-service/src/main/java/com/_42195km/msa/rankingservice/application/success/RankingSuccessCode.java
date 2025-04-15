@@ -12,8 +12,11 @@ import lombok.RequiredArgsConstructor;
 public enum RankingSuccessCode implements ServiceCode {
 
 	PERSONAL_RANKING_SCHEDULING(HttpStatus.CREATED, "개인 랭킹 스케쥴링 완료", "S_PERSONAL_RANKING_SCHEDULING"),
-	PERSONAL_RANKING_ALL_SEARCH_SUCCESS(HttpStatus.OK, "모든 랭킹 조회 완료", "S_PERSONAL_RANKING_ALL_SEARCH_SUCCESS"),
-	PERSONAL_RANKING_SEARCH_SUCCESS(HttpStatus.OK, "단건 랭킹 조회 완료", "S_PERSONAL_RANKING_SEARCH_SUCCESS"),
+	PERSONAL_RANKING_ALL_SEARCH_SUCCESS(HttpStatus.OK, "모든 랭킹 조회가 성공적으로 완료되었습니다.",
+		"S_PERSONAL_RANKING_ALL_SEARCH_SUCCESS"),
+	PERSONAL_RANKING_SEARCH_SUCCESS(HttpStatus.OK, "단건 랭킹 조회가 성공적으로 완료되었습니다.", "S_PERSONAL_RANKING_SEARCH_SUCCESS"),
+	KEYWORD_PERSONAL_RANKING_SEARCH_SUCCESS(HttpStatus.OK, "키워드 조회가 성공적으로 완료되었습니다.",
+		"S_KEYWORD_PERSONAL_RANKING_SEARCH_SUCCESS"),
 	;
 
 	private final HttpStatus httpStatus;

@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 public enum RankingException implements ServiceCode {
 
 	NOT_FOUND_PERSONAL_RANKING(HttpStatus.NOT_FOUND, "개인 랭킹을 찾지 못했습니다.", "E_NOT_FOUND_PERSONAL_RANKING"),
+	RANKING_EMPTY(HttpStatus.NOT_FOUND, "랭킹 리스트가 비었습니다.", "E_RANKING_EMPTY"),
 	;
 
 	private final HttpStatus httpStatus;

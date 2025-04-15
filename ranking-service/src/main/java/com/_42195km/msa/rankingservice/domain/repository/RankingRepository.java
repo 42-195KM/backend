@@ -16,4 +16,5 @@ public interface RankingRepository {
 	Page<Ranking> findAllWithDetails(Pageable pageable);
 
 	Optional<Ranking> findWithDetails(UUID individualRankingId);
+
 }
