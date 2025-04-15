@@ -19,6 +19,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "p_crew_member_mapping")
@@ -33,6 +34,7 @@ public class CrewMemberMapping extends BaseEntity {
 
 	@ManyToOne
 	@JoinColumn(name = "crew_id", nullable = false)
+	@Setter
 	private Crew crew;
 
 	@ManyToOne

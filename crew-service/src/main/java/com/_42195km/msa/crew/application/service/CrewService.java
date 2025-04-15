@@ -4,15 +4,21 @@ import static com._42195km.msa.crew.domain.model.CrewMemberMapping.CrewMemberSta
 
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com._42195km.msa.crew.application.dto.request.CreateCrewAppRequestDto;
 import com._42195km.msa.crew.application.dto.response.CreateCrewAppResponseDto;
+import com._42195km.msa.crew.application.dto.response.GetSpecificCrewAppResponseDto;
 import com._42195km.msa.crew.application.dto.response.JoinCrewAppResponseDto;
+import com._42195km.msa.crew.application.dto.response.SearchCrewAppPagingResponseDto;
 import com._42195km.msa.crew.application.exception.CrewBusinessException;
 import com._42195km.msa.crew.application.exception.CrewServiceCode;
 import com._42195km.msa.crew.domain.model.Crew;
+import com._42195km.msa.crew.domain.model.CrewMember;
+import com._42195km.msa.crew.domain.model.CrewMemberMapping;
 import com._42195km.msa.crew.domain.repository.CrewRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -25,7 +31,7 @@ public class CrewService {
 	@Transactional
 	public CreateCrewAppResponseDto createCrew(CreateCrewAppRequestDto dto) {
 		if (crewRepository.existsByName(dto.name())) {
-			throw new CrewBusinessException(CrewServiceCode.CREW_NAME_DUPLICATED);
+			throw CrewBusinessException.from(CrewServiceCode.CREW_NAME_DUPLICATED);
 		}
 
 		Crew crew = Crew.builder()
@@ -91,4 +97,10 @@ public class CrewService {
 		return SearchCrewAppPagingResponseDto.from(crews);
 	}
 
+	public GetSpecificCrewAppResponseDto getSpecificCrew(UUID crewId) {
+		Crew crew = crewRepository.findById(crewId)
+			.orElseThrow(() -> CrewBusinessException.from(CrewServiceCode.CREW_NOT_FOUND));
+
+		return GetSpecificCrewAppResponseDto.from(crew);
+	}
 }
