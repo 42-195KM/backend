@@ -96,6 +96,7 @@ public class CrewService {
 			.build();
 
 		crew.addCrewMemberMapping(crewMemberMapping);
+		crewMember.addCrewMemberMapping(crewMemberMapping);
 		crewRepository.save(crew);
 
 		return new JoinCrewAppResponseDto(
