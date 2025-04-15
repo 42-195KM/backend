@@ -130,4 +130,12 @@ public class CrewService {
 		crew.setDeletedCrewMember();
 		crew.setDeleted();
 	}
+
+	public JoinCrewAppResponseDto agreeJoiningCrew(UUID crewId) {
+		return null;
+	}
+
+	public JoinCrewAppResponseDto rejectJoiningCrew(UUID crewId) {
+		return null;
+	}
 }

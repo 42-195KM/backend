@@ -113,4 +113,28 @@ public class CrewController {
 		);
 	}
 
+	@PatchMapping("/{crewId}/agree")
+	public ResponseEntity<ApiResponse<?>> agreeJoiningCrew(@PathVariable(name = "crewId") UUID crewId) {
+		return ResponseEntity.ok(
+			new ApiResponse<>(
+				CrewServiceCode.CREW_AGREE_JOIN_PATCH_SUCCESS.getCode(),
+				JoinCrewResponseDto.from(crewService.agreeJoiningCrew(crewId)),
+				CrewServiceCode.CREW_AGREE_JOIN_PATCH_SUCCESS.getMessage(),
+				CrewServiceCode.CREW_AGREE_JOIN_PATCH_SUCCESS.getStatus()
+			)
+		);
+	}
+
+	@PatchMapping("/{crewId}/reject")
+	public ResponseEntity<ApiResponse<?>> rejectJoiningCrew(@PathVariable(name = "crewId") UUID crewId) {
+		return ResponseEntity.ok(
+			new ApiResponse<>(
+				CrewServiceCode.CREW_REJECT_JOIN_PATCH_SUCCESS.getCode(),
+				JoinCrewResponseDto.from(crewService.rejectJoiningCrew(crewId)),
+				CrewServiceCode.CREW_REJECT_JOIN_PATCH_SUCCESS.getMessage(),
+				CrewServiceCode.CREW_REJECT_JOIN_PATCH_SUCCESS.getStatus()
+			)
+		);
+	}
+
 }
