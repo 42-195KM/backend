@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import com._42195km.msa.auth.domain.model.UserRole;
 import com._42195km.msa.auth.infrastructure.jwt.exception.JwtException;
+import com._42195km.msa.common.exception.CustomBusinessException;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -70,18 +71,31 @@ public class JwtUtil {
 			.compact();
 	}
 
-	// 토큰 검증
+	// 기본 토큰 검증
 	public void validateToken(String token) {
 		try {
 			Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(removePrefix(token));
 		} catch (SecurityException | MalformedJwtException | SignatureException e) {
-			throw new RuntimeException(JwtException.INVALID_JWT_SIGNATURE.getMessage());
+			throw CustomBusinessException.from(JwtException.INVALID_JWT_SIGNATURE);
 		} catch (ExpiredJwtException e) {
-			throw new RuntimeException(JwtException.EXPIRED_JWT_TOKEN.getMessage());
+			throw CustomBusinessException.from(JwtException.EXPIRED_JWT_TOKEN);
 		} catch (UnsupportedJwtException e) {
-			throw new RuntimeException(JwtException.UNSUPPORTED_JWT_TOKEN.getMessage());
+			throw CustomBusinessException.from(JwtException.UNSUPPORTED_JWT_TOKEN);
 		} catch (IllegalArgumentException e) {
-			throw new RuntimeException(JwtException.JWT_CLAIM_IS_EMPTY.getMessage());
+			throw CustomBusinessException.from(JwtException.JWT_CLAIM_IS_EMPTY);
+		}
+	}
+
+	// 액세스 토큰 검증 (만료 예외 제외)
+	public void validateAccessToken(String token) {
+		try {
+			Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(removePrefix(token));
+		} catch (SecurityException | MalformedJwtException | SignatureException e) {
+			throw CustomBusinessException.from(JwtException.INVALID_JWT_SIGNATURE);
+		} catch (UnsupportedJwtException e) {
+			throw CustomBusinessException.from(JwtException.UNSUPPORTED_JWT_TOKEN);
+		} catch (IllegalArgumentException e) {
+			throw CustomBusinessException.from(JwtException.JWT_CLAIM_IS_EMPTY);
 		}
 	}
 
@@ -95,7 +109,7 @@ public class JwtUtil {
 	}
 
 	// Prefix 제거
-	private String removePrefix(String token) {
+	public String removePrefix(String token) {
 		if (token != null && token.startsWith(BEARER_PREFIX)) {
 			return token.substring(BEARER_PREFIX.length());
 		}

@@ -49,7 +49,9 @@ public class SseServiceImpl implements SseService {
                             .name(eventName)
                             .data(eventData)
                     );
-        } catch (IOException e) {
+        } catch (IOException | IllegalStateException e) {
+            sseEmitterMap.remove(userId);
+            sseEmitterMap.get(userId).complete();
             throw CustomBusinessException.from(ChatbotCode.SSE_ERROR);
         }
 

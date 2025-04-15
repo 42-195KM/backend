@@ -83,6 +83,7 @@ public class UserController {
 
 	@GetMapping("/v1/app/users")
 	@Operation(summary = "모든 유저 조회", description = "유저 조회는 'MASTER' 만 가능")
+	// @CheckPermission(roles = {"MASTER"}, mode = CheckPermission.Mode.ALL)
 	public ResponseEntity<ApiResponse<Page<GetAllUserResponseDto>>> getAllUser(
 		@PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.ASC) Pageable pageable
 	) {

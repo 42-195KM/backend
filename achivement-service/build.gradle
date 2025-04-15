@@ -39,6 +39,8 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.kafka:spring-kafka-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    // for kafka message type serialize/deserialize
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
 
     implementation project(':common')
 }

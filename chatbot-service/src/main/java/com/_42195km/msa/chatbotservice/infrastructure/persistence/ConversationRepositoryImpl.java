@@ -1,6 +1,6 @@
 package com._42195km.msa.chatbotservice.infrastructure.persistence;
 
-import com._42195km.msa.chatbotservice.application.dto.request.SearchConversationAppDto;
+import com._42195km.msa.chatbotservice.application.dto.request.SearchConversationRequestAppDto;
 import com._42195km.msa.chatbotservice.domain.entity.Conversation;
 import com._42195km.msa.chatbotservice.domain.entity.QConversation;
 import com._42195km.msa.chatbotservice.domain.repository.ConversationRepository;
@@ -26,7 +26,7 @@ public class ConversationRepositoryImpl implements ConversationRepository {
     }
 
     @Override
-    public Page<Conversation> search(SearchConversationAppDto dto, Pageable pageable) {
+    public Page<Conversation> search(SearchConversationRequestAppDto dto, Pageable pageable) {
         QConversation conversation = QConversation.conversation;
 
         BooleanBuilder builder = new BooleanBuilder();

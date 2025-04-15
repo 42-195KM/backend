@@ -36,4 +36,21 @@ public record ApiResponse<T>(
 			.status(CommonServiceCode.METHOD_ARGUMENT_NOT_VALID.getStatus())
 			.build();
 	}
+
+	public static <T> ApiResponse<T> success(T data){
+		return ApiResponse.<T>builder()
+				.code(CommonServiceCode.SUCCESS.getCode())
+				.message(CommonServiceCode.SUCCESS.getMessage())
+				.data(data)
+				.build();
+	}
+
+	public static <T> ApiResponse<T> success(T data, String message){
+		return ApiResponse.<T>builder()
+				.code(CommonServiceCode.SUCCESS.getCode())
+				.data(data)
+				.message(message)
+				.build();
+	}
+
 }
