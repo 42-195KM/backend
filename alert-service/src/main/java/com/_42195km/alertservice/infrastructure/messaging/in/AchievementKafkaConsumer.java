@@ -19,11 +19,12 @@ public class AchievementKafkaConsumer {
     private final ObjectMapper objectMapper;
     @KafkaListener(topics = "achieve-achievement", groupId = "alert-group")
     public void AlertAchievement(Map<String, Object> eventMap) {
-
-
         AchieveEventDto achieveEventDto = objectMapper.convertValue(eventMap, AchieveEventDto.class);
 
         log.info("AchieveEventDto: {}", achieveEventDto);
+        String message = "축하합니다! " + achieveEventDto.getAchievementTitle() +" 업적을 달성하였습니다!!";
+
+        messageService.sendMessage(message,achieveEventDto.getUserMediaId());
 
     }
 
