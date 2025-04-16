@@ -21,7 +21,7 @@ import com._42195km.msa.common.api.ApiResponse;
 import com._42195km.msa.runningrecordservice.application.dto.request.CreateRunningRecordCommandDto;
 import com._42195km.msa.runningrecordservice.application.service.RunningRecordService;
 import com._42195km.msa.runningrecordservice.domain.model.RunningRecord;
-import com._42195km.msa.runningrecordservice.infrastructure.config.RunningRecordServiceCode;
+import com._42195km.msa.runningrecordservice.infrastructure.code.RunningRecordServiceCode;
 import com._42195km.msa.runningrecordservice.presentation.dto.request.CreateRunningRecordRequestDto;
 import com._42195km.msa.runningrecordservice.presentation.dto.response.CreateRunningRecordResponseDto;
 import com._42195km.msa.runningrecordservice.presentation.dto.response.DeleteRunningRecordResponseDto;

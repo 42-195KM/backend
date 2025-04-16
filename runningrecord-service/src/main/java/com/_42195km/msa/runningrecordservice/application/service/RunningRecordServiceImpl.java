@@ -14,7 +14,7 @@ import com._42195km.msa.common.exception.CustomBusinessException;
 import com._42195km.msa.runningrecordservice.application.dto.request.CreateRunningRecordCommandDto;
 import com._42195km.msa.runningrecordservice.domain.model.RunningRecord;
 import com._42195km.msa.runningrecordservice.domain.repository.RunningRecordRepository;
-import com._42195km.msa.runningrecordservice.infrastructure.config.RunningRecordServiceCode;
+import com._42195km.msa.runningrecordservice.infrastructure.code.RunningRecordServiceCode;
 import com._42195km.msa.runningrecordservice.infrastructure.messaging.out.RunningRecordEventProducer;
 import lombok.RequiredArgsConstructor;
 
