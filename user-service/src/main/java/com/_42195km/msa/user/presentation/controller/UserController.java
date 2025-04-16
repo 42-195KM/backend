@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com._42195km.msa.common.aop.CheckPermission;
 import com._42195km.msa.common.api.ApiResponse;
 import com._42195km.msa.user.application.dto.request.CreateUserRequestDto;
 import com._42195km.msa.user.application.dto.request.UpdateUserRequestDto;
@@ -34,7 +35,6 @@ import com._42195km.msa.user.application.success.UserSuccessCode;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -45,14 +45,6 @@ import lombok.RequiredArgsConstructor;
 public class UserController {
 
 	private final UserService userService;
-
-	@GetMapping("/v1/users/test")
-	@Operation(summary = "테스트", description = "헤더에 제대로 값이 전달 되었는지 확인용")
-	public ResponseEntity<Void> debugHeaders(HttpServletRequest request) {
-		String userId = request.getHeader("X-User-Id");
-		System.out.println(">>>> Controller에서 받은 X-User-Id: " + userId);
-		return ResponseEntity.ok().build();
-	}
 
 	@PostMapping("/v1/users")
 	@Operation(summary = "유저 회원가입", description = "유저 회원가입은 아무나 가능")
@@ -83,7 +75,7 @@ public class UserController {
 
 	@GetMapping("/v1/app/users")
 	@Operation(summary = "모든 유저 조회", description = "유저 조회는 'MASTER' 만 가능")
-	// @CheckPermission(roles = {"MASTER"}, mode = CheckPermission.Mode.ALL)
+	@CheckPermission(roles = {"MASTER"}, mode = CheckPermission.Mode.ALL)
 	public ResponseEntity<ApiResponse<Page<GetAllUserResponseDto>>> getAllUser(
 		@PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.ASC) Pageable pageable
 	) {
@@ -103,7 +95,7 @@ public class UserController {
 	}
 
 	@GetMapping("/v1/app/users/{userId}")
-	@Operation(summary = "단건 유저 조회", description = "유저 조회는 'MASTER' 만 가능")
+	@Operation(summary = "단건 유저 조회", description = "유저 조회는 아무나 가능")
 	public ResponseEntity<ApiResponse<GetUserResponseDto>> getUser(
 		@PathVariable UUID userId
 	) {
@@ -124,6 +116,7 @@ public class UserController {
 
 	@GetMapping("/v1/app/users/search")
 	@Operation(summary = "유저 키워드 검색", description = "유저 조회는 'MASTER' 만 가능\n 유저 검색 키워드는 '이름, 번호, 메일, 매체ID'")
+	@CheckPermission(roles = {"MASTER"}, mode = CheckPermission.Mode.ALL)
 	public ResponseEntity<ApiResponse<Page<SearchUserResponseDto>>> searchUser(
 		@RequestParam String keyword,
 		@PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.ASC) Pageable pageable
@@ -145,6 +138,7 @@ public class UserController {
 
 	@PatchMapping("/v1/app/users/{userId}")
 	@Operation(summary = "유저 정보 수정", description = "유저 정보 수정은 아무나 가능")
+	@CheckPermission(roles = {"MASTER", "NORMAL", "COMPANY"}, mode = CheckPermission.Mode.ANY)
 	public ResponseEntity<ApiResponse<UpdateUserResponseDto>> updateUser(
 		@PathVariable UUID userId,
 		@RequestBody @Valid UpdateUserRequestDto updateUserRequestDto
@@ -166,6 +160,7 @@ public class UserController {
 
 	@DeleteMapping("/v1/app/users/{userId}")
 	@Operation(summary = "유저 회원 탈퇴", description = "개인 회원 탈퇴는 해당 유저만 가능")
+	@CheckPermission(roles = {"MASTER", "NORMAL", "COMPANY"}, mode = CheckPermission.Mode.ANY)
 	public ResponseEntity<ApiResponse<DeleteUserResponseDto>> deleteUser(
 		@PathVariable UUID userId
 	) {
@@ -185,6 +180,7 @@ public class UserController {
 
 	@DeleteMapping("/v1/app/users/ban/{userId}")
 	@Operation(summary = "유저 밴", description = "유저 밴은 'MASTER' 만 가능")
+	@CheckPermission(roles = {"MASTER"}, mode = CheckPermission.Mode.ALL)
 	public ResponseEntity<ApiResponse<BanUserResponseDto>> banUser(
 		@PathVariable UUID userId
 	) {

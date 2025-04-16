@@ -20,7 +20,7 @@ public class UpdateUserResponseDto {
 
 	private String username;
 
-	private String password;
+	// private String password;
 
 	private String email;
 
@@ -39,7 +39,7 @@ public class UpdateUserResponseDto {
 		return UpdateUserResponseDto.builder()
 			.id(targetUser.getId())
 			.username(targetUser.getUsername())
-			.password(targetUser.getPassword())
+			// .password(targetUser.getPassword())
 			.email(targetUser.getEmail())
 			.birth(targetUser.getBirth())
 			.gender(targetUser.getGender())

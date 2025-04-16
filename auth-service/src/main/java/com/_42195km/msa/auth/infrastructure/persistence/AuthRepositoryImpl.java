@@ -25,4 +25,9 @@ public class AuthRepositoryImpl implements AuthRepository {
 	public Optional<Auth> findByUserUuid(UUID userUuId) {
 		return authJpaRepository.findByUserUuidAndIsDeletedIsFalse(userUuId);
 	}
+
+	@Override
+	public Auth save(Auth auth) {
+		return authJpaRepository.save(auth);
+	}
 }

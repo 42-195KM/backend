@@ -4,7 +4,6 @@ import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com._42195km.msa.competitionservice.domain.model.Competition;
@@ -21,5 +20,5 @@ public interface CompetitionRepository {
 
 	Competition findById(UUID id);
 
-	Page<Competition> findByHost(UUID hostId,Pageable pageable);
+	Page<Competition> findByHost(UUID hostId, Pageable pageable);
 }

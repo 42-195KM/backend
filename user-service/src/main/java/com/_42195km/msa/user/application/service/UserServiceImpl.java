@@ -18,9 +18,13 @@ import com._42195km.msa.user.application.dto.response.SearchUserResponseDto;
 import com._42195km.msa.user.application.dto.response.UpdateUserResponseDto;
 import com._42195km.msa.user.application.exception.UserException;
 import com._42195km.msa.user.domain.model.User;
+import com._42195km.msa.user.infrastructure.messaging.AuthServiceClient;
 import com._42195km.msa.user.infrastructure.messaging.out.DeleteUserEventProducer;
 import com._42195km.msa.user.infrastructure.persistence.UserRepositoryImpl;
+import com._42195km.msa.user.presentation.dto.request.AuthUserCreateSyncRequestDto;
+import com._42195km.msa.user.presentation.dto.request.AuthUserUpdateSyncRequestDto;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,13 +37,17 @@ public class UserServiceImpl implements UserService {
 
 	private final PasswordEncoder passwordEncoder;
 	private final UserRepositoryImpl userRepositoryImpl;
+	private final AuthServiceClient authServiceClient;
+	private final HttpServletRequest request;
 	private final DeleteUserEventProducer deleteUserEventProducer;
 
 	@Override
 	@Transactional
 	public CreateUserResponseDto createUser(@Valid CreateUserRequestDto createUserRequestDto) {
 
-		// TODO : 닉네임 중복 확인
+		if (userRepositoryImpl.findByUserName(createUserRequestDto.getUsername())) {
+			throw CustomBusinessException.from(UserException.DUPL_USER);
+		}
 
 		// 비밀번호 암호화
 		String encodedPassword = passwordEncoder.encode(createUserRequestDto.getPassword());
@@ -47,6 +55,16 @@ public class UserServiceImpl implements UserService {
 		User user = CreateUserRequestDto.toUser(createUserRequestDto, encodedPassword);
 
 		User savedUser = userRepositoryImpl.save(user);
+
+		// Auth-Service 동기화
+		AuthUserCreateSyncRequestDto authUserCreateSyncRequestDto = AuthUserCreateSyncRequestDto.builder()
+			.userId(savedUser.getId())
+			.username(savedUser.getUsername())
+			.password(encodedPassword)
+			.role(savedUser.getRole())
+			.build();
+
+		authServiceClient.syncCreateUser(authUserCreateSyncRequestDto);
 
 		return CreateUserResponseDto.fromUser(savedUser);
 	}
@@ -97,7 +115,28 @@ public class UserServiceImpl implements UserService {
 
 		User targetUser = findUserById(userId);
 
+		// 비밀번호가 들어온 경우에만 처리
+		if (updateUserRequestDto.getPassword() != null && !updateUserRequestDto.getPassword().isBlank()) {
+			boolean isSame = passwordEncoder.matches(updateUserRequestDto.getPassword(), targetUser.getPassword());
+
+			if (!isSame) {
+				String newEncodedPassword = passwordEncoder.encode(updateUserRequestDto.getPassword());
+				targetUser.changePassword(newEncodedPassword);
+			}
+		}
+
+		// 비밀번호 외의 필드 업데이트
 		targetUser.update(updateUserRequestDto);
+
+		AuthUserUpdateSyncRequestDto authUserUpdateSyncRequestDto = AuthUserUpdateSyncRequestDto.builder()
+			.userId(targetUser.getId())
+			.password(targetUser.getPassword())
+			.username(targetUser.getUsername())
+			.role(targetUser.getRole())
+			.build();
+
+		String header = request.getHeader("Authorization");
+		authServiceClient.syncUpdateUser(header, authUserUpdateSyncRequestDto);
 
 		return UpdateUserResponseDto.fromUser(targetUser);
 	}
@@ -110,6 +149,8 @@ public class UserServiceImpl implements UserService {
 
 		targetUser.setDeleted();
 
+		String header = request.getHeader("Authorization");
+		authServiceClient.syncDeleteUser(header, userId);
 		deleteUserEventProducer.sendDeleteUserEvent(targetUser.getId());
 	}
 
@@ -121,6 +162,8 @@ public class UserServiceImpl implements UserService {
 
 		targetUser.setDeleted();
 
+		String header = request.getHeader("Authorization");
+		authServiceClient.syncDeleteUser(header, userId);
 		deleteUserEventProducer.sendDeleteUserEvent(targetUser.getId());
 	}
 

@@ -88,6 +88,7 @@ public class AuthenticationFilter implements GlobalFilter {
 			path.equals("/api/v1/auth/validate-token") || // 토큰검증
 			path.equals("/api/v1/auth/refresh") || // 토큰 재발행
 			path.equals("/api/v1/users") ||    // 회원가입
+			path.equals("/api/v1/auths") ||
 			path.startsWith("/swagger-ui") || // Swagger UI
 			path.startsWith("/v3/api-docs"); // Swagger API Docs
 	}

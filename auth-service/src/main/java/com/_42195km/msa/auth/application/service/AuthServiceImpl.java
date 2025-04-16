@@ -17,7 +17,11 @@ import com._42195km.msa.auth.domain.model.UserRole;
 import com._42195km.msa.auth.infrastructure.jwt.JwtUtil;
 import com._42195km.msa.auth.infrastructure.persistence.AuthRepositoryImpl;
 import com._42195km.msa.auth.infrastructure.persistence.RedisRepositoryImpl;
+import com._42195km.msa.auth.presentation.dto.request.CreateAuthRequestDto;
 import com._42195km.msa.auth.presentation.dto.request.TokenRequestDto;
+import com._42195km.msa.auth.presentation.dto.request.UpdateAuthRequestDto;
+import com._42195km.msa.auth.presentation.dto.response.CreateAuthResponseDto;
+import com._42195km.msa.auth.presentation.dto.response.UpdateAuthResponseDto;
 import com._42195km.msa.auth.presentation.dto.response.ValidateTokenResponse;
 import com._42195km.msa.common.exception.CustomBusinessException;
 
@@ -126,6 +130,39 @@ public class AuthServiceImpl implements AuthService {
 			.build();
 
 		return validateTokenResponse;
+	}
+
+	@Override
+	@Transactional
+	public CreateAuthResponseDto createAuth(CreateAuthRequestDto createAuthRequestDto) {
+
+		Auth auth = CreateAuthRequestDto.toAuth(createAuthRequestDto);
+
+		Auth savedAuth = authRepositoryImpl.save(auth);
+
+		return CreateAuthResponseDto.from(savedAuth);
+	}
+
+	@Override
+	@Transactional
+	public UpdateAuthResponseDto updateAuth(UpdateAuthRequestDto updateAuthRequestDto) {
+
+		Auth auth = authRepositoryImpl.findByUserUuid(updateAuthRequestDto.getUserId())
+			.orElseThrow(() -> CustomBusinessException.from(AuthException.NOT_FOUND_AUTH_USER));
+
+		auth.update(updateAuthRequestDto);
+
+		return UpdateAuthResponseDto.from(auth);
+	}
+
+	@Override
+	@Transactional
+	public void deleteAuth(UUID userId) {
+
+		Auth auth = authRepositoryImpl.findByUserUuid(userId)
+			.orElseThrow(() -> CustomBusinessException.from(AuthException.NOT_FOUND_AUTH_USER));
+
+		auth.setDeleted();
 	}
 
 	/// 액세스 토큰 블랙리스트 처리 메서드

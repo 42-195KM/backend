@@ -7,10 +7,12 @@ import org.hibernate.annotations.UuidGenerator;
 
 import com._42195km.msa.common.BaseEntity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -33,13 +35,14 @@ public class CrewMemberMapping extends BaseEntity {
 	@UuidGenerator
 	private UUID id;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "crew_id", nullable = false)
 	@Setter
 	private Crew crew;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinColumn(name = "crew_member_id", nullable = false)
+	@Setter
 	private CrewMember crewMember;
 
 	@Enumerated(EnumType.STRING)
@@ -72,13 +75,10 @@ public class CrewMemberMapping extends BaseEntity {
 	public void expel() {
 		if (this.status == CrewMemberStatus.APPROVED) {
 			this.status = CrewMemberStatus.BLACKLIST;
+			return;
 		}
 
 		throw new IllegalStateException("크루원이 아닌 사용자에게 적용할 수 없습니다");
-	}
-
-	public enum CrewMemberStatus {
-		PENDING, APPROVED, REJECTED, BLACKLIST
 	}
 
 	@Override
@@ -93,5 +93,9 @@ public class CrewMemberMapping extends BaseEntity {
 	@Override
 	public int hashCode() {
 		return Objects.hashCode(id);
+	}
+
+	public enum CrewMemberStatus {
+		PENDING, APPROVED, REJECTED, BLACKLIST
 	}
 }

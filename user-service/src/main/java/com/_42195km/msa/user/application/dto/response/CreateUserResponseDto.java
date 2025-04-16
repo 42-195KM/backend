@@ -20,7 +20,7 @@ public class CreateUserResponseDto {
 
 	private String username;
 
-	private String password;
+	// private String password;
 
 	private String email;
 
@@ -38,7 +38,7 @@ public class CreateUserResponseDto {
 		return CreateUserResponseDto.builder()
 			.id(savedUser.getId())
 			.username(savedUser.getUsername())
-			.password(savedUser.getPassword())
+			// .password(savedUser.getPassword())
 			.email(savedUser.getEmail())
 			.birth(savedUser.getBirth())
 			.gender(savedUser.getGender())
