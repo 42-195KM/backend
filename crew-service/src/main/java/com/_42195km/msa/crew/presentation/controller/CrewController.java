@@ -1,0 +1,222 @@
+package com._42195km.msa.crew.presentation.controller;
+
+import java.util.UUID;
+
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com._42195km.msa.common.api.ApiResponse;
+import com._42195km.msa.common.resolver.UserInfo;
+import com._42195km.msa.common.resolver.UserInfoDto;
+import com._42195km.msa.crew.application.exception.CrewServiceCode;
+import com._42195km.msa.crew.application.service.CrewService;
+import com._42195km.msa.crew.presentation.dto.request.CreateCrewRequestDto;
+import com._42195km.msa.crew.presentation.dto.request.HandleCrewJoinRequestDto;
+import com._42195km.msa.crew.presentation.dto.request.UpdateCrewRequestDto;
+import com._42195km.msa.crew.presentation.dto.response.CreateCrewResponseDto;
+import com._42195km.msa.crew.presentation.dto.response.ExpelCrewMemberResponseDto;
+import com._42195km.msa.crew.presentation.dto.response.GetSpecificCrewMemberResponseDto;
+import com._42195km.msa.crew.presentation.dto.response.GetSpecificCrewResponseDto;
+import com._42195km.msa.crew.presentation.dto.response.HandleCrewJoinResponseDto;
+import com._42195km.msa.crew.presentation.dto.response.JoinCrewResponseDto;
+import com._42195km.msa.crew.presentation.dto.response.SearchCrewMemberPagingResponseDto;
+import com._42195km.msa.crew.presentation.dto.response.SearchCrewPagingResponseDto;
+import com._42195km.msa.crew.presentation.dto.response.UpdateCrewResponseDto;
+
+import lombok.RequiredArgsConstructor;
+
+@RestController
+@RequestMapping("/api/v1/crews")
+@RequiredArgsConstructor
+public class CrewController {
+	private final CrewService crewService;
+
+	@PostMapping
+	public ResponseEntity<ApiResponse<?>> createCrew(@RequestBody CreateCrewRequestDto dto,
+		@UserInfo UserInfoDto userInfoDto) {
+		return ResponseEntity.ok(
+			new ApiResponse<>(
+				CrewServiceCode.CREW_CREATE_POST_SUCCESS.getCode(),
+				CreateCrewResponseDto.from(crewService.createCrew(dto.toAppDto(),
+					userInfoDto.userId())),
+				CrewServiceCode.CREW_CREATE_POST_SUCCESS.getMessage(),
+				CrewServiceCode.CREW_CREATE_POST_SUCCESS.getStatus()
+			)
+		);
+	}
+
+	@PostMapping("/{crewId}/join")
+	public ResponseEntity<ApiResponse<?>> applyJoiningCrew(@PathVariable(name = "crewId") UUID crewId,
+		@UserInfo UserInfoDto userInfoDto) {
+		return ResponseEntity.ok(
+			new ApiResponse<>(
+				CrewServiceCode.CREW_APPLY_JOIN_POST_SUCCESS.getCode(),
+				JoinCrewResponseDto.from(crewService.applyJoiningCrew(crewId, userInfoDto.userId())),
+				CrewServiceCode.CREW_APPLY_JOIN_POST_SUCCESS.getMessage(),
+				CrewServiceCode.CREW_APPLY_JOIN_POST_SUCCESS.getStatus()
+			)
+		);
+
+	}
+
+	@GetMapping("/{crewId}")
+	public ResponseEntity<ApiResponse<?>> getSpecificCrew(@PathVariable(name = "crewId") UUID crewId) {
+		return ResponseEntity.ok(
+			new ApiResponse<>(
+				CrewServiceCode.CREW_SPECIFIC_GET_SUCCESS.getCode(),
+				GetSpecificCrewResponseDto.from(crewService.getSpecificCrew(crewId)),
+				CrewServiceCode.CREW_SPECIFIC_GET_SUCCESS.getMessage(),
+				CrewServiceCode.CREW_SPECIFIC_GET_SUCCESS.getStatus()
+			)
+		);
+	}
+
+	@GetMapping("/search")
+	public ResponseEntity<ApiResponse<?>> searchCrew(
+		@RequestParam(name = "keyword", required = false) String keyword,
+		@PageableDefault(size = 30, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
+	) {
+		return ResponseEntity.ok(
+			new ApiResponse<>(
+				CrewServiceCode.CREW_SEARCH_GET_SUCCESS.getCode(),
+				SearchCrewPagingResponseDto.from(crewService.searchCrew(keyword, pageable)),
+				CrewServiceCode.CREW_SEARCH_GET_SUCCESS.getMessage(),
+				CrewServiceCode.CREW_SEARCH_GET_SUCCESS.getStatus()
+			)
+		);
+	}
+
+	@PatchMapping("/{crewId}")
+	public ResponseEntity<ApiResponse<?>> updateCrew(@PathVariable(name = "crewId") UUID crewId,
+		@UserInfo UserInfoDto userInfoDto,
+		@RequestBody UpdateCrewRequestDto dto) {
+		return ResponseEntity.ok(
+			new ApiResponse<>(
+				CrewServiceCode.CREW_UPDATE_PATCH_SUCCESS.getCode(),
+				UpdateCrewResponseDto.from(crewService.updateCrew(crewId, userInfoDto.userId(), dto.toAppDto())),
+				CrewServiceCode.CREW_UPDATE_PATCH_SUCCESS.getMessage(),
+				CrewServiceCode.CREW_UPDATE_PATCH_SUCCESS.getStatus()
+			)
+		);
+	}
+
+	@DeleteMapping("/{crewId}")
+	public ResponseEntity<ApiResponse<?>> deleteCrew(@PathVariable(name = "crewId") UUID crewId,
+		@UserInfo UserInfoDto userInfoDto) {
+		crewService.deleteCrew(crewId, userInfoDto.userId());
+		return ResponseEntity.ok(
+			new ApiResponse<>(
+				CrewServiceCode.CREW_DELETE_DELETE_SUCCESS.getCode(),
+				null,
+				CrewServiceCode.CREW_DELETE_DELETE_SUCCESS.getMessage(),
+				CrewServiceCode.CREW_DELETE_DELETE_SUCCESS.getStatus()
+			)
+		);
+	}
+
+	@PatchMapping("/{crewId}/agree")
+	public ResponseEntity<ApiResponse<?>> agreeJoiningCrew(
+		@RequestBody HandleCrewJoinRequestDto dto,
+		@PathVariable(name = "crewId") UUID crewId,
+		@UserInfo UserInfoDto userInfoDto) {
+		return ResponseEntity.ok(
+			new ApiResponse<>(
+				CrewServiceCode.CREW_AGREE_JOIN_PATCH_SUCCESS.getCode(),
+				HandleCrewJoinResponseDto.from(crewService.agreeJoiningCrew(
+					dto.toAppDto(),
+					crewId,
+					userInfoDto.userId())),
+				CrewServiceCode.CREW_AGREE_JOIN_PATCH_SUCCESS.getMessage(),
+				CrewServiceCode.CREW_AGREE_JOIN_PATCH_SUCCESS.getStatus()
+			)
+		);
+	}
+
+	@PatchMapping("/{crewId}/reject")
+	public ResponseEntity<ApiResponse<?>> rejectJoiningCrew(
+		@RequestBody HandleCrewJoinRequestDto dto,
+		@PathVariable(name = "crewId") UUID crewId,
+		@UserInfo UserInfoDto userInfoDto) {
+		return ResponseEntity.ok(
+			new ApiResponse<>(
+				CrewServiceCode.CREW_REJECT_JOIN_PATCH_SUCCESS.getCode(),
+				HandleCrewJoinResponseDto.from(crewService.rejectJoiningCrew(
+					dto.toAppDto(),
+					crewId,
+					userInfoDto.userId())),
+				CrewServiceCode.CREW_REJECT_JOIN_PATCH_SUCCESS.getMessage(),
+				CrewServiceCode.CREW_REJECT_JOIN_PATCH_SUCCESS.getStatus()
+			)
+		);
+	}
+
+	@GetMapping("/{crewId}/members/search")
+	public ResponseEntity<ApiResponse<?>> searchMembers(
+		@PathVariable(name = "crewId") UUID crewId,
+		@PageableDefault(size = 30, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
+	) {
+		//  TODO : 크루원 프로필이나 닉네임을 추가
+
+		return ResponseEntity.ok(
+			new ApiResponse<>(
+				CrewServiceCode.CREW_MEMBER_SEARCH_GET_SUCCESS.getCode(),
+				SearchCrewMemberPagingResponseDto.from(crewService.searchCrewMember(crewId, pageable)),
+				CrewServiceCode.CREW_MEMBER_SEARCH_GET_SUCCESS.getMessage(),
+				CrewServiceCode.CREW_MEMBER_SEARCH_GET_SUCCESS.getStatus()
+			)
+		);
+	}
+
+	@GetMapping("/{crewId}/members/{memberId}")
+	public ResponseEntity<ApiResponse<?>> getMember(@PathVariable(name = "crewId") UUID crewId,
+		@PathVariable(name = "memberId") UUID memberId) {
+		return ResponseEntity.ok(
+			new ApiResponse<>(
+				CrewServiceCode.CREW_MEMBER_SPECIFIC_GET_SUCCESS.getCode(),
+				GetSpecificCrewMemberResponseDto.from(crewService.getSpecificCrewMember(crewId, memberId)),
+				CrewServiceCode.CREW_MEMBER_SPECIFIC_GET_SUCCESS.getMessage(),
+				CrewServiceCode.CREW_MEMBER_SPECIFIC_GET_SUCCESS.getStatus()
+			)
+		);
+	}
+
+	@DeleteMapping("/{crewId}/members/{memberId}")
+	public ResponseEntity<ApiResponse<?>> expelMember(@PathVariable(name = "crewId") UUID crewId,
+		@PathVariable(name = "memberId") UUID memberId,
+		@UserInfo UserInfoDto userInfoDto) {
+		return ResponseEntity.ok(
+			new ApiResponse<>(
+				CrewServiceCode.CREW_EXPEL_DELETE_SUCCESS.getCode(),
+				ExpelCrewMemberResponseDto.from(crewService.expel(crewId, memberId, userInfoDto.userId())),
+				CrewServiceCode.CREW_EXPEL_DELETE_SUCCESS.getMessage(),
+				CrewServiceCode.CREW_EXPEL_DELETE_SUCCESS.getStatus()
+			)
+		);
+	}
+
+	@DeleteMapping("/{crewId}/members/{memberId}/leave")
+	public ResponseEntity<ApiResponse<?>> leaveMember(@PathVariable(name = "crewId") UUID crewId,
+		@PathVariable(name = "memberId") UUID memberId,
+		@UserInfo UserInfoDto userInfoDto) {
+		crewService.leaveCrew(crewId, memberId, userInfoDto.userId());
+		return ResponseEntity.ok(
+			new ApiResponse<>(
+				CrewServiceCode.CREW_LEAVE_DELETE_SUCCESS.getCode(),
+				null,
+				CrewServiceCode.CREW_LEAVE_DELETE_SUCCESS.getMessage(),
+				CrewServiceCode.CREW_LEAVE_DELETE_SUCCESS.getStatus()
+			)
+		);
+	}
+}
