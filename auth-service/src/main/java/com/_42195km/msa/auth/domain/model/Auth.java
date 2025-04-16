@@ -2,6 +2,7 @@ package com._42195km.msa.auth.domain.model;
 
 import java.util.UUID;
 
+import com._42195km.msa.auth.presentation.dto.request.UpdateAuthRequestDto;
 import com._42195km.msa.common.BaseEntity;
 
 import jakarta.persistence.Column;
@@ -13,6 +14,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -39,4 +41,24 @@ public class Auth extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	private UserRole role;
 
+	@Builder
+	public Auth(
+		UUID userUuid,
+		String username,
+		String password,
+		UserRole role
+	) {
+		this.userUuid = userUuid;
+		this.username = username;
+		this.password = password;
+		this.role = role;
+	}
+
+	public void update(UpdateAuthRequestDto updateAuthRequestDto) {
+
+		this.userUuid = updateAuthRequestDto.getUserId();
+		this.username = updateAuthRequestDto.getUsername();
+		this.password = updateAuthRequestDto.getPassword();
+		this.role = updateAuthRequestDto.getRole();
+	}
 }

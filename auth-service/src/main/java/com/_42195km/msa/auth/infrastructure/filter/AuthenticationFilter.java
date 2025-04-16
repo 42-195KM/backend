@@ -33,7 +33,9 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 
 		// 로그인 요청은 필터에서 건너뛰고, 컨트롤러에서 처리
 		if (request.getRequestURI().equals("/api/v1/auth/login") ||
-			request.getRequestURI().equals("/api/v1/auth/refresh")) {
+			request.getRequestURI().equals("/api/v1/auth/refresh") ||
+			request.getRequestURI().equals("/api/v1/auths")
+		) {
 			log.info("요청 제외 필터");
 			filterChain.doFilter(request, response);
 			return;

@@ -41,4 +41,9 @@ public class UserRepositoryImpl implements UserRepository {
 	public Page<User> searchUser(String keyword, Pageable pageable) {
 		return userJpaRepository.searchByKeyword(keyword, pageable);
 	}
+
+	@Override
+	public boolean findByUserName(String username) {
+		return userJpaRepository.existsByUsernameAndIsDeletedIsFalse(username);
+	}
 }
