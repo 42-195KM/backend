@@ -3,6 +3,7 @@ package com._42195km.msa.achievementservice.domain.model;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UuidGenerator;
@@ -69,5 +70,11 @@ public class Achievement extends BaseEntity {
 			.criteriaInequality(CriteriaInequality.valueOf(createAchievementCommandDto.getCriteriaType()))
 			.achievementUsers(new HashSet<>())
 			.build();
+	}
+
+	public Set<AchievementUser> getAchievementUsers() {
+		return achievementUsers.stream().filter(achievementUser -> {
+			return !achievementUser.isDeleted();
+		}).collect(Collectors.toSet());
 	}
 }
