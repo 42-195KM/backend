@@ -11,7 +11,7 @@ import org.springframework.data.repository.query.Param;
 
 import com._42195km.msa.competitionservice.domain.model.Competition;
 
-public interface CompetitionJpaRepository extends JpaRepository <Competition, UUID>{
+public interface CompetitionJpaRepository extends JpaRepository<Competition, UUID> {
 
 	Page<Competition> findByIsDeletedFalse(Pageable pageable);
 

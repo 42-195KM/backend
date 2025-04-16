@@ -14,6 +14,9 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ApplyCompetitionRequestDto {
 
+	@Schema(example = "872dd912-8616-4595-aa94-5737bf633012")
+	private  UUID competitionId;
+
 	@Schema(example = "1845b196-7132-47c8-a233-193a6ebf5278")
 	private UUID participantId;
 }

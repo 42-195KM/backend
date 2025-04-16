@@ -21,4 +21,10 @@ public class CancelParticipantRequestDto {
 
 	@Schema(example = "1845b196-7132-47c8-a233-193a6ebf5278")
 	private UUID participantId;
+
+	@Schema(example = "일정 변동")
+	private String reason;
+
+	@Schema(example = "1")
+	private boolean refundRequired;
 }

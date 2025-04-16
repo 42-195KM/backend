@@ -8,9 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,11 +19,9 @@ import com._42195km.msa.competitionservice.application.dto.response.SearchPartic
 import com._42195km.msa.competitionservice.application.exception.CompetitionServiceCode;
 import com._42195km.msa.competitionservice.application.mapper.ParticipantMapper;
 import com._42195km.msa.competitionservice.application.service.ParticipantService;
-import com._42195km.msa.competitionservice.domain.repository.ParticipantRepository;
 import com._42195km.msa.competitionservice.presentation.dto.request.CancelParticipantRequestDto;
 import com._42195km.msa.competitionservice.presentation.dto.request.GetRequestDto;
 import com._42195km.msa.competitionservice.presentation.dto.request.SearchRequestDto;
-import com._42195km.msa.competitionservice.presentation.dto.response.ParticipantResponseDto;
 import com._42195km.msa.competitionservice.presentation.dto.response.SearchResponseDto;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -42,8 +38,10 @@ public class ParticipantController {
 
 	@GetMapping("/{competitionId}")
 	@Operation(summary = "대회 참가자 조회")
-	public ResponseEntity<?> getParticipants(@ModelAttribute @Valid GetRequestDto requestDto, @RequestParam("competitionId") UUID competitionId) {
-		Page<ParticipantAppResponseDto> participants = participantService.getParticipants(requestDto.toPageable(), competitionId);
+	public ResponseEntity<?> getParticipants(@ModelAttribute @Valid GetRequestDto requestDto,
+		@RequestParam("competitionId") UUID competitionId) {
+		Page<ParticipantAppResponseDto> participants = participantService.getParticipants(requestDto.toPageable(),
+			competitionId);
 		return ResponseEntity.ok(new ApiResponse<>(CompetitionServiceCode.COMPETITION_CREATE_SUCCESS.getCode(),
 			participants,
 			CompetitionServiceCode.COMPETITION_CREATE_SUCCESS.getMessage(),
@@ -53,7 +51,8 @@ public class ParticipantController {
 	@GetMapping("/search")
 	@Operation(summary = "참가자 검색")
 	public ResponseEntity<?> getParticipants(@ParameterObject @Valid SearchRequestDto requestDto) {
-		Page<SearchParticipantAppResponseDto> participants = participantService.searchParticipants(requestDto.keyword(),requestDto.searchType(),requestDto.toPageable());
+		Page<SearchParticipantAppResponseDto> participants = participantService.searchParticipants(requestDto.keyword(),
+			requestDto.searchType(), requestDto.toPageable());
 		Page<SearchResponseDto> presentationParticipants = participantMapper.toPresentationDtoPage(participants);
 		return ResponseEntity.ok(new ApiResponse<>(CompetitionServiceCode.PARTICIPANT_SEARCH_SUCCESS.getCode(),
 			presentationParticipants,
@@ -64,7 +63,8 @@ public class ParticipantController {
 	@GetMapping("/show/{userId}")
 	@Operation(summary = "참가자 id로 조회")
 	public ResponseEntity<?> getParticipant(@ParameterObject SearchRequestDto requestDto) {
-		Page<SearchParticipantAppResponseDto> participant = participantService.getParticipant(requestDto.keyword(),requestDto.toPageable());
+		Page<SearchParticipantAppResponseDto> participant = participantService.getParticipant(requestDto.keyword(),
+			requestDto.toPageable());
 		Page<SearchResponseDto> presentationParticipant = participantMapper.toPresentationDtoPage(participant);
 		return ResponseEntity.ok(new ApiResponse<>(CompetitionServiceCode.PARTICIPANT_GET_SUCCESS.getCode(),
 			presentationParticipant,
