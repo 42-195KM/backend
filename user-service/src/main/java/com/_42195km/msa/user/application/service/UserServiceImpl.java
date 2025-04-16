@@ -19,6 +19,7 @@ import com._42195km.msa.user.application.dto.response.UpdateUserResponseDto;
 import com._42195km.msa.user.application.exception.UserException;
 import com._42195km.msa.user.domain.model.User;
 import com._42195km.msa.user.infrastructure.messaging.AuthServiceClient;
+import com._42195km.msa.user.infrastructure.messaging.out.DeleteUserEventProducer;
 import com._42195km.msa.user.infrastructure.persistence.UserRepositoryImpl;
 import com._42195km.msa.user.presentation.dto.request.AuthUserCreateSyncRequestDto;
 import com._42195km.msa.user.presentation.dto.request.AuthUserUpdateSyncRequestDto;
@@ -38,6 +39,7 @@ public class UserServiceImpl implements UserService {
 	private final UserRepositoryImpl userRepositoryImpl;
 	private final AuthServiceClient authServiceClient;
 	private final HttpServletRequest request;
+	private final DeleteUserEventProducer deleteUserEventProducer;
 
 	@Override
 	@Transactional
@@ -149,6 +151,7 @@ public class UserServiceImpl implements UserService {
 
 		String header = request.getHeader("Authorization");
 		authServiceClient.syncDeleteUser(header, userId);
+		deleteUserEventProducer.sendDeleteUserEvent(targetUser.getId());
 	}
 
 	@Transactional
@@ -161,6 +164,7 @@ public class UserServiceImpl implements UserService {
 
 		String header = request.getHeader("Authorization");
 		authServiceClient.syncDeleteUser(header, userId);
+		deleteUserEventProducer.sendDeleteUserEvent(targetUser.getId());
 	}
 
 	private User findUserById(UUID userId) {
