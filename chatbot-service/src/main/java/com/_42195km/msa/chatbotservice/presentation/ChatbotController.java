@@ -33,16 +33,15 @@ public class ChatbotController {
     private final EmbeddingService embeddingService;
     private final ConversationService conversationService;
 
-    @GetMapping(value = "/subscribe/{userId}", produces = "text/event-stream")
-    public SseEmitter subscribe(@PathVariable UUID userId){
-        return sseService.subscribe(userId);
-    }
 
     @PostMapping
-    public ResponseEntity<?> sendQuestion(@RequestBody QuestionRequestDto questionRequestDto) {
+    public SseEmitter sendQuestion(@RequestBody QuestionRequestDto questionRequestDto) {
+        SseEmitter sseEmitter = sseService.subscribe(questionRequestDto.getUserId());
         aiService.sendQuestion(ChatbotMapper.toQuestionRequestAppDto(questionRequestDto));
-        return ResponseEntity.ok().build();
+        return sseEmitter;
+
     }
+
 
     @GetMapping("/conversations/search")
     public ResponseEntity<ApiResponse<Page<SearchConversationResponseDto>>> search(@RequestBody SearchConversationRequestDto searchConversationDto,
@@ -58,9 +57,7 @@ public class ChatbotController {
     @PostMapping("/embedding")
     public ResponseEntity<?> saveEmbeddingInfo(@RequestBody String embeddingRequest){
         embeddingService.saveEmbeddingInfo(embeddingRequest);
-        return ResponseEntity.ok(ApiResponse.builder()
-                                        .code(CommonServiceCode.SUCCESS.getCode())
-                                        .build());
+        return ResponseEntity.ok(ApiResponse.success(CommonServiceCode.SUCCESS));
 
     }
 

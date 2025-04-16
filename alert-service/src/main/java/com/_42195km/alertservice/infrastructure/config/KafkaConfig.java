@@ -28,9 +28,6 @@ public class KafkaConfig {
     @Value("${spring.kafka.bootstrap-servers}")
     private String kafkaBootstrapServers;
 
-    @Value("${spring.kafka.consumer.group-id}")
-    private String groupId;
-
     /**
      * 공통 Producer 설정: 이벤트 타입에 관계없이 Object로 처리
      * @return
@@ -53,7 +50,6 @@ public class KafkaConfig {
     public ConsumerFactory<String, Object> consumerFactory() {
         Map<String, Object> configProps = new HashMap<>();
         configProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaBootstrapServers);
-        configProps.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
         configProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         configProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, CustomDeserializer.class);
         // 모든 패키지의 클래스 역직렬화 허용 (보안에 주의)
