@@ -2,6 +2,7 @@ package com._42195km.msa.crew.application.service;
 
 import static com._42195km.msa.crew.domain.model.CrewMemberMapping.CrewMemberStatus.*;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -19,6 +20,7 @@ import com._42195km.msa.crew.application.dto.response.CreateCrewAppResponseDto;
 import com._42195km.msa.crew.application.dto.response.CreateCrewMeetingAppResponseDto;
 import com._42195km.msa.crew.application.dto.response.ExpelCrewMemberAppResponseDto;
 import com._42195km.msa.crew.application.dto.response.GetSpecificCrewAppResponseDto;
+import com._42195km.msa.crew.application.dto.response.GetSpecificCrewMeetingAppResponseDto;
 import com._42195km.msa.crew.application.dto.response.GetSpecificCrewMemberAppResponseDto;
 import com._42195km.msa.crew.application.dto.response.HandleCrewJoinAppResponseDto;
 import com._42195km.msa.crew.application.dto.response.JoinCrewAppResponseDto;
@@ -356,6 +358,33 @@ public class CrewService {
 			crewMeeting.getDescription(),
 			crewMeeting.getType().name(),
 			crewMeeting.getCapacity()
+		);
+	}
+
+	public GetSpecificCrewMeetingAppResponseDto getSpecificCrewMeeting(UUID crewId, UUID meetingId) {
+		Crew crew = crewRepository.findByIdAndDeletedAtIsNull(crewId)
+			.orElseThrow(() -> CrewBusinessException.from(CrewServiceCode.CREW_NOT_FOUND));
+
+		CrewMeeting crewMeeting = crew.findCrewMeeting(meetingId);
+		List<CrewMeetingMemberMapping> crewMeetingMemberMappings = crewMeeting.getCrewMeetingMemberMappings();
+
+		return new GetSpecificCrewMeetingAppResponseDto(
+			crewMeeting.getId(),
+			crew.getId(),
+			crewMeeting.getName(),
+			crewMeeting.getMeetingDateTime(),
+			crewMeeting.getHour(),
+			crewMeeting.getDescription(),
+			crewMeeting.getType().name(),
+			crewMeeting.getCapacity(),
+			crewMeetingMemberMappings.stream()
+				.map(mapping -> new GetSpecificCrewMeetingAppResponseDto.MeetingMemberAppInfo(
+					mapping.getId(),
+					mapping.getMeetingMember().getUserId(),
+					mapping.getStatus().name()
+
+				))
+				.toList()
 		);
 	}
 

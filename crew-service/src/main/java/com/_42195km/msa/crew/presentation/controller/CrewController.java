@@ -29,6 +29,7 @@ import com._42195km.msa.crew.presentation.dto.request.UpdateCrewRequestDto;
 import com._42195km.msa.crew.presentation.dto.response.CreateCrewMeetingResponseDto;
 import com._42195km.msa.crew.presentation.dto.response.CreateCrewResponseDto;
 import com._42195km.msa.crew.presentation.dto.response.ExpelCrewMemberResponseDto;
+import com._42195km.msa.crew.presentation.dto.response.GetSpecificCrewMeetingResponseDto;
 import com._42195km.msa.crew.presentation.dto.response.GetSpecificCrewMemberResponseDto;
 import com._42195km.msa.crew.presentation.dto.response.GetSpecificCrewResponseDto;
 import com._42195km.msa.crew.presentation.dto.response.HandleCrewJoinResponseDto;
@@ -273,6 +274,20 @@ public class CrewController {
 				)),
 				CrewServiceCode.CREW_UPDATE_MEETING_SUCCESS.getMessage(),
 				CrewServiceCode.CREW_UPDATE_MEETING_SUCCESS.getStatus()
+			)
+		);
+	}
+
+	@GetMapping("/{crewId}/meetings/{meetingId}")
+	public ResponseEntity<ApiResponse<?>> getSpecificCrewMeeting(
+		@PathVariable(name = "crewId") UUID crewId,
+		@PathVariable(name = "meetingId") UUID meetingId) {
+		return ResponseEntity.ok(
+			new ApiResponse<>(
+				CrewServiceCode.CREW_SPECIFIC_GET_SUCCESS.getCode(),
+				GetSpecificCrewMeetingResponseDto.from(crewService.getSpecificCrewMeeting(crewId, meetingId)),
+				CrewServiceCode.CREW_SPECIFIC_GET_SUCCESS.getMessage(),
+				CrewServiceCode.CREW_SPECIFIC_GET_SUCCESS.getStatus()
 			)
 		);
 	}
