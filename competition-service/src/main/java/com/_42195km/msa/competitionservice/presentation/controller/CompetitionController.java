@@ -16,12 +16,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com._42195km.msa.common.api.ApiResponse;
+import com._42195km.msa.competitionservice.application.dto.CompleteAppDto;
 import com._42195km.msa.competitionservice.application.dto.response.CompetitionAppResponseDto;
 import com._42195km.msa.competitionservice.application.exception.CompetitionServiceCode;
 import com._42195km.msa.competitionservice.application.mapper.CompetitionMapper;
 import com._42195km.msa.competitionservice.application.service.CompetitionService;
-import com._42195km.msa.competitionservice.domain.model.Competition;
-import com._42195km.msa.competitionservice.presentation.dto.request.ApplyCompetitionRequestDto;
+import com._42195km.msa.competitionservice.application.service.SagaService;
+import com._42195km.msa.competitionservice.infrastructure.messaging.CompetitionSagaOrchestrator;
 import com._42195km.msa.competitionservice.presentation.dto.request.CreateCompetitionRequestDto;
 import com._42195km.msa.competitionservice.presentation.dto.request.GetRequestDto;
 import com._42195km.msa.competitionservice.presentation.dto.request.SearchRequestDto;
@@ -31,14 +32,19 @@ import com._42195km.msa.competitionservice.presentation.dto.response.Competition
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/competitions")
 @RequiredArgsConstructor
 public class CompetitionController {
 
 	private final CompetitionService competitionService;
+	private final SagaService sagaService;
+
 	private final CompetitionMapper competitionMapper;
+	private final CompetitionSagaOrchestrator sagaOrchestrator;
 
 	@PostMapping("/")
 	@Operation(summary = "대회 생성")
@@ -120,29 +126,6 @@ public class CompetitionController {
 			HttpStatus.CREATED.value()));
 	}
 
-	@PostMapping("/{competitionId}/apply")
-	@Operation(summary = "대회 신청")
-	public ResponseEntity<?> applyCompetition(@PathVariable("competitionId") UUID competitionId,
-		@RequestBody ApplyCompetitionRequestDto participant) {
-		competitionService.applyCompetition(competitionId, participant.getParticipantId());
-		return ResponseEntity.ok(new ApiResponse<>(CompetitionServiceCode.COMPETITION_APPLY_SUCCESS.getCode(),
-			"대회 신청에 성공했습니다.",
-			CompetitionServiceCode.COMPETITION_APPLY_SUCCESS.getMessage(),
-			HttpStatus.CREATED.value()));
-	}
-
-	/*
-	TODO : 결제 부분 미구현
-	 */
-	@PostMapping("/payment")
-	@Operation(summary = "대회 결제")
-	public ResponseEntity<?> payCompetition(@RequestBody Competition competition) {
-		return ResponseEntity.ok(new ApiResponse<>(CompetitionServiceCode.COMPETITION_CREATE_SUCCESS.getCode(),
-			"",
-			CompetitionServiceCode.COMPETITION_CREATE_SUCCESS.getMessage(),
-			HttpStatus.CREATED.value()));
-	}
-
 	@PostMapping("/draw/{competitionId}")
 	@Operation(summary = "대회 추첨")
 	public ResponseEntity<?> drawCompetition(@PathVariable("competitionId") UUID competitionId) {
@@ -153,7 +136,40 @@ public class CompetitionController {
 			HttpStatus.CREATED.value()));
 	}
 
-	/*
-	TODO : 추첨 선정 인원 알림 전송
-	 */
+	@PostMapping("/complete")
+	@Operation(summary = "대회 신청 프로세스 - 분산 트랜젝션 도입 - 모든 단계 통합")
+	public ResponseEntity<?> completeApplication(@RequestBody CompleteAppDto requestDto) {
+
+		String response = sagaService.processCompleteApplication(
+			requestDto.getCompetitionId(),
+			requestDto.getParticipantId(),
+			requestDto.getTermsAgreed(),
+			requestDto.getSouvenirSelection(),
+			requestDto.getShippingAddress(),
+			requestDto.getPaymentMethod(),
+			requestDto.getPaymentStatus(),
+			requestDto.getTransactionId());
+
+		return ResponseEntity.ok(new ApiResponse<>(
+			CompetitionServiceCode.COMPETITION_APPLY_SUCCESS.getCode(),
+			response,
+			CompetitionServiceCode.COMPETITION_APPLY_SUCCESS.getMessage(),
+			HttpStatus.OK.value()
+		));
+	}
+
+	@GetMapping("/{competitionId}/{participantId}/status")
+	@Operation(summary = "대회 신청 상태 조회")
+	public ResponseEntity<?> getApplicationStatus(
+		@PathVariable("competitionId") UUID competitionId,
+		@PathVariable("participantId") UUID participantId) {
+		String result = sagaService.findActiveSagaId(competitionId, participantId);
+		return ResponseEntity.ok(new ApiResponse<>(
+			CompetitionServiceCode.COMPETITION_GET_SUCCESS.getCode(),
+			result,
+			CompetitionServiceCode.COMPETITION_GET_SUCCESS.getMessage(),
+			HttpStatus.OK.value()
+		));
+	}
+
 }

@@ -20,7 +20,7 @@ public class SearchUserResponseDto {
 
 	private String username;
 
-	private String password;
+	// private String password;
 
 	private String email;
 
@@ -39,7 +39,7 @@ public class SearchUserResponseDto {
 		return SearchUserResponseDto.builder()
 			.id(user.getId())
 			.username(user.getUsername())
-			.password(user.getPassword())
+			// .password(user.getPassword())
 			.email(user.getEmail())
 			.birth(user.getBirth())
 			.gender(user.getGender())

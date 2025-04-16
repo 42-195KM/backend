@@ -55,8 +55,14 @@ public class Crew extends BaseEntity {
 
 	public void addCrewMemberMapping(CrewMemberMapping crewMemberMapping) {
 		crewMemberMappings.add(crewMemberMapping);
-		if (crewMemberMapping.getCrew() == null) {
-			crewMemberMapping.setCrew(this);
+		crewMemberMapping.setCrew(this);
+
+	}
+
+	public void addCrewMeeting(CrewMeeting crewMeeting) {
+		crewMeetings.add(crewMeeting);
+		if (crewMeeting.getCrew() == null) {
+			crewMeeting.setCrew(this);
 		}
 	}
 
@@ -67,13 +73,13 @@ public class Crew extends BaseEntity {
 	public boolean isAlreadyJoined(UUID userId) {
 		return crewMemberMappings.stream()
 			.anyMatch(crewMemberMapping -> crewMemberMapping.getCrewMember().getUserId().equals(userId)
-			&& crewMemberMapping.isAlreadyJoined() );
+				&& crewMemberMapping.isAlreadyJoined());
 	}
 
 	public boolean isInBlackList(UUID userId) {
 		return crewMemberMappings.stream()
 			.anyMatch(crewMemberMapping -> crewMemberMapping.getCrewMember().getUserId().equals(userId)
-			&& crewMemberMapping.isInBlackList() );
+				&& crewMemberMapping.isInBlackList());
 	}
 
 	public void update(String description, Integer capacity, Boolean isAutoAgree) {
@@ -130,6 +136,12 @@ public class Crew extends BaseEntity {
 		return memberMapping;
 	}
 
+	public boolean isNotMember(UUID userId) {
+		return crewMemberMappings.stream()
+			.noneMatch(crewMemberMapping -> crewMemberMapping.getCrewMember().getUserId().equals(userId)
+				&& crewMemberMapping.getDeletedAt() == null);
+	}
+
 
 	public CrewMemberMapping expel(UUID memberId) {
 		CrewMemberMapping memberMapping = findCrewMemberMappingByUserId(memberId);
@@ -146,9 +158,16 @@ public class Crew extends BaseEntity {
 
 	public CrewMemberMapping findCrewMemberMappingByUserId(UUID userId) {
 		return this.crewMemberMappings.stream()
-			.filter(m -> m.getCrewMember().getUserId().equals(userId))
+			.filter(m -> m.getCrewMember().getUserId().equals(userId) && m.getDeletedAt() == null)
 			.findFirst()
 			.orElseThrow(() -> new IllegalArgumentException("해당 사용자는 크루에 가입되어 있지 않습니다."));
+	}
+
+	public CrewMeeting findCrewMeeting(UUID meetingId) {
+		return this.crewMeetings.stream()
+			.filter(m -> m.getId().equals(meetingId) && m.getDeletedAt() == null)
+			.findFirst()
+			.orElseThrow(() -> new IllegalArgumentException("해당 모임은 크루에 존재하지 않습니다."));
 	}
 
 	@Override

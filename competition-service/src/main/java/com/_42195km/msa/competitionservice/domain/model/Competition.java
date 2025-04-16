@@ -7,7 +7,6 @@ import java.util.UUID;
 import com._42195km.msa.common.BaseEntity;
 import com._42195km.msa.competitionservice.application.dto.request.CreateCompetitionCommandDto;
 import com._42195km.msa.competitionservice.application.dto.request.UpdateCompetitionCommandDto;
-import com._42195km.msa.competitionservice.presentation.dto.request.UpdateCompetitionRequestDto;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -20,7 +19,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -55,7 +53,8 @@ public class Competition extends BaseEntity {
 	private List<CompetitionParticipantMapping> participantMappings = new ArrayList<>();
 
 	@Builder
-	public Competition(UUID userId, String title, CompetitionType type, ReceptionType receptionType, Integer participantsNum, Integer price) {
+	public Competition(UUID userId, String title, CompetitionType type, ReceptionType receptionType,
+		Integer participantsNum, Integer price) {
 		this.userId = userId;
 		this.title = title;
 		this.type = type;
@@ -64,7 +63,7 @@ public class Competition extends BaseEntity {
 		this.price = price;
 	}
 
-	public static Competition create(CreateCompetitionCommandDto commandDto){
+	public static Competition create(CreateCompetitionCommandDto commandDto) {
 		return Competition.builder()
 			.userId(commandDto.getUserId())
 			.title(commandDto.getTitle())

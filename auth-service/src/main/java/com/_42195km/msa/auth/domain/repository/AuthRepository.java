@@ -9,4 +9,6 @@ public interface AuthRepository {
 	Optional<Auth> findByUserName(String username);
 
 	Optional<Auth> findByUserUuid(UUID userUuId);
+
+	Auth save(Auth auth);
 }

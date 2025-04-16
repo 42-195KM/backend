@@ -41,11 +41,12 @@ public class CompetitionRepositoryImpl implements CompetitionRepository {
 
 	@Override
 	public Competition findById(UUID id) {
-		return jpaRepository.findByIdAndIsDeletedFalse(id).orElseThrow(()-> CustomBusinessException.from(CompetitionServiceCode.COMPETITION_GET_ID_FAIL));
+		return jpaRepository.findByIdAndIsDeletedFalse(id)
+			.orElseThrow(() -> CustomBusinessException.from(CompetitionServiceCode.COMPETITION_GET_ID_FAIL));
 	}
 
 	@Override
-	public Page<Competition> findByHost(UUID hostId,Pageable pageable){
+	public Page<Competition> findByHost(UUID hostId, Pageable pageable) {
 		return jpaRepository.findByUserIdAndIsDeletedFalse(hostId, pageable);
 	}
 

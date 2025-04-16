@@ -3,7 +3,9 @@ package com._42195km.msa.competitionservice.presentation.dto.response;
 import java.util.UUID;
 
 import lombok.Builder;
+import lombok.Getter;
 
+@Getter
 public class ParticipantResponseDto {
 
 	private UUID participantId;
