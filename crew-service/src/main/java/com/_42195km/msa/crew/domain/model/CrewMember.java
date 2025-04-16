@@ -35,8 +35,13 @@ public class CrewMember extends BaseEntity {
 	@Column(name = "user_id", nullable = false)
 	private UUID userId;
 
-	@OneToMany(mappedBy = "crewMember", orphanRemoval = true, cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "crewMember")
 	private List<CrewMemberMapping> crewMemberMappings = new ArrayList<>();
+
+	public void addCrewMemberMapping(CrewMemberMapping crewMemberMapping) {
+		crewMemberMappings.add(crewMemberMapping);
+		crewMemberMapping.setCrewMember(this);
+	}
 
 	@Override
 	public boolean equals(Object o) {
