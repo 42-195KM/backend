@@ -18,6 +18,7 @@ import com._42195km.msa.user.application.dto.response.SearchUserResponseDto;
 import com._42195km.msa.user.application.dto.response.UpdateUserResponseDto;
 import com._42195km.msa.user.application.exception.UserException;
 import com._42195km.msa.user.domain.model.User;
+import com._42195km.msa.user.infrastructure.messaging.out.DeleteUserEventProducer;
 import com._42195km.msa.user.infrastructure.persistence.UserRepositoryImpl;
 
 import jakarta.validation.Valid;
@@ -32,6 +33,7 @@ public class UserServiceImpl implements UserService {
 
 	private final PasswordEncoder passwordEncoder;
 	private final UserRepositoryImpl userRepositoryImpl;
+	private final DeleteUserEventProducer deleteUserEventProducer;
 
 	@Override
 	@Transactional
@@ -107,6 +109,8 @@ public class UserServiceImpl implements UserService {
 		User targetUser = findUserById(userId);
 
 		targetUser.setDeleted();
+
+		deleteUserEventProducer.sendDeleteUserEvent(targetUser.getId());
 	}
 
 	@Transactional
@@ -116,6 +120,8 @@ public class UserServiceImpl implements UserService {
 		User targetUser = findUserById(userId);
 
 		targetUser.setDeleted();
+
+		deleteUserEventProducer.sendDeleteUserEvent(targetUser.getId());
 	}
 
 	private User findUserById(UUID userId) {

@@ -1,5 +1,6 @@
 package com._42195km.msa.achievementservice.infrastructure.persistence;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -16,4 +17,7 @@ public interface AchievementUserJpaRepository extends AchievementUserRepository,
 	@Override
 	@Query("SELECT au.achievement FROM AchievementUser au WHERE au.userId = :userId")
 	Page<Achievement> search(@Param("userId") UUID userId, Pageable pageable);
+
+	@Override
+	List<AchievementUser> findByUserId(UUID userId);
 }

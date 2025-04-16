@@ -3,7 +3,7 @@ package com._42195km.msa.chatbotservice;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {"com._42195km.msa.common", "com._42195km.msa.chatbotservice"})
 public class ChatbotServiceApplication {
 
     public static void main(String[] args) {
