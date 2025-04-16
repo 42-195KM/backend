@@ -30,8 +30,8 @@ public record GetSpecificCrewMeetingResponseDto(
 			dto.meetingMembers().stream().map(
 				meetingMember -> new MeetingMemberInfo(
 					meetingMember.id(),
-					meetingMember.crewMeetingMember().id(),
-					meetingMember.crewMeetingMember().status()
+					meetingMember.userId(),
+					meetingMember.status()
 				)
 			).toList()
 		);
