@@ -1,0 +1,25 @@
+package com._42195km.msa.competitionservice.domain.model;
+
+public enum SagaStep {
+	// 대회 신청 단계
+	TERMS_AGREEMENT,
+	SOUVENIR_SELECTION,
+	SHIPPING_ADDRESS,
+
+	// 결제 단계
+	PAYMENT_INITIATED,
+	PAYMENT_PROCESSED,
+
+	// 신청 가능 여부 확인
+	ELIGIBILITY_CHECK,
+
+	// 참가 확정 단계
+	PARTICIPATION_CONFIRMED,
+	NOTIFICATION_SENT,
+
+	// 취소 단계
+	CANCELLATION_REQUESTED,
+	CANCELLATION_PROCESSED,
+	REFUND_INITIATED,
+	REFUND_PROCESSED,
+}

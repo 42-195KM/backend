@@ -81,12 +81,15 @@ public class User extends BaseEntity {
 	public void update(UpdateUserRequestDto updateUserRequestDto) {
 
 		Optional.ofNullable(updateUserRequestDto.getUsername()).ifPresent(value -> this.username = value);
-		Optional.ofNullable(updateUserRequestDto.getPassword()).ifPresent(value -> this.password = value);
 		Optional.ofNullable(updateUserRequestDto.getEmail()).ifPresent(value -> this.email = value);
 		Optional.ofNullable(updateUserRequestDto.getGender()).ifPresent(value -> this.gender = value);
 		Optional.ofNullable(updateUserRequestDto.getRole()).ifPresent(value -> this.role = value);
 		Optional.ofNullable(updateUserRequestDto.getMediaId()).ifPresent(value -> this.mediaId = value);
 		Optional.ofNullable(updateUserRequestDto.getPhone()).ifPresent(value -> this.phone = value);
 
+	}
+
+	public void changePassword(String newEncodedPassword) {
+		this.password = newEncodedPassword;
 	}
 }

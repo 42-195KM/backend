@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: ranking-service
+  config:
+    import:
+      - file:.env[.properties]
+      - classpath:./properties/datasource.yml
+      - classpath:./properties/jpa.yml
+  profiles:
+    group:
+      local: local, key
+    active: ${ACTIVE_VAL}
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_SERVER}  # Eureka 서버 URL
+server:
+  port: ${RANKING_SERVER}
