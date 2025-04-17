@@ -311,7 +311,7 @@ public class CrewService {
 		CrewMeetingMemberMapping crewMeetingMemberMapping = CrewMeetingMemberMapping.builder()
 			.meeting(crewMeeting)
 			.meetingMember(crewMeetingMember)
-			.status(CrewMeetingMemberMapping.MeetingMemberStatus.PENDING)
+			.status(CrewMeetingMemberMapping.MeetingMemberStatus.APPROVED)
 			.build();
 
 		crew.addCrewMeeting(crewMeeting);
@@ -409,6 +409,8 @@ public class CrewService {
 
 		CrewMeeting crewMeeting = crew.findCrewMeeting(meetingId);
 		CrewMeetingMemberMapping crewMeetingMemberMapping = crewMeeting.findCrewMeetingMemberMapping(meetingMemberId);
+		crewMeetingMemberMapping.manageNoShow();
+		crewRepository.save(crew);
 
 		return new ManageNoShowMeetingMemberAppResponseDto(
 			crew.getId(),
@@ -421,6 +423,24 @@ public class CrewService {
 		);
 	}
 
+	@Transactional
+	public void leaveMeeting(UUID crewId, UUID meetingId, UUID meetingMemberId, UUID userId) {
+		Crew crew = crewRepository.findByIdAndDeletedAtIsNull(crewId)
+			.orElseThrow(() -> CrewBusinessException.from(CrewServiceCode.CREW_NOT_FOUND));
+
+		CrewMeeting crewMeeting = crew.findCrewMeeting(meetingId);
+
+		if (!meetingMemberId.equals(userId)) {
+			throw CrewBusinessException.from(CrewServiceCode.UNAUTHORIZED_CREW_MEETING_DELETE_ACCESS);
+		}
+
+		crewMeeting.removeMeetingMember(meetingMemberId);
+	}
+	// TODO : 애그리거트를 이용해 상태변경하도록 수정
+	// TODO : 모임 시간이 끝나면 모임이 자동 출석되도록 하는 이벤트 추가
+	// TODO : 메서드 순서 정리
+
+	@Transactional
 	public void deleteCrewMeeting(UUID crewId, UUID meetingId, UUID meetingCaptainId) {
 		Crew crew = crewRepository.findByIdAndDeletedAtIsNull(crewId)
 			.orElseThrow(() -> CrewBusinessException.from(CrewServiceCode.CREW_NOT_FOUND));
@@ -433,7 +453,6 @@ public class CrewService {
 
 		crewMeeting.deleteCrewMemberMappings();
 		crewMeeting.setDeleted();
-
-
+		crewRepository.save(crew);
 	}
 }

@@ -118,6 +118,11 @@ public class CrewMeeting extends BaseEntity {
 		this.crewMeetingMemberMappings.forEach(CrewMeetingMemberMapping::setDeleted);
 	}
 
+	public void removeMeetingMember(UUID meetingMemberId) {
+		CrewMeetingMemberMapping crewMeetingMemberMapping = findCrewMeetingMemberMapping(meetingMemberId);
+		crewMeetingMemberMapping.setDeleted();
+	}
+
 	public void update(String name, Integer hour, String description, Integer capacity) {
 		if (name != null) {
 			this.name = name;
