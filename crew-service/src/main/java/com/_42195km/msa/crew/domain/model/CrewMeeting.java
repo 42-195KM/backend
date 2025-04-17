@@ -107,6 +107,13 @@ public class CrewMeeting extends BaseEntity {
 			.count() >= capacity;
 	}
 
+	public CrewMeetingMemberMapping findCrewMeetingMemberMapping(UUID meetingMemberId) {
+		return crewMeetingMemberMappings.stream()
+			.filter(crewMeetingMemberMapping -> crewMeetingMemberMapping.getId().equals(meetingMemberId))
+			.findFirst()
+			.orElseThrow(() -> new IllegalArgumentException("해당 사용자는 크루 모임에 가입되어 있지 않습니다."));
+	}
+
 	public void update(String name, Integer hour, String description, Integer capacity) {
 		if (name != null) {
 			this.name = name;

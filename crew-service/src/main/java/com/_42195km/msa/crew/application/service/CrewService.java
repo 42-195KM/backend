@@ -24,6 +24,7 @@ import com._42195km.msa.crew.application.dto.response.GetSpecificCrewMeetingAppR
 import com._42195km.msa.crew.application.dto.response.GetSpecificCrewMemberAppResponseDto;
 import com._42195km.msa.crew.application.dto.response.HandleCrewJoinAppResponseDto;
 import com._42195km.msa.crew.application.dto.response.JoinCrewAppResponseDto;
+import com._42195km.msa.crew.application.dto.response.ManageNoShowMeetingMemberAppResponseDto;
 import com._42195km.msa.crew.application.dto.response.ParticipateCrewMeetingAppResponseDto;
 import com._42195km.msa.crew.application.dto.response.SearchCrewAppPagingResponseDto;
 import com._42195km.msa.crew.application.dto.response.SearchCrewMeetingAppPagingResponseDto;
@@ -394,6 +395,29 @@ public class CrewService {
 	public SearchCrewMeetingAppPagingResponseDto searchCrewMeeting(UUID crewId, Pageable pageable) {
 		return SearchCrewMeetingAppPagingResponseDto.from(
 			crewRepository.findAllCrewMeetingByCrewId(crewId, pageable)
+		);
+	}
+
+	public ManageNoShowMeetingMemberAppResponseDto manageNoShowMeetingMember(UUID crewId, UUID meetingId,
+		UUID meetingMemberId, UUID captainId) {
+		Crew crew = crewRepository.findByIdAndDeletedAtIsNull(crewId)
+			.orElseThrow(() -> CrewBusinessException.from(CrewServiceCode.CREW_NOT_FOUND));
+
+		if (crew.isNotCaptain(captainId)) {
+			throw CrewBusinessException.from(CrewServiceCode.UNAUTHORIZED_CREW_ACCESS);
+		}
+
+		CrewMeeting crewMeeting = crew.findCrewMeeting(meetingId);
+		CrewMeetingMemberMapping crewMeetingMemberMapping = crewMeeting.findCrewMeetingMemberMapping(meetingMemberId);
+
+		return new ManageNoShowMeetingMemberAppResponseDto(
+			crew.getId(),
+			crewMeetingMemberMapping.getMeeting().getId(),
+			new ManageNoShowMeetingMemberAppResponseDto.MeetingMemberAppInfo(
+				crewMeetingMemberMapping.getId(),
+				crewMeetingMemberMapping.getMeetingMember().getUserId(),
+				crewMeetingMemberMapping.getStatus().name()
+			)
 		);
 	}
 }

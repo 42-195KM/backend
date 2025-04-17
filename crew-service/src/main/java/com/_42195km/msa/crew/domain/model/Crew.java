@@ -148,7 +148,6 @@ public class Crew extends BaseEntity {
 				&& crewMemberMapping.getDeletedAt() == null);
 	}
 
-
 	public CrewMemberMapping expel(UUID memberId) {
 		CrewMemberMapping memberMapping = findCrewMemberMappingByUserId(memberId);
 		memberMapping.expel();
