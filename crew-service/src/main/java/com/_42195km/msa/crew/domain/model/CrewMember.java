@@ -26,7 +26,6 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Builder
 public class CrewMember extends BaseEntity {
 	@Id
 	@UuidGenerator
@@ -36,11 +35,17 @@ public class CrewMember extends BaseEntity {
 	private UUID userId;
 
 	@OneToMany(mappedBy = "crewMember")
-	private List<CrewMemberMapping> crewMemberMappings = new ArrayList<>();
+	private List<CrewMemberMapping> crewMemberMappings;
 
 	public void addCrewMemberMapping(CrewMemberMapping crewMemberMapping) {
 		crewMemberMappings.add(crewMemberMapping);
 		crewMemberMapping.setCrewMember(this);
+	}
+
+	@Builder
+	public CrewMember(UUID userId) {
+		this.userId = userId;
+		this.crewMemberMappings = new ArrayList<>();
 	}
 
 	@Override

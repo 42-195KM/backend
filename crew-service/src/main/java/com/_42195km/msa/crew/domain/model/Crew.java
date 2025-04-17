@@ -1,5 +1,8 @@
 package com._42195km.msa.crew.domain.model;
 
+import static com._42195km.msa.crew.domain.model.CrewMemberMapping.CrewMemberStatus.*;
+
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -26,7 +29,6 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Builder
 public class Crew extends BaseEntity {
 	@Id
 	@UuidGenerator
@@ -48,12 +50,33 @@ public class Crew extends BaseEntity {
 	private Boolean isAutoAgree;
 
 	@OneToMany(mappedBy = "crew", orphanRemoval = true, cascade = CascadeType.ALL)
-	@Builder.Default
-	private List<CrewMemberMapping> crewMemberMappings = new ArrayList<>();
+	private List<CrewMemberMapping> crewMemberMappings;
 
 	@OneToMany(mappedBy = "crew", orphanRemoval = true, cascade = CascadeType.ALL)
-	@Builder.Default
 	private List<CrewMeeting> crewMeetings = new ArrayList<>();
+
+	@Builder
+	public Crew(String name, String description, UUID captainId, Integer capacity, Boolean isAutoAgree) {
+		this.name = name;
+		this.description = description;
+		this.captainId = captainId;
+		this.capacity = capacity;
+		this.isAutoAgree = isAutoAgree;
+		this.crewMemberMappings = new ArrayList<>();
+	}
+
+	public void autoJoinCaptain() {
+		CrewMember crewMember = CrewMember.builder()
+			.userId(this.captainId)
+			.build();
+
+		CrewMemberMapping crewMemberMapping = CrewMemberMapping.builder()
+			.crewMember(crewMember)
+			.status(APPROVED)
+			.build();
+
+		addCrewMemberMapping(crewMemberMapping);
+	}
 
 	public void addCrewMemberMapping(CrewMemberMapping crewMemberMapping) {
 		crewMemberMappings.add(crewMemberMapping);
@@ -72,10 +95,10 @@ public class Crew extends BaseEntity {
 		return crewMemberMappings.size() >= capacity;
 	}
 
-	public boolean isAlreadyJoined(UUID userId) {
+	public boolean isAlreadyRelatedUser(UUID userId) {
 		return crewMemberMappings.stream()
 			.anyMatch(crewMemberMapping -> crewMemberMapping.getCrewMember().getUserId().equals(userId)
-				&& crewMemberMapping.isAlreadyJoined());
+				&& (crewMemberMapping.isAlreadyJoined() || crewMemberMapping.isAlreadyApplied()));
 	}
 
 	public boolean isInBlackList(UUID userId) {
@@ -174,6 +197,25 @@ public class Crew extends BaseEntity {
 			.filter(m -> m.getId().equals(meetingId) && m.getDeletedAt() == null)
 			.findFirst()
 			.orElseThrow(() -> new IllegalArgumentException("해당 모임은 크루에 존재하지 않습니다."));
+	}
+
+	public boolean isCrewMeetingTimeOverLapped(UUID userId, LocalDateTime meetingStartDateTime, Integer hour) {
+		LocalDateTime meetingEndDateTime = meetingStartDateTime.plusHours(hour);
+
+		List<CrewMeeting> crewMeetings = this.crewMeetings.stream()
+			.filter(crewMeeting -> crewMeeting.getCreatedBy().equals(userId))
+			.toList();
+
+		return crewMeetings.stream()
+			.anyMatch(crewMeeting -> {
+				LocalDateTime startDateTime = crewMeeting.getMeetingDateTime();
+				LocalDateTime endDateTime = startDateTime.plusHours(crewMeeting.getHour());
+
+				return !meetingStartDateTime.isAfter(endDateTime) && !startDateTime.isBefore(
+					meetingEndDateTime
+				);
+			});
+
 	}
 
 	@Override

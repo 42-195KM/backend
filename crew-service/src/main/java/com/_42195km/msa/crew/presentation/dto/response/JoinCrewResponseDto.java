@@ -5,7 +5,6 @@ import java.util.UUID;
 import com._42195km.msa.crew.application.dto.response.JoinCrewAppResponseDto;
 
 public record JoinCrewResponseDto(
-	UUID id,
 	UUID crewId,
 	UUID crewMemberMappingId,
 	CrewMemberInfo crewMember
@@ -19,7 +18,6 @@ public record JoinCrewResponseDto(
 
 	public static JoinCrewResponseDto from(JoinCrewAppResponseDto dto) {
 		return new JoinCrewResponseDto(
-			dto.id(),
 			dto.crewId(),
 			dto.crewMemberMappingId(),
 			new CrewMemberInfo(

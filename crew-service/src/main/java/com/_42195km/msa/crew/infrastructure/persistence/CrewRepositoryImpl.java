@@ -35,7 +35,6 @@ public class CrewRepositoryImpl implements CrewRepository {
 		return crewJpaRepository.findByIdAndDeletedAtIsNull(crewId);
 	}
 
-
 	@Override
 	public Page<Crew> findAllByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndDeletedAtIsNull(
 		String nameKeyword,
@@ -58,5 +57,10 @@ public class CrewRepositoryImpl implements CrewRepository {
 	@Override
 	public Page<CrewMeeting> findAllCrewMeetingByCrewId(UUID crewId, Pageable pageable) {
 		return crewJpaRepository.findAllCrewMeetingByCrewId(crewId, pageable);
+	}
+
+	@Override
+	public void flush() {
+		crewJpaRepository.flush();
 	}
 }

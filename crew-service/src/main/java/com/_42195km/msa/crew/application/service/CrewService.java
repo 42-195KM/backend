@@ -62,6 +62,7 @@ public class CrewService {
 			.isAutoAgree(dto.isAutoAgree())
 			.build();
 
+		crew.autoJoinCaptain();
 		crewRepository.save(crew);
 
 		return new CreateCrewAppResponseDto(
@@ -83,8 +84,8 @@ public class CrewService {
 			throw CrewBusinessException.from(CrewServiceCode.CREW_IS_FULL);
 		}
 
-		if (crew.isAlreadyJoined(userId)) {
-			throw CrewBusinessException.from(CrewServiceCode.CREW_MEMBER_ALREADY_JOINED);
+		if (crew.isAlreadyRelatedUser(userId)) {
+			throw CrewBusinessException.from(CrewServiceCode.CREW_MEMBER_ALREADY_RELATED);
 		}
 
 		if (crew.isInBlackList(userId)) {
@@ -103,10 +104,11 @@ public class CrewService {
 
 		crew.addCrewMemberMapping(crewMemberMapping);
 		crewMember.addCrewMemberMapping(crewMemberMapping);
+
 		crewRepository.save(crew);
+		crewRepository.flush();
 
 		return new JoinCrewAppResponseDto(
-			crewMember.getId(),
 			crew.getId(),
 			crewMemberMapping.getId(),
 			new JoinCrewAppResponseDto.CrewMemberAppInfo(
@@ -259,6 +261,10 @@ public class CrewService {
 			}
 		}
 
+		if (crew.isNotMember(userId)) {
+			throw CrewBusinessException.from(CrewServiceCode.CREW_MEMBER_NOT_FOUND);
+		}
+
 		CrewMeeting crewMeeting = CrewMeeting.builder()
 			.name(dto.name())
 			.meetingDateTime(dto.date())
@@ -267,6 +273,10 @@ public class CrewService {
 			.type(dto.type())
 			.capacity(dto.capacity())
 			.build();
+
+		if (crew.isCrewMeetingTimeOverLapped(userId, dto.date(), dto.hour())) {
+			throw CrewBusinessException.from(CrewServiceCode.CREW_MEETING_TIME_OVERLAPPED);
+		}
 
 		crew.addCrewMeeting(crewMeeting);
 		crewRepository.save(crew);
@@ -339,7 +349,7 @@ public class CrewService {
 
 		CrewMeeting crewMeeting = crew.findCrewMeeting(meetingId);
 
-		if (crewMeeting.getCreatedBy() != userId) {
+		if (!crewMeeting.getCreatedBy().equals(userId)) {
 			throw CrewBusinessException.from(CrewServiceCode.UNAUTHORIZED_CREW_MEETING_ACCESS);
 		}
 

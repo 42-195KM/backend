@@ -52,6 +52,7 @@ public class CrewMeetingMemberMapping extends BaseEntity {
 	public void manageNoShow() {
 		if (this.status == MeetingMemberStatus.APPROVED) {
 			this.status = MeetingMemberStatus.NOSHOW;
+			return;
 		}
 
 		throw new IllegalArgumentException("변경 가능한 상태가 아닙니다");
