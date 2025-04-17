@@ -75,6 +75,7 @@ public class CrewMemberMapping extends BaseEntity {
 	public void expel() {
 		if (this.status == CrewMemberStatus.APPROVED) {
 			this.status = CrewMemberStatus.BLACKLIST;
+			this.crewMember.setDeleted();
 			return;
 		}
 

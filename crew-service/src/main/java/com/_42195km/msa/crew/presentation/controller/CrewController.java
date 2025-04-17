@@ -308,5 +308,23 @@ public class CrewController {
 		);
 	}
 
+	@DeleteMapping("/{crewId}/meetings/{meetingId}")
+	public ResponseEntity<ApiResponse<?>> deleteCrewMeeting(
+		@PathVariable(name = "crewId") UUID crewId,
+		@PathVariable(name = "meetingId") UUID meetingId,
+		@UserInfo UserInfoDto userInfoDto) {
+		crewService.deleteCrewMeeting(crewId, meetingId, userInfoDto.userId());
+		return ResponseEntity.ok(
+			new ApiResponse<>(
+				CrewServiceCode.CREW_DELETE_MEETING_DELETE_SUCCESS.getCode(),
+				null,
+				CrewServiceCode.CREW_DELETE_MEETING_DELETE_SUCCESS.getMessage(),
+				CrewServiceCode.CREW_DELETE_MEETING_DELETE_SUCCESS.getStatus()
+			)
+		);
+	}
+
+
+
 }
 

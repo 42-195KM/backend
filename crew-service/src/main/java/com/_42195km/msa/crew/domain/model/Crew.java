@@ -113,6 +113,12 @@ public class Crew extends BaseEntity {
 		}
 	}
 
+	public void setDeletedCrewMemberMappings() {
+		if (!crewMemberMappings.isEmpty()) {
+			crewMemberMappings.forEach(CrewMemberMapping::setDeleted);
+		}
+	}
+
 	public boolean isNotCaptain(UUID userId) {
 		return !isCaptain(userId);
 	}
@@ -146,7 +152,6 @@ public class Crew extends BaseEntity {
 	public CrewMemberMapping expel(UUID memberId) {
 		CrewMemberMapping memberMapping = findCrewMemberMappingByUserId(memberId);
 		memberMapping.expel();
-
 		return memberMapping;
 	}
 

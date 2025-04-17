@@ -169,6 +169,7 @@ public class CrewService {
 
 		crew.setDeletedCrewMeetings();
 		crew.setDeletedCrewMember();
+		crew.setDeletedCrewMemberMappings();
 		crew.setDeleted();
 	}
 
@@ -389,6 +390,7 @@ public class CrewService {
 		);
 	}
 
+	@Transactional(readOnly = true)
 	public SearchCrewMeetingAppPagingResponseDto searchCrewMeeting(UUID crewId, Pageable pageable) {
 		return SearchCrewMeetingAppPagingResponseDto.from(
 			crewRepository.findAllCrewMeetingByCrewId(crewId, pageable)
