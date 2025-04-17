@@ -42,6 +42,11 @@ dependencies {
     // for kafka message type serialize/deserialize
     implementation 'com.fasterxml.jackson.core:jackson-databind'
 
+    // SWAGGER
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0'
+
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+
     implementation project(':common')
 }
 
