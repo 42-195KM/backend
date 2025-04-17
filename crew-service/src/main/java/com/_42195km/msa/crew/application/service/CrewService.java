@@ -420,4 +420,20 @@ public class CrewService {
 			)
 		);
 	}
+
+	public void deleteCrewMeeting(UUID crewId, UUID meetingId, UUID meetingCaptainId) {
+		Crew crew = crewRepository.findByIdAndDeletedAtIsNull(crewId)
+			.orElseThrow(() -> CrewBusinessException.from(CrewServiceCode.CREW_NOT_FOUND));
+
+		CrewMeeting crewMeeting = crew.findCrewMeeting(meetingId);
+
+		if (crewMeeting.getCreatedBy() != meetingCaptainId) {
+			throw CrewBusinessException.from(CrewServiceCode.UNAUTHORIZED_CREW_MEETING_ACCESS);
+		}
+
+		crewMeeting.deleteCrewMemberMappings();
+		crewMeeting.setDeleted();
+
+
+	}
 }

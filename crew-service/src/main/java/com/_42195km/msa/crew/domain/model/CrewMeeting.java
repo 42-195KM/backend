@@ -114,6 +114,10 @@ public class CrewMeeting extends BaseEntity {
 			.orElseThrow(() -> new IllegalArgumentException("해당 사용자는 크루 모임에 가입되어 있지 않습니다."));
 	}
 
+	public void deleteCrewMemberMappings() {
+		this.crewMeetingMemberMappings.forEach(CrewMeetingMemberMapping::setDeleted);
+	}
+
 	public void update(String name, Integer hour, String description, Integer capacity) {
 		if (name != null) {
 			this.name = name;
