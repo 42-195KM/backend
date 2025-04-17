@@ -26,6 +26,7 @@ import com._42195km.msa.crew.application.dto.response.HandleCrewJoinAppResponseD
 import com._42195km.msa.crew.application.dto.response.JoinCrewAppResponseDto;
 import com._42195km.msa.crew.application.dto.response.ParticipateCrewMeetingAppResponseDto;
 import com._42195km.msa.crew.application.dto.response.SearchCrewAppPagingResponseDto;
+import com._42195km.msa.crew.application.dto.response.SearchCrewMeetingAppPagingResponseDto;
 import com._42195km.msa.crew.application.dto.response.SearchCrewMemberAppPagingResponseDto;
 import com._42195km.msa.crew.application.dto.response.UpdateCrewAppResponseDto;
 import com._42195km.msa.crew.application.dto.response.UpdateCrewMeetingAppResponseDto;
@@ -388,4 +389,9 @@ public class CrewService {
 		);
 	}
 
+	public SearchCrewMeetingAppPagingResponseDto searchCrewMeeting(UUID crewId, Pageable pageable) {
+		return SearchCrewMeetingAppPagingResponseDto.from(
+			crewRepository.findAllCrewMeetingByCrewId(crewId, pageable)
+		);
+	}
 }

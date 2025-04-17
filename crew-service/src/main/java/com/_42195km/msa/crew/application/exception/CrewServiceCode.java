@@ -33,7 +33,8 @@ public enum CrewServiceCode implements ServiceCode {
 	CREW_REGULAR_MEETING_IS_FULL("CREW_063", "정규 모임이 마감되었습니다", HttpStatus.FORBIDDEN),
 	CREW_UPDATE_MEETING_SUCCESS("CREW_064", "모임 정보가 수정되었습니다", HttpStatus.OK),
 	UNAUTHORIZED_CREW_MEETING_ACCESS("CREW_065", "크루 모임의 주최자가 아닙니다", HttpStatus.FORBIDDEN),
-	CREW_SEARCH_MEETING_SEARCH_SUCCESS("CREW_066", "크루 모임 검색 성공", HttpStatus.OK);
+	CREW_MEETING_SPECIFIC_GET_SUCCESS("CREW_066", "크루 모임 상세 조회 성공", HttpStatus.OK),
+	CREW_SEARCH_MEETING_SEARCH_SUCCESS("CREW_067", "크루 모임 검색 성공", HttpStatus.OK);
 
 	private final String code;
 	private final String message;
