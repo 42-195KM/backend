@@ -28,6 +28,7 @@ public class KafkaConfig {
     @Value("${spring.kafka.bootstrap-servers}")
     private String kafkaBootstrapServers;
 
+
     /**
      * 공통 Producer 설정: 이벤트 타입에 관계없이 Object로 처리
      * @return
