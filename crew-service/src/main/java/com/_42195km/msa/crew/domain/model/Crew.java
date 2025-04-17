@@ -48,9 +48,11 @@ public class Crew extends BaseEntity {
 	private Boolean isAutoAgree;
 
 	@OneToMany(mappedBy = "crew", orphanRemoval = true, cascade = CascadeType.ALL)
+	@Builder.Default
 	private List<CrewMemberMapping> crewMemberMappings = new ArrayList<>();
 
 	@OneToMany(mappedBy = "crew", orphanRemoval = true, cascade = CascadeType.ALL)
+	@Builder.Default
 	private List<CrewMeeting> crewMeetings = new ArrayList<>();
 
 	public void addCrewMemberMapping(CrewMemberMapping crewMemberMapping) {

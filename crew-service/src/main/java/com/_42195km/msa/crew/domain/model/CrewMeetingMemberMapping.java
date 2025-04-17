@@ -22,6 +22,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "p_crew_meeting_member_mapping")
@@ -36,10 +37,12 @@ public class CrewMeetingMemberMapping extends BaseEntity {
 
 	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinColumn(name = "crew_meeting_id", nullable = false)
+	@Setter
 	private CrewMeeting meeting;
 
 	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinColumn(name = "crew_meeting_member_id", nullable = false)
+	@Setter
 	private CrewMeetingMember meetingMember;
 
 	@Enumerated(EnumType.STRING)
@@ -51,7 +54,7 @@ public class CrewMeetingMemberMapping extends BaseEntity {
 			this.status = MeetingMemberStatus.NOSHOW;
 		}
 
-		throw new IllegalArgumentException("변경 가능한 상태가 아닙니다" );
+		throw new IllegalArgumentException("변경 가능한 상태가 아닙니다");
 	}
 
 	@Override
