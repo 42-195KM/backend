@@ -35,6 +35,7 @@ import com._42195km.msa.crew.presentation.dto.response.GetSpecificCrewResponseDt
 import com._42195km.msa.crew.presentation.dto.response.HandleCrewJoinResponseDto;
 import com._42195km.msa.crew.presentation.dto.response.JoinCrewResponseDto;
 import com._42195km.msa.crew.presentation.dto.response.ParticipateCrewMeetingResponseDto;
+import com._42195km.msa.crew.presentation.dto.response.SearchCrewMeetingPagingResponseDto;
 import com._42195km.msa.crew.presentation.dto.response.SearchCrewMemberPagingResponseDto;
 import com._42195km.msa.crew.presentation.dto.response.SearchCrewPagingResponseDto;
 import com._42195km.msa.crew.presentation.dto.response.UpdateCrewMeetingResponseDto;
@@ -284,10 +285,25 @@ public class CrewController {
 		@PathVariable(name = "meetingId") UUID meetingId) {
 		return ResponseEntity.ok(
 			new ApiResponse<>(
-				CrewServiceCode.CREW_SPECIFIC_GET_SUCCESS.getCode(),
+				CrewServiceCode.CREW_MEETING_SPECIFIC_GET_SUCCESS.getCode(),
 				GetSpecificCrewMeetingResponseDto.from(crewService.getSpecificCrewMeeting(crewId, meetingId)),
-				CrewServiceCode.CREW_SPECIFIC_GET_SUCCESS.getMessage(),
-				CrewServiceCode.CREW_SPECIFIC_GET_SUCCESS.getStatus()
+				CrewServiceCode.CREW_MEETING_SPECIFIC_GET_SUCCESS.getMessage(),
+				CrewServiceCode.CREW_MEETING_SPECIFIC_GET_SUCCESS.getStatus()
+			)
+		);
+	}
+
+	@GetMapping("/{crewId}/meetings/search")
+	public ResponseEntity<ApiResponse<?>> searchCrewMeeting(
+		@PathVariable(name = "crewId") UUID crewId,
+		@PageableDefault(size = 30, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
+	) {
+		return ResponseEntity.ok(
+			new ApiResponse<>(
+				CrewServiceCode.CREW_SEARCH_MEETING_SEARCH_SUCCESS.getCode(),
+				SearchCrewMeetingPagingResponseDto.from(crewService.searchCrewMeeting(crewId, pageable)),
+				CrewServiceCode.CREW_SEARCH_MEETING_SEARCH_SUCCESS.getMessage(),
+				CrewServiceCode.CREW_SEARCH_MEETING_SEARCH_SUCCESS.getStatus()
 			)
 		);
 	}

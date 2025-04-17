@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
 
 import com._42195km.msa.crew.domain.model.Crew;
+import com._42195km.msa.crew.domain.model.CrewMeeting;
 import com._42195km.msa.crew.domain.model.CrewMemberMapping;
 
 public interface CrewRepository {
@@ -23,4 +24,6 @@ public interface CrewRepository {
 	Page<Crew> findAllByDeletedAtIsNull(Pageable pageable);
 
 	Page<CrewMemberMapping> findAllCrewMemberMappingByCrewId(@Param(value = "crewId") UUID crewId, Pageable pageable);
+
+	Page<CrewMeeting> findAllCrewMeetingByCrewId(UUID crewId, Pageable pageable);
 }
