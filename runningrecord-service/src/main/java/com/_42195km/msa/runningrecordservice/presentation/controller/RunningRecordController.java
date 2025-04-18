@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com._42195km.msa.common.aop.CheckPermission;
 import com._42195km.msa.common.api.ApiResponse;
 
 import com._42195km.msa.runningrecordservice.application.dto.request.CreateRunningRecordCommandDto;
@@ -124,6 +125,7 @@ public class RunningRecordController {
 
 	// 러닝 기록 삭제 (DELETE api/v1/running-records/{runningRecordId})
 	@DeleteMapping("/{runningRecordId}")
+	@CheckPermission(roles = {"MASTER"}, mode = CheckPermission.Mode.ALL)
 	public ResponseEntity<?> deleteRunningRecord(@PathVariable UUID runningRecordId) {
 		RunningRecord runningRecord = runningRecordService.deleteRecord(runningRecordId);
 		DeleteRunningRecordResponseDto responseDto = new DeleteRunningRecordResponseDto(runningRecord);

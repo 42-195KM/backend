@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com._42195km.msa.common.aop.CheckPermission;
 import com._42195km.msa.common.api.ApiResponse;
 
 import com._42195km.msa.achievementservice.application.dto.request.CreateAchievementCommandDto;
@@ -36,6 +37,7 @@ public class AchievementController {
 
 	// 업적 생성 (POST api/v1/app/achivements)
 	@PostMapping("/app/achivements")
+	@CheckPermission(roles = {"MASTER"}, mode = CheckPermission.Mode.ALL)
 	public ResponseEntity<?> createAchievement(@RequestBody CreateAchievementRequestDto dto) {
 		CreateAchievementCommandDto createAchievementCommandDto = dto.toCommandDto();
 		Achievement achievement = achievementService.createAchievement(createAchievementCommandDto);
@@ -140,6 +142,7 @@ public class AchievementController {
 
 	// 업적 삭제 (DELETE api/vi/achivements/{achivementId})
 	@DeleteMapping("/achivements/{achievementId}")
+	@CheckPermission(roles = {"MASTER"}, mode = CheckPermission.Mode.ALL)
 	public ResponseEntity<?> deleteAchievement(@PathVariable UUID achievementId){
 		Achievement achievement = achievementService.deleteAchievement(achievementId);
 		DeleteAchievementResponseDto responseDto = new DeleteAchievementResponseDto(achievement);
