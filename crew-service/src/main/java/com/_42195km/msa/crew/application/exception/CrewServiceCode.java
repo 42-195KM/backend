@@ -13,11 +13,11 @@ public enum CrewServiceCode implements ServiceCode {
 	CREW_APPLY_JOIN_POST_SUCCESS("CREW_003", "크루 가입 신청 성공", HttpStatus.OK),
 	CREW_NOT_FOUND("CREW_004", "크루를 찾을 수 없습니다", HttpStatus.NOT_FOUND),
 	CREW_IS_FULL("CREW_005", "이 크루는 이미 인원이 최대입니다", HttpStatus.BAD_REQUEST),
-	CREW_MEMBER_ALREADY_JOINED("CREW_006", "이미 이 크루에 가입된 사용자입니다", HttpStatus.BAD_REQUEST),
+	CREW_MEMBER_ALREADY_RELATED("CREW_006", "이미 이 크루에 가입되었거나 가입 신청중인 사용자입니다", HttpStatus.BAD_REQUEST),
 	CREW_SEARCH_GET_SUCCESS("CREW_007", "크루 검색 성공", HttpStatus.OK),
 	CREW_SPECIFIC_GET_SUCCESS("CREW_008", "크루 상세 조회 성공", HttpStatus.OK),
 	CREW_UPDATE_PATCH_SUCCESS("CREW_009", "크루 정보 수정 성공", HttpStatus.OK),
-	CREW_DELETE_DELETE_SUCCESS("CREW_010", "크루 정보 삭제 성공", HttpStatus.NO_CONTENT),
+	CREW_DELETE_DELETE_SUCCESS("CREW_010", "크루 정보 삭제 성공", HttpStatus.OK),
 	CREW_AGREE_JOIN_PATCH_SUCCESS("CREW_011", "크루장이 가입 신청을 승인하였습니다", HttpStatus.OK),
 	CREW_REJECT_JOIN_PATCH_SUCCESS("CREW_012", "크루장이 가입 신청을 거절하였습니다", HttpStatus.OK),
 	UNAUTHORIZED_CREW_ACCESS("CREW_013", "이 크루의 크루장이 아닙니다", HttpStatus.FORBIDDEN),
@@ -26,7 +26,7 @@ public enum CrewServiceCode implements ServiceCode {
 	CREW_MEMBER_SPECIFIC_GET_SUCCESS("CREW_016", "크루원 상세 조회 성공", HttpStatus.OK),
 	CREW_MEMBER_IN_BLACK_LIST("CREW_017", "크루에서 추방되어 재가입 할 수 없습니다", HttpStatus.FORBIDDEN),
 	CREW_EXPEL_DELETE_SUCCESS("CREW_018", "크루원을 추방했습니다.", HttpStatus.OK),
-	CREW_LEAVE_DELETE_SUCCESS("CREW_019", "크루를 탈퇴했습니다", HttpStatus.NO_CONTENT),
+	CREW_LEAVE_DELETE_SUCCESS("CREW_019", "크루를 탈퇴했습니다", HttpStatus.OK),
 	CREW_CREATE_MEETING_POST_SUCCESS("CREW_060", "모임 생성 성공", HttpStatus.OK),
 	CREW_PARTICIPATE_MEETING_POST_SUCCESS("CREW_061", "크루 모임 신청 성공", HttpStatus.OK),
 	CREW_MEETING_ALREADY_PARTICIPATED("CREW_062", "이미 이 모임에 참여한 사용자입니다", HttpStatus.BAD_REQUEST),
@@ -34,7 +34,12 @@ public enum CrewServiceCode implements ServiceCode {
 	CREW_UPDATE_MEETING_SUCCESS("CREW_064", "모임 정보가 수정되었습니다", HttpStatus.OK),
 	UNAUTHORIZED_CREW_MEETING_ACCESS("CREW_065", "크루 모임의 주최자가 아닙니다", HttpStatus.FORBIDDEN),
 	CREW_MEETING_SPECIFIC_GET_SUCCESS("CREW_066", "크루 모임 상세 조회 성공", HttpStatus.OK),
-	CREW_SEARCH_MEETING_SEARCH_SUCCESS("CREW_067", "크루 모임 검색 성공", HttpStatus.OK);
+	CREW_SEARCH_MEETING_SEARCH_SUCCESS("CREW_067", "크루 모임 검색 성공", HttpStatus.OK),
+	CREW_DELETE_MEETING_DELETE_SUCCESS("CREW_068", "크루 모임 삭제 성공", HttpStatus.OK),
+	CREW_MANAGE_NO_SHOW_DELETE_SUCCESS("CREW_069", "크루 모임 노쇼 팀원 처리 성공", HttpStatus.OK),
+	CREW_LEAVE_MEETING_DELETE_SUCCESS("CREW_070", "크루 모임 탈퇴 성공", HttpStatus.OK),
+	UNAUTHORIZED_CREW_MEETING_DELETE_ACCESS("CREW_071", "크루 모임 취소는 본인만 가능합니다 ", HttpStatus.FORBIDDEN),
+	CREW_MEETING_TIME_OVERLAPPED("CREW_072", "크루 모임 일정이 이미 생성된 모임 시간과 겹칩니다", HttpStatus.BAD_REQUEST);
 
 	private final String code;
 	private final String message;

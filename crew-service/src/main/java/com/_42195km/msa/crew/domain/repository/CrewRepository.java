@@ -26,4 +26,6 @@ public interface CrewRepository {
 	Page<CrewMemberMapping> findAllCrewMemberMappingByCrewId(@Param(value = "crewId") UUID crewId, Pageable pageable);
 
 	Page<CrewMeeting> findAllCrewMeetingByCrewId(UUID crewId, Pageable pageable);
+
+	void flush();
 }

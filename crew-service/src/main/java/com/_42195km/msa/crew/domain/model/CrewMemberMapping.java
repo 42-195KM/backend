@@ -29,7 +29,6 @@ import lombok.Setter;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Builder
 public class CrewMemberMapping extends BaseEntity {
 	@Id
 	@UuidGenerator
@@ -49,9 +48,17 @@ public class CrewMemberMapping extends BaseEntity {
 	@Column(name = "status", length = 50, nullable = false)
 	private CrewMemberStatus status;
 
+	@Builder
+	public CrewMemberMapping(Crew crew, CrewMember crewMember, CrewMemberStatus status) {
+		this.crew = crew;
+		this.crewMember = crewMember;
+		this.status = status;
+	}
+
 	public void approve() {
 		if (this.status == CrewMemberStatus.PENDING) {
 			this.status = CrewMemberStatus.APPROVED;
+			return;
 		}
 
 		throw new IllegalStateException("이미 승인된 크루입니다.");
@@ -60,8 +67,13 @@ public class CrewMemberMapping extends BaseEntity {
 	public void reject() {
 		if (this.status == CrewMemberStatus.PENDING) {
 			this.status = CrewMemberStatus.REJECTED;
+			return;
 		}
 		throw new IllegalStateException("이미 거절된 크루입니다.");
+	}
+
+	public boolean isAlreadyApplied() {
+		return this.status == CrewMemberStatus.PENDING;
 	}
 
 	public boolean isAlreadyJoined() {
@@ -75,6 +87,7 @@ public class CrewMemberMapping extends BaseEntity {
 	public void expel() {
 		if (this.status == CrewMemberStatus.APPROVED) {
 			this.status = CrewMemberStatus.BLACKLIST;
+			this.crewMember.setDeleted();
 			return;
 		}
 

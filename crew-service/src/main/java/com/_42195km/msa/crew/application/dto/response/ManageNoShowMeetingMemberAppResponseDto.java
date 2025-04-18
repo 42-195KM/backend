@@ -2,12 +2,12 @@ package com._42195km.msa.crew.application.dto.response;
 
 import java.util.UUID;
 
-public record JoinCrewAppResponseDto(
+public record ManageNoShowMeetingMemberAppResponseDto(
 	UUID crewId,
-	UUID crewMemberMappingId,
-	CrewMemberAppInfo crewMember
+	UUID meetingId,
+	MeetingMemberAppInfo meetingMemberInfo
 ) {
-	public record CrewMemberAppInfo(
+	public record MeetingMemberAppInfo(
 		UUID id,
 		UUID userId,
 		String status

@@ -24,6 +24,7 @@ import com._42195km.msa.crew.application.dto.response.GetSpecificCrewMeetingAppR
 import com._42195km.msa.crew.application.dto.response.GetSpecificCrewMemberAppResponseDto;
 import com._42195km.msa.crew.application.dto.response.HandleCrewJoinAppResponseDto;
 import com._42195km.msa.crew.application.dto.response.JoinCrewAppResponseDto;
+import com._42195km.msa.crew.application.dto.response.ManageNoShowMeetingMemberAppResponseDto;
 import com._42195km.msa.crew.application.dto.response.ParticipateCrewMeetingAppResponseDto;
 import com._42195km.msa.crew.application.dto.response.SearchCrewAppPagingResponseDto;
 import com._42195km.msa.crew.application.dto.response.SearchCrewMeetingAppPagingResponseDto;
@@ -61,6 +62,7 @@ public class CrewService {
 			.isAutoAgree(dto.isAutoAgree())
 			.build();
 
+		crew.autoJoinCaptain();
 		crewRepository.save(crew);
 
 		return new CreateCrewAppResponseDto(
@@ -82,8 +84,8 @@ public class CrewService {
 			throw CrewBusinessException.from(CrewServiceCode.CREW_IS_FULL);
 		}
 
-		if (crew.isAlreadyJoined(userId)) {
-			throw CrewBusinessException.from(CrewServiceCode.CREW_MEMBER_ALREADY_JOINED);
+		if (crew.isAlreadyRelatedUser(userId)) {
+			throw CrewBusinessException.from(CrewServiceCode.CREW_MEMBER_ALREADY_RELATED);
 		}
 
 		if (crew.isInBlackList(userId)) {
@@ -102,10 +104,11 @@ public class CrewService {
 
 		crew.addCrewMemberMapping(crewMemberMapping);
 		crewMember.addCrewMemberMapping(crewMemberMapping);
+
 		crewRepository.save(crew);
+		crewRepository.flush();
 
 		return new JoinCrewAppResponseDto(
-			crewMember.getId(),
 			crew.getId(),
 			crewMemberMapping.getId(),
 			new JoinCrewAppResponseDto.CrewMemberAppInfo(
@@ -169,6 +172,7 @@ public class CrewService {
 
 		crew.setDeletedCrewMeetings();
 		crew.setDeletedCrewMember();
+		crew.setDeletedCrewMemberMappings();
 		crew.setDeleted();
 	}
 
@@ -257,10 +261,19 @@ public class CrewService {
 			}
 		}
 
+		if (crew.isNotMember(userId)) {
+			throw CrewBusinessException.from(CrewServiceCode.CREW_MEMBER_NOT_FOUND);
+		}
+
+		if (crew.isCrewMeetingTimeOverLapped(userId, dto.date(), dto.hour())) {
+			throw CrewBusinessException.from(CrewServiceCode.CREW_MEETING_TIME_OVERLAPPED);
+		}
+
 		CrewMeeting crewMeeting = CrewMeeting.builder()
 			.name(dto.name())
 			.meetingDateTime(dto.date())
 			.hour(dto.hour())
+			.description(dto.description())
 			.description(dto.description())
 			.type(dto.type())
 			.capacity(dto.capacity())
@@ -309,7 +322,7 @@ public class CrewService {
 		CrewMeetingMemberMapping crewMeetingMemberMapping = CrewMeetingMemberMapping.builder()
 			.meeting(crewMeeting)
 			.meetingMember(crewMeetingMember)
-			.status(CrewMeetingMemberMapping.MeetingMemberStatus.PENDING)
+			.status(CrewMeetingMemberMapping.MeetingMemberStatus.APPROVED)
 			.build();
 
 		crew.addCrewMeeting(crewMeeting);
@@ -337,7 +350,7 @@ public class CrewService {
 
 		CrewMeeting crewMeeting = crew.findCrewMeeting(meetingId);
 
-		if (crewMeeting.getCreatedBy() != userId) {
+		if (!crewMeeting.getCreatedBy().equals(userId)) {
 			throw CrewBusinessException.from(CrewServiceCode.UNAUTHORIZED_CREW_MEETING_ACCESS);
 		}
 
@@ -389,9 +402,68 @@ public class CrewService {
 		);
 	}
 
+	@Transactional(readOnly = true)
 	public SearchCrewMeetingAppPagingResponseDto searchCrewMeeting(UUID crewId, Pageable pageable) {
 		return SearchCrewMeetingAppPagingResponseDto.from(
 			crewRepository.findAllCrewMeetingByCrewId(crewId, pageable)
 		);
+	}
+
+	public ManageNoShowMeetingMemberAppResponseDto manageNoShowMeetingMember(UUID crewId, UUID meetingId,
+		UUID meetingMemberId, UUID captainId) {
+		Crew crew = crewRepository.findByIdAndDeletedAtIsNull(crewId)
+			.orElseThrow(() -> CrewBusinessException.from(CrewServiceCode.CREW_NOT_FOUND));
+
+		if (crew.isNotCaptain(captainId)) {
+			throw CrewBusinessException.from(CrewServiceCode.UNAUTHORIZED_CREW_ACCESS);
+		}
+
+		CrewMeeting crewMeeting = crew.findCrewMeeting(meetingId);
+		CrewMeetingMemberMapping crewMeetingMemberMapping = crewMeeting.findCrewMeetingMemberMapping(meetingMemberId);
+		crewMeetingMemberMapping.manageNoShow();
+		crewRepository.save(crew);
+
+		return new ManageNoShowMeetingMemberAppResponseDto(
+			crew.getId(),
+			crewMeetingMemberMapping.getMeeting().getId(),
+			new ManageNoShowMeetingMemberAppResponseDto.MeetingMemberAppInfo(
+				crewMeetingMemberMapping.getId(),
+				crewMeetingMemberMapping.getMeetingMember().getUserId(),
+				crewMeetingMemberMapping.getStatus().name()
+			)
+		);
+	}
+
+	@Transactional
+	public void leaveMeeting(UUID crewId, UUID meetingId, UUID meetingMemberUserId, UUID userId) {
+		Crew crew = crewRepository.findByIdAndDeletedAtIsNull(crewId)
+			.orElseThrow(() -> CrewBusinessException.from(CrewServiceCode.CREW_NOT_FOUND));
+
+		CrewMeeting crewMeeting = crew.findCrewMeeting(meetingId);
+
+		if (!meetingMemberUserId.equals(userId)) {
+			throw CrewBusinessException.from(CrewServiceCode.UNAUTHORIZED_CREW_MEETING_DELETE_ACCESS);
+		}
+
+		crewMeeting.removeMeetingMember(meetingMemberUserId);
+	}
+	// TODO : 애그리거트를 이용해 상태변경하도록 수정
+	// TODO : 모임 시간이 끝나면 모임이 자동 출석되도록 하는 이벤트 추가
+	// TODO : 메서드 순서 정리
+
+	@Transactional
+	public void deleteCrewMeeting(UUID crewId, UUID meetingId, UUID meetingCaptainId) {
+		Crew crew = crewRepository.findByIdAndDeletedAtIsNull(crewId)
+			.orElseThrow(() -> CrewBusinessException.from(CrewServiceCode.CREW_NOT_FOUND));
+
+		CrewMeeting crewMeeting = crew.findCrewMeeting(meetingId);
+
+		if (crewMeeting.getCreatedBy().equals(meetingCaptainId)) {
+			throw CrewBusinessException.from(CrewServiceCode.UNAUTHORIZED_CREW_MEETING_ACCESS);
+		}
+
+		crewMeeting.deleteCrewMemberMappings();
+		crewMeeting.setDeleted();
+		crewRepository.save(crew);
 	}
 }

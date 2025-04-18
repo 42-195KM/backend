@@ -34,6 +34,7 @@ import com._42195km.msa.crew.presentation.dto.response.GetSpecificCrewMemberResp
 import com._42195km.msa.crew.presentation.dto.response.GetSpecificCrewResponseDto;
 import com._42195km.msa.crew.presentation.dto.response.HandleCrewJoinResponseDto;
 import com._42195km.msa.crew.presentation.dto.response.JoinCrewResponseDto;
+import com._42195km.msa.crew.presentation.dto.response.ManageNoShowMeetingMemberResponseDto;
 import com._42195km.msa.crew.presentation.dto.response.ParticipateCrewMeetingResponseDto;
 import com._42195km.msa.crew.presentation.dto.response.SearchCrewMeetingPagingResponseDto;
 import com._42195km.msa.crew.presentation.dto.response.SearchCrewMemberPagingResponseDto;
@@ -293,6 +294,46 @@ public class CrewController {
 		);
 	}
 
+	@DeleteMapping("/{crewId}/meetings/{meetingId}/noshow/{meetingMemberId}")
+	public ResponseEntity<ApiResponse<?>> manageNoShowMeetingMember(
+		@PathVariable(name = "crewId") UUID crewId,
+		@PathVariable(name = "meetingId") UUID meetingId,
+		@PathVariable(name = "meetingMemberId") UUID meetingMemberId,
+		@UserInfo UserInfoDto userInfoDto
+	) {
+		return ResponseEntity.ok(
+			new ApiResponse<>(
+				CrewServiceCode.CREW_MANAGE_NO_SHOW_DELETE_SUCCESS.getCode(),
+				ManageNoShowMeetingMemberResponseDto.from(crewService.manageNoShowMeetingMember(
+					crewId,
+					meetingId,
+					meetingMemberId,
+					userInfoDto.userId()
+				)),
+				CrewServiceCode.CREW_MANAGE_NO_SHOW_DELETE_SUCCESS.getMessage(),
+				CrewServiceCode.CREW_MANAGE_NO_SHOW_DELETE_SUCCESS.getStatus()
+			)
+		);
+	}
+
+	@DeleteMapping("/{crewId}/meetings/{meetingId}/meetingMembers/{meetingMemberId}")
+	public ResponseEntity<ApiResponse<?>> leaveMeeting(
+		@PathVariable(name = "crewId") UUID crewId,
+		@PathVariable(name = "meetingId") UUID meetingId,
+		@PathVariable(name = "meetingMemberId") UUID meetingMemberId,
+		@UserInfo UserInfoDto userInfoDto
+	) {
+		crewService.leaveMeeting(crewId, meetingId, meetingMemberId, userInfoDto.userId());
+		return ResponseEntity.ok(
+			new ApiResponse<>(
+				CrewServiceCode.CREW_LEAVE_MEETING_DELETE_SUCCESS.getCode(),
+				null,
+				CrewServiceCode.CREW_LEAVE_MEETING_DELETE_SUCCESS.getMessage(),
+				CrewServiceCode.CREW_LEAVE_MEETING_DELETE_SUCCESS.getStatus()
+			)
+		);
+	}
+
 	@GetMapping("/{crewId}/meetings/search")
 	public ResponseEntity<ApiResponse<?>> searchCrewMeeting(
 		@PathVariable(name = "crewId") UUID crewId,
@@ -304,6 +345,22 @@ public class CrewController {
 				SearchCrewMeetingPagingResponseDto.from(crewService.searchCrewMeeting(crewId, pageable)),
 				CrewServiceCode.CREW_SEARCH_MEETING_SEARCH_SUCCESS.getMessage(),
 				CrewServiceCode.CREW_SEARCH_MEETING_SEARCH_SUCCESS.getStatus()
+			)
+		);
+	}
+
+	@DeleteMapping("/{crewId}/meetings/{meetingId}")
+	public ResponseEntity<ApiResponse<?>> deleteCrewMeeting(
+		@PathVariable(name = "crewId") UUID crewId,
+		@PathVariable(name = "meetingId") UUID meetingId,
+		@UserInfo UserInfoDto userInfoDto) {
+		crewService.deleteCrewMeeting(crewId, meetingId, userInfoDto.userId());
+		return ResponseEntity.ok(
+			new ApiResponse<>(
+				CrewServiceCode.CREW_DELETE_MEETING_DELETE_SUCCESS.getCode(),
+				null,
+				CrewServiceCode.CREW_DELETE_MEETING_DELETE_SUCCESS.getMessage(),
+				CrewServiceCode.CREW_DELETE_MEETING_DELETE_SUCCESS.getStatus()
 			)
 		);
 	}
