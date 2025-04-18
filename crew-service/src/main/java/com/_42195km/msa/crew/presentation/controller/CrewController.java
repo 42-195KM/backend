@@ -294,7 +294,7 @@ public class CrewController {
 		);
 	}
 
-	@DeleteMapping("/{crewId}/meetings/{meetingId}/noShow/{meetingMemberId}")
+	@DeleteMapping("/{crewId}/meetings/{meetingId}/noshow/{meetingMemberId}")
 	public ResponseEntity<ApiResponse<?>> manageNoShowMeetingMember(
 		@PathVariable(name = "crewId") UUID crewId,
 		@PathVariable(name = "meetingId") UUID meetingId,
@@ -316,7 +316,7 @@ public class CrewController {
 		);
 	}
 
-	@DeleteMapping("/{crewId}/meetings/{meetingId}/{meetingMemberId}")
+	@DeleteMapping("/{crewId}/meetings/{meetingId}/meetingMembers/{meetingMemberId}")
 	public ResponseEntity<ApiResponse<?>> leaveMeeting(
 		@PathVariable(name = "crewId") UUID crewId,
 		@PathVariable(name = "meetingId") UUID meetingId,
