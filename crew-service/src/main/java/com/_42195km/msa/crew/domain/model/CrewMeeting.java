@@ -112,7 +112,7 @@ public class CrewMeeting extends BaseEntity {
 		return crewMeetingMemberMappings.stream()
 			.filter(crewMeetingMemberMapping -> crewMeetingMemberMapping.getMeetingMember()
 				.getUserId()
-				.equals(meetingMemberId))
+				.equals(meetingMemberId) && crewMeetingMemberMapping.getDeletedAt() == null)
 			.findFirst()
 			.orElseThrow(() -> new IllegalArgumentException("해당 사용자는 크루 모임에 가입되어 있지 않습니다."));
 	}
