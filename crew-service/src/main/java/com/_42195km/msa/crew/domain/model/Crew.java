@@ -203,7 +203,8 @@ public class Crew extends BaseEntity {
 		LocalDateTime meetingEndDateTime = meetingStartDateTime.plusHours(hour);
 
 		List<CrewMeeting> crewMeetings = this.crewMeetings.stream()
-			.filter(crewMeeting -> crewMeeting.getCreatedBy().equals(userId))
+			.filter(crewMeeting -> crewMeeting.getCreatedBy().equals(userId)
+				&& crewMeeting.getDeletedAt() == null)
 			.toList();
 
 		return crewMeetings.stream()

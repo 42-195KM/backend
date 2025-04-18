@@ -265,18 +265,19 @@ public class CrewService {
 			throw CrewBusinessException.from(CrewServiceCode.CREW_MEMBER_NOT_FOUND);
 		}
 
+		if (crew.isCrewMeetingTimeOverLapped(userId, dto.date(), dto.hour())) {
+			throw CrewBusinessException.from(CrewServiceCode.CREW_MEETING_TIME_OVERLAPPED);
+		}
+
 		CrewMeeting crewMeeting = CrewMeeting.builder()
 			.name(dto.name())
 			.meetingDateTime(dto.date())
 			.hour(dto.hour())
 			.description(dto.description())
+			.description(dto.description())
 			.type(dto.type())
 			.capacity(dto.capacity())
 			.build();
-
-		if (crew.isCrewMeetingTimeOverLapped(userId, dto.date(), dto.hour())) {
-			throw CrewBusinessException.from(CrewServiceCode.CREW_MEETING_TIME_OVERLAPPED);
-		}
 
 		crew.addCrewMeeting(crewMeeting);
 		crewRepository.save(crew);
@@ -434,17 +435,17 @@ public class CrewService {
 	}
 
 	@Transactional
-	public void leaveMeeting(UUID crewId, UUID meetingId, UUID meetingMemberId, UUID userId) {
+	public void leaveMeeting(UUID crewId, UUID meetingId, UUID meetingMemberUserId, UUID userId) {
 		Crew crew = crewRepository.findByIdAndDeletedAtIsNull(crewId)
 			.orElseThrow(() -> CrewBusinessException.from(CrewServiceCode.CREW_NOT_FOUND));
 
 		CrewMeeting crewMeeting = crew.findCrewMeeting(meetingId);
 
-		if (!meetingMemberId.equals(userId)) {
+		if (!meetingMemberUserId.equals(userId)) {
 			throw CrewBusinessException.from(CrewServiceCode.UNAUTHORIZED_CREW_MEETING_DELETE_ACCESS);
 		}
 
-		crewMeeting.removeMeetingMember(meetingMemberId);
+		crewMeeting.removeMeetingMember(meetingMemberUserId);
 	}
 	// TODO : 애그리거트를 이용해 상태변경하도록 수정
 	// TODO : 모임 시간이 끝나면 모임이 자동 출석되도록 하는 이벤트 추가
@@ -457,7 +458,7 @@ public class CrewService {
 
 		CrewMeeting crewMeeting = crew.findCrewMeeting(meetingId);
 
-		if (crewMeeting.getCreatedBy() != meetingCaptainId) {
+		if (crewMeeting.getCreatedBy().equals(meetingCaptainId)) {
 			throw CrewBusinessException.from(CrewServiceCode.UNAUTHORIZED_CREW_MEETING_ACCESS);
 		}
 
