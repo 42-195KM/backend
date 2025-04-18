@@ -14,6 +14,7 @@ import lombok.Getter;
 @Builder
 public class RankingDetailResponseDto {
 	private UUID id;
+	private UUID rankingId;
 	private String metricName;
 	private String metricValue;
 	private int rank;
@@ -22,6 +23,7 @@ public class RankingDetailResponseDto {
 	public static RankingDetailResponseDto from(RankingDetail detail) {
 		return RankingDetailResponseDto.builder()
 			.id(detail.getId())
+			.rankingId(detail.getRanking().getId())
 			.metricName(detail.getMetricName())
 			.metricValue(detail.getMetricValue())
 			.rank(detail.getRank())

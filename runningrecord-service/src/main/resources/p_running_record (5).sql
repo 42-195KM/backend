@@ -1,4 +1,4 @@
-INSERT INTO p_running_record (id, user_id, created_at, distance, pace, timer, is_deleted)
+INSERT INTO runningrecord.public.p_running_record (id, user_id, created_at, distance, pace, timer, is_deleted)
 VALUES ('c77b2e5d-cf55-438d-addb-bcb73e6b1cf5', '619f2a90-459e-4959-b10a-35009ade8ca6', '2025-04-01 08:10:00', 4.77,
         3.58, 1024596000000, false),
        ('1562e6e6-bd98-4fae-b200-d45dc654faa2', '619f2a90-459e-4959-b10a-35009ade8ca6', '2025-04-03 08:18:00', 7.36,
