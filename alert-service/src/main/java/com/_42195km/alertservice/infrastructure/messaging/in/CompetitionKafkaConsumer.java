@@ -15,14 +15,12 @@ import java.util.Map;
 @Slf4j
 public class CompetitionKafkaConsumer {
 
-    private final AlertContext<CompetitionEventDto> context;
+    private final AlertContext context;
     private final CompetitionStrategy competitionStrategy;
 
     @KafkaListener(topics = "competition_notification", groupId = "competition-group")
-    public void AlertCompetition(Map<String, Object> eventMap) {
+    public void alertCompetition(Map<String, Object> eventMap) {
         context.sendMessage(eventMap, competitionStrategy, CompetitionEventDto.class);
     }
-
-
 
 }

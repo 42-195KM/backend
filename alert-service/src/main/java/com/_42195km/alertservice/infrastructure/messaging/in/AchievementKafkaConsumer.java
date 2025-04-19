@@ -13,7 +13,7 @@ import java.util.Map;
 @Slf4j
 public class AchievementKafkaConsumer {
 
-    private final AlertContext<AchieveEventDto> context;
+    private final AlertContext context;
     private final AchievementStrategy achievementStrategy;
 
     @KafkaListener(topics = "achieve-achievement", groupId = "achieve-group")
