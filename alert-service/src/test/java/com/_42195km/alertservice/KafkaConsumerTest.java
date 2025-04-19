@@ -1,13 +1,11 @@
 package com._42195km.alertservice;
 
-import com._42195km.alertservice.infrastructure.messaging.in.AchieveEventDto;
-import com._42195km.alertservice.infrastructure.messaging.in.CompetitionEventDto;
+import com._42195km.alertservice.infrastructure.messaging.dto.AchieveEventDto;
+import com._42195km.alertservice.infrastructure.messaging.dto.CompetitionEventDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.test.context.EmbeddedKafka;
 
 import java.util.UUID;
 
@@ -28,7 +26,6 @@ public class KafkaConsumerTest {
     @Test
     void AchievementProducerTest() {
 
-
         AchieveEventDto achieveEventDto = AchieveEventDto.builder()
                 .userId(UUID.fromString("aaaaaaaa-0bda-11f0-b183-cad3a17bbf53"))
                 .userMediaId("U08MRJYTBL1")
@@ -38,14 +35,10 @@ public class KafkaConsumerTest {
                 .build();
 
         kafkaTemplate.send("achieve-achievement", achieveEventDto);
-
-
     }
 
     @Test
     void CompetitionProducerTest() {
-
-
         CompetitionEventDto competitionEventDto = CompetitionEventDto.builder()
                 .userId(UUID.fromString("aaaaaaaa-0bda-11f0-b183-cad3a17bbf53"))
                 .mediaId("U08MRJYTBL1")
