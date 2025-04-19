@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import com._42195km.msa.crew.domain.model.Crew;
+import com._42195km.msa.crew.domain.model.CrewMeeting;
 import com._42195km.msa.crew.domain.model.CrewMemberMapping;
 import com._42195km.msa.crew.domain.repository.CrewRepository;
 
@@ -34,7 +35,6 @@ public class CrewRepositoryImpl implements CrewRepository {
 		return crewJpaRepository.findByIdAndDeletedAtIsNull(crewId);
 	}
 
-
 	@Override
 	public Page<Crew> findAllByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndDeletedAtIsNull(
 		String nameKeyword,
@@ -52,5 +52,15 @@ public class CrewRepositoryImpl implements CrewRepository {
 	@Override
 	public Page<CrewMemberMapping> findAllCrewMemberMappingByCrewId(UUID crewId, Pageable pageable) {
 		return crewJpaRepository.findAllCrewMemberMappingByCrewId(crewId, pageable);
+	}
+
+	@Override
+	public Page<CrewMeeting> findAllCrewMeetingByCrewId(UUID crewId, Pageable pageable) {
+		return crewJpaRepository.findAllCrewMeetingByCrewId(crewId, pageable);
+	}
+
+	@Override
+	public void flush() {
+		crewJpaRepository.flush();
 	}
 }

@@ -19,7 +19,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "p_auth", schema = "authschema")
+@Table(name = "p_auth")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class Auth extends BaseEntity {

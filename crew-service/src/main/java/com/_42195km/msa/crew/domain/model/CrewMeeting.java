@@ -60,7 +60,7 @@ public class CrewMeeting extends BaseEntity {
 	private Crew crew;
 
 	@OneToMany(mappedBy = "meeting", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<CrewMeetingMemberMapping> crewMeetingMemberMappings = new ArrayList<>();
+	private List<CrewMeetingMemberMapping> crewMeetingMemberMappings;
 
 	@Builder
 	public CrewMeeting(String name, LocalDateTime meetingDateTime, Integer hour, String description, String type,
@@ -71,6 +71,7 @@ public class CrewMeeting extends BaseEntity {
 		this.description = description;
 		this.type = parseTypeLiteral(type);
 		this.capacity = capacity;
+		this.crewMeetingMemberMappings = new ArrayList<>();
 	}
 
 	public static boolean isRegularMeetingRequest(String type) {
@@ -105,6 +106,24 @@ public class CrewMeeting extends BaseEntity {
 		return crewMeetingMemberMappings.stream()
 			.filter(crewMeetingMemberMapping -> crewMeetingMemberMapping.getDeletedAt() == null)
 			.count() >= capacity;
+	}
+
+	public CrewMeetingMemberMapping findCrewMeetingMemberMapping(UUID meetingMemberId) {
+		return crewMeetingMemberMappings.stream()
+			.filter(crewMeetingMemberMapping -> crewMeetingMemberMapping.getMeetingMember()
+				.getUserId()
+				.equals(meetingMemberId) && crewMeetingMemberMapping.getDeletedAt() == null)
+			.findFirst()
+			.orElseThrow(() -> new IllegalArgumentException("해당 사용자는 크루 모임에 가입되어 있지 않습니다."));
+	}
+
+	public void deleteCrewMemberMappings() {
+		this.crewMeetingMemberMappings.forEach(CrewMeetingMemberMapping::setDeleted);
+	}
+
+	public void removeMeetingMember(UUID meetingMemberId) {
+		CrewMeetingMemberMapping crewMeetingMemberMapping = findCrewMeetingMemberMapping(meetingMemberId);
+		crewMeetingMemberMapping.setDeleted();
 	}
 
 	public void update(String name, Integer hour, String description, Integer capacity) {

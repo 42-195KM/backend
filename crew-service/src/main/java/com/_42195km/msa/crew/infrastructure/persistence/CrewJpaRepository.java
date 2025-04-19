@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com._42195km.msa.crew.domain.model.Crew;
+import com._42195km.msa.crew.domain.model.CrewMeeting;
 import com._42195km.msa.crew.domain.model.CrewMemberMapping;
 
 public interface CrewJpaRepository extends JpaRepository<Crew, UUID> {
@@ -24,4 +25,7 @@ public interface CrewJpaRepository extends JpaRepository<Crew, UUID> {
 
 	@Query("SELECT cmm from CrewMemberMapping cmm JOIN cmm.crewMember cm WHERE cmm.crew.id = :crewId AND cmm.deletedAt IS NULL")
 	Page<CrewMemberMapping> findAllCrewMemberMappingByCrewId(@Param(value = "crewId") UUID crewId, Pageable pageable);
+
+	@Query("SELECT cm from CrewMeeting cm WHERE cm.crew.id = :crewId AND cm.deletedAt IS NULL")
+	Page<CrewMeeting> findAllCrewMeetingByCrewId(@Param(value = "crewId") UUID crewId, Pageable pageable);
 }
