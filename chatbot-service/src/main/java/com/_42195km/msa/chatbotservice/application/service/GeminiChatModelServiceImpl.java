@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class GeminiService implements AiService {
+public class GeminiChatModelServiceImpl implements ChatModelService {
 
     private final VertexAiGeminiChatModel vertexAiGeminiChatModel;
     private final SseServiceImpl sseService;

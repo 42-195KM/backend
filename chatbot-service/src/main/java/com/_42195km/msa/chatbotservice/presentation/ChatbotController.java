@@ -3,11 +3,10 @@ package com._42195km.msa.chatbotservice.presentation;
 
 
 import com._42195km.msa.chatbotservice.application.dto.response.SearchConversationResponseAppDto;
-import com._42195km.msa.chatbotservice.application.service.AiService;
+import com._42195km.msa.chatbotservice.application.service.ChatModelService;
 import com._42195km.msa.chatbotservice.application.service.ConversationService;
 import com._42195km.msa.chatbotservice.application.service.EmbeddingService;
 import com._42195km.msa.chatbotservice.application.service.SseService;
-import com._42195km.msa.chatbotservice.domain.entity.Conversation;
 import com._42195km.msa.chatbotservice.presentation.dto.request.QuestionRequestDto;
 import com._42195km.msa.chatbotservice.presentation.dto.request.SearchConversationRequestDto;
 import com._42195km.msa.chatbotservice.presentation.dto.response.SearchConversationResponseDto;
@@ -21,14 +20,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import java.util.UUID;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/chatbots")
 public class ChatbotController {
 
-    private final AiService aiService;
+    private final ChatModelService aiService;
     private final SseService sseService;
     private final EmbeddingService embeddingService;
     private final ConversationService conversationService;
