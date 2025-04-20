@@ -1,7 +1,7 @@
 package com._42195km.alertservice.infrastructure.messaging.in;
 
 import com._42195km.alertservice.application.service.AlertStrategy;
-import com._42195km.alertservice.code.AlertCode;
+import com._42195km.alertservice.exception.AlertCode;
 import com._42195km.alertservice.infrastructure.messaging.dto.CompetitionEventDto;
 import com._42195km.msa.common.exception.CustomBusinessException;
 import lombok.extern.slf4j.Slf4j;
