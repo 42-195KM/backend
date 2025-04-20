@@ -1,5 +1,6 @@
 package com._42195km.alertservice.infrastructure.messaging.in;
 
+import com._42195km.alertservice.application.service.AlertContext;
 import com._42195km.alertservice.infrastructure.messaging.dto.AchieveEventDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +15,7 @@ import java.util.Map;
 public class AchievementKafkaConsumer {
 
     private final AlertContext context;
-    private final AchievementStrategy achievementStrategy;
+    private final AchievementStrategyImpl achievementStrategy;
 
     @KafkaListener(topics = "achieve-achievement", groupId = "achieve-group")
     public void alertAchievement(Map<String, Object> eventMap) {

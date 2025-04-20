@@ -1,6 +1,7 @@
 package com._42195km.alertservice.infrastructure.messaging.in;
 
 
+import com._42195km.alertservice.application.service.AlertContext;
 import com._42195km.alertservice.infrastructure.messaging.dto.CompetitionEventDto;
 
 import lombok.RequiredArgsConstructor;
@@ -16,7 +17,7 @@ import java.util.Map;
 public class CompetitionKafkaConsumer {
 
     private final AlertContext context;
-    private final CompetitionStrategy competitionStrategy;
+    private final CompetitionStrategyImpl competitionStrategy;
 
     @KafkaListener(topics = "competition_notification", groupId = "competition-group")
     public void alertCompetition(Map<String, Object> eventMap) {

@@ -1,4 +1,4 @@
-package com._42195km.alertservice.infrastructure.messaging.in;
+package com._42195km.alertservice.application.service;
 
 public interface AlertStrategy<T> {
 

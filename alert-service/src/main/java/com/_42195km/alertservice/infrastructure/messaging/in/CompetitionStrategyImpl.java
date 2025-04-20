@@ -1,5 +1,6 @@
 package com._42195km.alertservice.infrastructure.messaging.in;
 
+import com._42195km.alertservice.application.service.AlertStrategy;
 import com._42195km.alertservice.code.AlertCode;
 import com._42195km.alertservice.infrastructure.messaging.dto.CompetitionEventDto;
 import com._42195km.msa.common.exception.CustomBusinessException;
@@ -8,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public class CompetitionStrategy implements AlertStrategy<CompetitionEventDto> {
+public class CompetitionStrategyImpl implements AlertStrategy<CompetitionEventDto> {
     @Override
     public String makeMessage(CompetitionEventDto eventDto) {
         return eventDto.getTitle() +" 신청이 완료되었습니다.";

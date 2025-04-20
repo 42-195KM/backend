@@ -1,5 +1,6 @@
 package com._42195km.alertservice.infrastructure.messaging.in;
 
+import com._42195km.alertservice.application.service.AlertStrategy;
 import com._42195km.alertservice.code.AlertCode;
 import com._42195km.alertservice.infrastructure.messaging.dto.AchieveEventDto;
 import com._42195km.msa.common.exception.CustomBusinessException;
@@ -8,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public class AchievementStrategy implements AlertStrategy<AchieveEventDto>{
+public class AchievementStrategyImpl implements AlertStrategy<AchieveEventDto> {
 
 
     @Override

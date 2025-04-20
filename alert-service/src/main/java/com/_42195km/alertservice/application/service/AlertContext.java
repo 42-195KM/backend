@@ -1,7 +1,5 @@
-package com._42195km.alertservice.infrastructure.messaging.in;
+package com._42195km.alertservice.application.service;
 
-import com._42195km.alertservice.application.service.MessageService;
-import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
