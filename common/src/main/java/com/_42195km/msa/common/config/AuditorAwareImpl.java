@@ -29,10 +29,11 @@ public class AuditorAwareImpl implements AuditorAware<UUID> {
 				try {
 					return Optional.of(UUID.fromString(userId));
 				} catch (IllegalArgumentException e) {
-					return Optional.empty();
+					log.warn("Invalid UUID format for X-User-Id: {}", userId);
+					return Optional.of(UUID.fromString("00000000-0000-0000-0000-000000000000"));
 				}
 			}
 		}
-		return Optional.empty();
+		return Optional.of(UUID.fromString("00000000-0000-0000-0000-000000000000"));
 	}
 }
