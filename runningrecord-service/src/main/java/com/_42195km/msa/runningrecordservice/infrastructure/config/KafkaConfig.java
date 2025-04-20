@@ -24,6 +24,8 @@ import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.springframework.util.backoff.FixedBackOff;
 
+import com._42195km.msa.common.config.CustomDeserializer;
+
 @Configuration
 @EnableKafka
 public class KafkaConfig {
@@ -58,7 +60,7 @@ public class KafkaConfig {
 		configProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaBootstrapServers);
 		configProps.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
 		configProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-		configProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
+		configProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, CustomDeserializer.class);
 		// 모든 패키지의 클래스 역직렬화 허용 (보안에 주의)
 		configProps.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
 		// 타입 정보가 없는 경우 Map으로 변환
