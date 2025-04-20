@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com._42195km.msa.common.BaseEntity;
 import com._42195km.msa.common.exception.CustomBusinessException;
@@ -25,6 +26,7 @@ public class RunningRecordServiceImpl implements RunningRecordService {
 	private final RunningRecordRepository runningRecordRepository;
 	private final RunningRecordEventProducer runningRecordEventProducer;
 
+	@Transactional
 	@Override
 	public RunningRecord createRunningRecord(CreateRunningRecordCommandDto createRunningRecordCommandDto) {
 		try {
@@ -69,6 +71,7 @@ public class RunningRecordServiceImpl implements RunningRecordService {
 		}
 	}
 
+	@Transactional
 	@Override
 	public RunningRecord deleteRecord(UUID runningRecordId) {
 		try{

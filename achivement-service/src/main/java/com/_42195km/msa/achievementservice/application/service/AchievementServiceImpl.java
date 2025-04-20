@@ -15,6 +15,8 @@ import com._42195km.msa.achievementservice.domain.model.Achievement;
 import com._42195km.msa.achievementservice.domain.repository.AchievementRepository;
 import com._42195km.msa.achievementservice.domain.repository.AchievementUserRepository;
 import com._42195km.msa.achievementservice.infrastructure.code.AchievementServiceCode;
+
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -24,6 +26,7 @@ public class AchievementServiceImpl extends ServiceExecutor implements Achivemen
 	private final AchievementRepository achievementRepository;
 	private final AchievementUserRepository achievementUserRepository;
 
+	@Transactional
 	@Override
 	public Achievement createAchievement(CreateAchievementCommandDto createAchievementCommandDto) {
 		return execute(() -> {
@@ -63,6 +66,7 @@ public class AchievementServiceImpl extends ServiceExecutor implements Achivemen
 			AchievementServiceCode.ACHIEVEMENT_GET_BY_USER_FAIL);
 	}
 
+	@Transactional
 	@Override
 	public Achievement deleteAchievement(UUID achievementId) {
 		return execute(() -> {
