@@ -26,12 +26,14 @@ import com._42195km.msa.achievementservice.presentation.dto.request.CreateAchiev
 import com._42195km.msa.achievementservice.presentation.dto.response.CreateAchievementResponseDto;
 import com._42195km.msa.achievementservice.presentation.dto.response.DeleteAchievementResponseDto;
 import com._42195km.msa.achievementservice.presentation.dto.response.GetAchievementResponseDto;
+import com._42195km.msa.common.controller.BaseController;
+
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1")
-public class AchievementController {
+public class AchievementController extends BaseController {
 
 	private final AchivementService achievementService;
 
@@ -43,16 +45,7 @@ public class AchievementController {
 		Achievement achievement = achievementService.createAchievement(createAchievementCommandDto);
 		CreateAchievementResponseDto responseDto = new CreateAchievementResponseDto(achievement);
 
-		AchievementServiceCode serviceCode = AchievementServiceCode.ACHIEVEMENT_CREATE_SUCCESS;
-
-		ApiResponse<CreateAchievementResponseDto> response = ApiResponse.<CreateAchievementResponseDto>builder()
-			.code(serviceCode.getCode())
-			.message(serviceCode.getMessage())
-			.status(serviceCode.getStatus())
-			.data(responseDto)
-			.build();
-
-		return ResponseEntity.ok(response);
+		return createOkResponseEntity(responseDto, AchievementServiceCode.ACHIEVEMENT_CREATE_SUCCESS);
 	}
 
 	// 업적 조회 (GET api/vi/achivements/{achivementId})
@@ -61,15 +54,7 @@ public class AchievementController {
 		Achievement achievement = achievementService.getAchievementById(achievementId);
 		GetAchievementResponseDto responseDto = new GetAchievementResponseDto(achievement);
 
-		AchievementServiceCode serviceCode = AchievementServiceCode.ACHIEVEMENT_GET_SUCCESS;
-		ApiResponse.<GetAchievementResponseDto>builder()
-			.code(serviceCode.getCode())
-			.message(serviceCode.getMessage())
-			.status(serviceCode.getStatus())
-			.data(responseDto)
-			.build();
-
-		return ResponseEntity.ok(responseDto);
+		return createOkResponseEntity(responseDto, AchievementServiceCode.ACHIEVEMENT_GET_SUCCESS);
 	}
 
 	// 업적 목록 보기 (GET api/v1/achivements)
@@ -82,16 +67,7 @@ public class AchievementController {
 		Page<GetAchievementResponseDto> responseDtos = achievementService.getAchievements(pageable)
 			.map(GetAchievementResponseDto::new);
 
-		AchievementServiceCode serviceCode = AchievementServiceCode.ACHIEVEMENT_GET_ALL_SUCCESS;
-
-		ApiResponse<Page<GetAchievementResponseDto>> response = ApiResponse.<Page<GetAchievementResponseDto>>builder()
-			.code(serviceCode.getCode())
-			.message(serviceCode.getMessage())
-			.status(serviceCode.getStatus())
-			.data(responseDtos)
-			.build();
-
-		return ResponseEntity.ok(response);
+		return createOkResponseEntity(responseDtos, AchievementServiceCode.ACHIEVEMENT_GET_ALL_SUCCESS);
 	}
 
 	// 업적 검색 (GET api/v1/achivements/search?title={title})
@@ -105,16 +81,7 @@ public class AchievementController {
 		Page<GetAchievementResponseDto> responseDtos = achievementService.searchAchievements(title, pageable)
 			.map(GetAchievementResponseDto::new);
 
-		AchievementServiceCode serviceCode = AchievementServiceCode.ACHIEVEMENT_SEARCH_SUCCESS;
-
-		ApiResponse<Page<GetAchievementResponseDto>> response = ApiResponse.<Page<GetAchievementResponseDto>>builder()
-			.code(serviceCode.getCode())
-			.message(serviceCode.getMessage())
-			.status(serviceCode.getStatus())
-			.data(responseDtos)
-			.build();
-
-		return ResponseEntity.ok(response);
+		return createOkResponseEntity(responseDtos, AchievementServiceCode.ACHIEVEMENT_SEARCH_SUCCESS);
 	}
 
 	// 특정 사용자가 달성한 업적 검색 (GET api/v1/achivements/user/{userId})
@@ -128,16 +95,7 @@ public class AchievementController {
 		Page<GetAchievementResponseDto> responseDtos = achievementService.getAchivementsByUser(userId, pageable)
 			.map(GetAchievementResponseDto::new);
 
-		AchievementServiceCode serviceCode = AchievementServiceCode.ACHIEVEMENT_GET_BY_USER_SUCCESS;
-
-		ApiResponse<Page<GetAchievementResponseDto>> response = ApiResponse.<Page<GetAchievementResponseDto>>builder()
-			.code(serviceCode.getCode())
-			.message(serviceCode.getMessage())
-			.status(serviceCode.getStatus())
-			.data(responseDtos)
-			.build();
-
-		return ResponseEntity.ok(response);
+		return createOkResponseEntity(responseDtos, AchievementServiceCode.ACHIEVEMENT_GET_BY_USER_SUCCESS);
 	}
 
 	// 업적 삭제 (DELETE api/vi/achivements/{achivementId})
@@ -147,15 +105,6 @@ public class AchievementController {
 		Achievement achievement = achievementService.deleteAchievement(achievementId);
 		DeleteAchievementResponseDto responseDto = new DeleteAchievementResponseDto(achievement);
 
-		AchievementServiceCode serviceCode = AchievementServiceCode.ACHIEVEMENT_DELETE_SUCCESS;
-
-		ApiResponse.<DeleteAchievementResponseDto>builder()
-			.code(serviceCode.getCode())
-			.message(serviceCode.getMessage())
-			.status(serviceCode.getStatus())
-			.data(responseDto)
-			.build();
-
-		return ResponseEntity.ok(responseDto);
+		return createOkResponseEntity(responseDto, AchievementServiceCode.ACHIEVEMENT_DELETE_SUCCESS);
 	}
 }
