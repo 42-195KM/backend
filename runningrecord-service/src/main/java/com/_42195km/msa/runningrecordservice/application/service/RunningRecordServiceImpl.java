@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com._42195km.msa.common.BaseEntity;
 import com._42195km.msa.common.exception.CustomBusinessException;
 
-import com._42195km.msa.common.service.ServiceExecutor;
+import com._42195km.msa.common.service.BaseService;
 import com._42195km.msa.runningrecordservice.application.dto.request.CreateRunningRecordCommandDto;
 import com._42195km.msa.runningrecordservice.domain.model.RunningRecord;
 import com._42195km.msa.runningrecordservice.domain.repository.RunningRecordRepository;
@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class RunningRecordServiceImpl extends ServiceExecutor implements RunningRecordService {
+public class RunningRecordServiceImpl extends BaseService implements RunningRecordService {
 
 	private final RunningRecordRepository runningRecordRepository;
 	private final RunningRecordEventProducer runningRecordEventProducer;
