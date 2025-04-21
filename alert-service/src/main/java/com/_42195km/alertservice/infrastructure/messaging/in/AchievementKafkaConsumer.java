@@ -30,4 +30,12 @@ public class AchievementKafkaConsumer {
     public void alertAchievement(Map<String, Object> eventMap) {
         context.sendMessage(eventMap, achievementStrategy, AchieveEventDto.class);
     }
+
+    @KafkaListener(topics = "achieve-achievement-dead-t", groupId = "achieve-group-retry")
+    void achievementConsumerDead(Map<String, Object> eventMap) {
+        log.error("[DLT] 메시지 수신 - 재처리 필요, payload: {}", eventMap);
+    }
+
+
+
 }
