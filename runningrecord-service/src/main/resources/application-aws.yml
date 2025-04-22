@@ -2,9 +2,6 @@ spring:
   application:
     name: runningrecord-service
 
-  config:
-    import: optional:file:../.env[.properties]
-
   jpa:
     show-sql: true
     hibernate:
@@ -54,6 +51,3 @@ eureka:
   client:
     service-url:
       defaultZone: ${EUREKA_SERVER}
-    register-with-eureka: false
-    fetch-registry: false
-    should-unregister-on-shutdown: false

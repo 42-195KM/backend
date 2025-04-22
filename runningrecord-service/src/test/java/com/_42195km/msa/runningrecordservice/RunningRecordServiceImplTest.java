@@ -26,6 +26,7 @@ import com._42195km.msa.runningrecordservice.application.service.RunningRecordSe
 import com._42195km.msa.runningrecordservice.domain.model.RunningRecord;
 import com._42195km.msa.runningrecordservice.domain.repository.RunningRecordRepository;
 import com._42195km.msa.common.exception.CustomBusinessException;
+import com._42195km.msa.runningrecordservice.infrastructure.messaging.out.RunningRecordEventProducer;
 
 @ExtendWith(MockitoExtension.class)
 @ActiveProfiles("test")
@@ -36,6 +37,9 @@ class RunningRecordServiceImplTest {
 
 	@Mock
 	private RunningRecordRepository runningRecordRepository;
+
+	@Mock
+	private RunningRecordEventProducer runningRecordEventProducer;
 
 	@Test
 	void testCreateRunningRecordSuccess() {
