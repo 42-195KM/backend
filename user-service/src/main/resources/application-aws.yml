@@ -1,13 +1,13 @@
+# Prod - AWS
 spring:
   application:
     name: user-service
   config:
     import:
-      - optional:file:.env[.properties]
       - classpath:./properties/datasource.yml
       - classpath:./properties/jpa.yml
   profiles:
-    active: local
+    active: aws
   kafka:
     url: ${KAFKA_BOOTSTRAP_SERVERS}
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}

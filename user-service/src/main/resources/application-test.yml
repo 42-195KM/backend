@@ -3,20 +3,23 @@ spring:
     name: user-service
   config:
     import:
-      - optional:file:.env[.properties]
+      - optional:file:../.env[.properties]
       - classpath:./properties/datasource.yml
       - classpath:./properties/jpa.yml
-  profiles:
-    active: local
   kafka:
     url: ${KAFKA_BOOTSTRAP_SERVERS}
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
     consumer:
       auto-offset-reset: earliest
       group-id: user-group
+
+server:
+  port: ${USER_SERVER}
+
 eureka:
   client:
     service-url:
-      defaultZone: ${EUREKA_SERVER}  # Eureka 서버 URL
-server:
-  port: ${USER_SERVER}
+      defaultZone: ${EUREKA_SERVER}
+    register-with-eureka: false
+    fetch-registry: false
+    should-unregister-on-shutdown: false
