@@ -7,11 +7,11 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestMethodOrder;
-import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -275,7 +275,7 @@ class CompetitionControllerAPITest {
 	//@Order(12)
 	//@DisplayName("대회 신청 상태 조회 API 테스트")
 	//public void testGetApplicationStatus() throws Exception {
-		// 상태 조회
+	// 상태 조회
 	//	mockMvc.perform(get("/api/v1/competitions/{competitionId}/{participantId}/status",
 	//			testCompetitionId, testUserId))
 	//		.andExpect(status().isOk())
