@@ -42,6 +42,7 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
+
 }
 
 dependencyManagement {
@@ -52,4 +53,9 @@ dependencyManagement {
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+
+jar {
+    enabled = false
 }

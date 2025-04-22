@@ -105,8 +105,12 @@ spring:
 
 eureka:
   client:
+    register-with-eureka: true
+    fetch-registry: true
     service-url:
       defaultZone: ${EUREKA_SERVER}
+  instance:
+    prefer-ip-address: true
 
 springdoc:
   swagger-ui:
