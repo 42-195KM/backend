@@ -12,6 +12,8 @@ spring:
   cloud:
     gateway:
       preserve-host-header: true  # 헤더에 정보 유지
+      globalfilters:
+        - AddRequestHeader=Authorization, {Authorization}
       routes:
         # 유저 서비스
         - id: user-service
