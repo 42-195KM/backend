@@ -32,6 +32,10 @@ public class KafkaConfig {
 		props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
 		props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
 
+		// 인터셉터 등록
+		props.put(ProducerConfig.INTERCEPTOR_CLASSES_CONFIG,
+			"com._42195km.msa.common.config.CustomProducerInterceptor");
+
 		return new DefaultKafkaProducerFactory<>(props);
 	}
 

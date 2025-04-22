@@ -11,6 +11,11 @@ spring:
     group:
       local: local, key
     active: ${ACTIVE_VAL}
+  kafka:
+    url: ${KAFKA_BOOTSTRAP_SERVERS}
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+    consumer:
+      group-id: auth-group
 eureka:
   client:
     service-url:
