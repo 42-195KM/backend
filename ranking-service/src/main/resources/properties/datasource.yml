@@ -1,6 +1,6 @@
 ## local 환경
 spring:
-  config.activate.on-profile: local
+  #  config.activate.on-profile: local
   datasource:
     url: ${DB_RANKING_URL}
     username: ${DB_RANKING_USERNAME}

@@ -3,16 +3,13 @@ spring:
     name: ranking-service
   config:
     import:
-      - optional:file:.env[.properties]
+      - optional:file:../.env[.properties]
       - classpath:./properties/datasource.yml
       - classpath:./properties/jpa.yml
-  profiles:
-    group:
-      local: local, key
-    active: local
+
 eureka:
   client:
     service-url:
-      defaultZone: ${EUREKA_SERVER}  # Eureka 서버 URL
+      defaultZone: ${EUREKA_SERVER}
 server:
   port: ${RANKING_SERVER}
