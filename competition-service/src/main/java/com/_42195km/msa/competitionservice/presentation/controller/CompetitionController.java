@@ -20,8 +20,8 @@ import com._42195km.msa.competitionservice.application.dto.CompleteAppDto;
 import com._42195km.msa.competitionservice.application.dto.response.CompetitionAppResponseDto;
 import com._42195km.msa.competitionservice.application.exception.CompetitionServiceCode;
 import com._42195km.msa.competitionservice.application.mapper.CompetitionMapper;
-import com._42195km.msa.competitionservice.application.service.CompetitionService;
-import com._42195km.msa.competitionservice.application.service.SagaService;
+import com._42195km.msa.competitionservice.application.service.CompetitionServiceImpl;
+import com._42195km.msa.competitionservice.application.service.SagaServiceImpl;
 import com._42195km.msa.competitionservice.infrastructure.messaging.CompetitionSagaOrchestrator;
 import com._42195km.msa.competitionservice.presentation.dto.request.CreateCompetitionRequestDto;
 import com._42195km.msa.competitionservice.presentation.dto.request.GetRequestDto;
@@ -40,8 +40,8 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class CompetitionController {
 
-	private final CompetitionService competitionService;
-	private final SagaService sagaService;
+	private final CompetitionServiceImpl competitionServiceImpl;
+	private final SagaServiceImpl sagaServiceImpl;
 
 	private final CompetitionMapper competitionMapper;
 	private final CompetitionSagaOrchestrator sagaOrchestrator;
@@ -49,7 +49,7 @@ public class CompetitionController {
 	@PostMapping("/")
 	@Operation(summary = "대회 생성")
 	public ResponseEntity<?> createCompetition(@RequestBody CreateCompetitionRequestDto requestDto) {
-		competitionService.createCompetition(requestDto.toCommandDto());
+		competitionServiceImpl.createCompetition(requestDto.toCommandDto());
 		return ResponseEntity.ok(new ApiResponse<>(
 			CompetitionServiceCode.COMPETITION_CREATE_SUCCESS.getCode(),
 			"대회 생성에 성공했습니다.",
@@ -60,7 +60,7 @@ public class CompetitionController {
 	@GetMapping("/")
 	@Operation(summary = "대회 전체 조회")
 	public ResponseEntity<?> getAllCompetitions(@ModelAttribute @Valid GetRequestDto requestDto) {
-		Page<CompetitionAppResponseDto> competitions = competitionService.getCompetitions(requestDto.toPageable());
+		Page<CompetitionAppResponseDto> competitions = competitionServiceImpl.getCompetitions(requestDto.toPageable());
 		Page<CompetitionResponseDto> presentationCompetitions = competitionMapper.toPresentationDtoPage(competitions);
 		return ResponseEntity.ok(new ApiResponse<>(CompetitionServiceCode.COMPETITION_GET_SUCCESS.getCode(),
 			presentationCompetitions,
@@ -71,7 +71,7 @@ public class CompetitionController {
 	@GetMapping("/search")
 	@Operation(summary = "대회 검색")
 	public ResponseEntity<?> searchCompetitions(@ParameterObject SearchRequestDto requstDto) {
-		Page<CompetitionAppResponseDto> competition = competitionService.searchCompetition(requstDto.keyword(),
+		Page<CompetitionAppResponseDto> competition = competitionServiceImpl.searchCompetition(requstDto.keyword(),
 			requstDto.toPageable());
 		Page<CompetitionResponseDto> presentationCompetition = competitionMapper.toPresentationDtoPage(competition);
 		return ResponseEntity.ok(new ApiResponse<>(CompetitionServiceCode.COMPETITION_SEARCH_SUCCESS.getCode(),
@@ -83,7 +83,7 @@ public class CompetitionController {
 	@GetMapping("/{competitionId}")
 	@Operation(summary = "대회 단건 조회")
 	public ResponseEntity<?> getCompetition(@PathVariable("competitionId") UUID competitionId) {
-		CompetitionAppResponseDto competition = competitionService.getCompetition(competitionId);
+		CompetitionAppResponseDto competition = competitionServiceImpl.getCompetition(competitionId);
 		CompetitionResponseDto presentation = competitionMapper.toPresentationDto(competition);
 		return ResponseEntity.ok(new ApiResponse<>(CompetitionServiceCode.COMPETITION_GET_SUCCESS.getCode(),
 			presentation,
@@ -95,7 +95,7 @@ public class CompetitionController {
 	@Operation(summary = "주최 대회 확인")
 	public ResponseEntity<?> checkCompetition(@PathVariable("competitionId") UUID userId,
 		@ParameterObject GetRequestDto requestDto) {
-		Page<CompetitionAppResponseDto> competition = competitionService.getHostCompetition(userId,
+		Page<CompetitionAppResponseDto> competition = competitionServiceImpl.getHostCompetition(userId,
 			requestDto.toPageable());
 		Page<CompetitionResponseDto> presentationCompetition = competitionMapper.toPresentationDtoPage(competition);
 		return ResponseEntity.ok(new ApiResponse<>(CompetitionServiceCode.COMPETITION_GET_SUCCESS.getCode(),
@@ -108,7 +108,7 @@ public class CompetitionController {
 	@Operation(summary = "대회 수정")
 	public ResponseEntity<?> updateCompetition(@PathVariable("competitionId") UUID competitionId,
 		@RequestBody UpdateCompetitionRequestDto requestDto) {
-		competitionService.updateCompetition(competitionId, requestDto.toCommandDto());
+		competitionServiceImpl.updateCompetition(competitionId, requestDto.toCommandDto());
 		return ResponseEntity.ok(new ApiResponse<>(CompetitionServiceCode.COMPETITION_UPDATE_SUCCESS.getCode(),
 			"대회 수정이 완료되었습니다.",
 			CompetitionServiceCode.COMPETITION_UPDATE_SUCCESS.getMessage(),
@@ -119,7 +119,7 @@ public class CompetitionController {
 	@PatchMapping("/{competitionId}/delete")
 	@Operation(summary = "대회 삭제")
 	public ResponseEntity<?> deleteCompetition(@PathVariable("competitionId") UUID competitionId) {
-		competitionService.deleteCompetition(competitionId);
+		competitionServiceImpl.deleteCompetition(competitionId);
 		return ResponseEntity.ok(new ApiResponse<>(CompetitionServiceCode.COMPETITION_DELETE_SUCCESS.getCode(),
 			"대회 삭제가 왼료되었습니다.",
 			CompetitionServiceCode.COMPETITION_DELETE_SUCCESS.getMessage(),
@@ -129,7 +129,7 @@ public class CompetitionController {
 	@PostMapping("/draw/{competitionId}")
 	@Operation(summary = "대회 추첨")
 	public ResponseEntity<?> drawCompetition(@PathVariable("competitionId") UUID competitionId) {
-		competitionService.drawCompetition(competitionId);
+		competitionServiceImpl.drawCompetition(competitionId);
 		return ResponseEntity.ok(new ApiResponse<>(CompetitionServiceCode.COMPETITION_DRAW_SUCCESS.getCode(),
 			"대회 추첨이 완료되었습니다.",
 			CompetitionServiceCode.COMPETITION_DRAW_SUCCESS.getMessage(),
@@ -140,7 +140,7 @@ public class CompetitionController {
 	@Operation(summary = "대회 신청 프로세스 - 분산 트랜젝션 도입 - 모든 단계 통합")
 	public ResponseEntity<?> completeApplication(@RequestBody CompleteAppDto requestDto) {
 
-		String response = sagaService.processCompleteApplication(requestDto);
+		String response = sagaServiceImpl.processCompleteApplication(requestDto);
 
 		return ResponseEntity.ok(new ApiResponse<>(
 			CompetitionServiceCode.COMPETITION_APPLY_SUCCESS.getCode(),
@@ -155,7 +155,7 @@ public class CompetitionController {
 	public ResponseEntity<?> getApplicationStatus(
 		@PathVariable("competitionId") UUID competitionId,
 		@PathVariable("participantId") UUID participantId) {
-		String result = sagaService.findActiveSagaId(competitionId, participantId);
+		String result = sagaServiceImpl.findActiveSagaId(competitionId, participantId);
 		return ResponseEntity.ok(new ApiResponse<>(
 			CompetitionServiceCode.COMPETITION_GET_SUCCESS.getCode(),
 			result,

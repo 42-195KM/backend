@@ -12,8 +12,8 @@ import com._42195km.msa.competitionservice.application.event.ApplicationSagaEven
 import com._42195km.msa.competitionservice.application.event.PaymentSagaEvent;
 import com._42195km.msa.competitionservice.application.event.SagaEvent;
 import com._42195km.msa.competitionservice.application.exception.CompetitionServiceCode;
-import com._42195km.msa.competitionservice.application.service.CompetitionService;
-import com._42195km.msa.competitionservice.application.service.ParticipantService;
+import com._42195km.msa.competitionservice.application.service.CompetitionServiceImpl;
+import com._42195km.msa.competitionservice.application.service.ParticipantServiceImpl;
 import com._42195km.msa.competitionservice.domain.model.SagaState;
 import com._42195km.msa.competitionservice.domain.model.SagaStep;
 import com._42195km.msa.competitionservice.infrastructure.persistence.SagaStateRepository;
@@ -31,8 +31,8 @@ public class CompetitionSagaOrchestrator {
 
 	private final KafkaTemplate<String, SagaEvent> kafkaTemplate;
 	private final SagaStateRepository sagaStateRepository;
-	private final CompetitionService competitionService;
-	private final ParticipantService participantService;
+	private final CompetitionServiceImpl competitionServiceImpl;
+	private final ParticipantServiceImpl participantService;
 
 	public String startApplicationSaga(UUID competitionId, UUID participantId) {
 		SagaState sagaState = new SagaState("APPLICATION", competitionId, participantId);
@@ -148,7 +148,7 @@ public class CompetitionSagaOrchestrator {
 	public void initiatePayment(String sagaId, UUID competitionId, UUID participantId,
 		String paymentMethod) {
 
-		CompetitionAppResponseDto competition = competitionService.getCompetition(competitionId);
+		CompetitionAppResponseDto competition = competitionServiceImpl.getCompetition(competitionId);
 		Integer amount = competition.getPrice();
 
 		SagaState sagaState = sagaStateRepository.getSagaState(sagaId);

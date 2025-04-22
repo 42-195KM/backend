@@ -34,9 +34,9 @@ import com._42195km.msa.competitionservice.infrastructure.persistence.Participan
 
 @ExtendWith(MockitoExtension.class)
 @ActiveProfiles("test")
-class CompetitionServiceTest {
+class CompetitionServiceImplTest {
 	@InjectMocks
-	private CompetitionService competitionService;
+	private CompetitionServiceImpl competitionServiceImpl;
 
 	@Mock
 	private CompetitionRepositoryImpl competitionRepository;
@@ -81,7 +81,7 @@ class CompetitionServiceTest {
 		// 예외 없이 성공적으로 동작한다고 가정하므로, 특별히 when-stub 설정하지 않음
 
 		// when
-		competitionService.createCompetition(command);
+		competitionServiceImpl.createCompetition(command);
 
 		// then
 		then(competitionRepository)
@@ -103,7 +103,7 @@ class CompetitionServiceTest {
 		// when
 		CustomBusinessException ex = assertThrows(
 			CustomBusinessException.class,
-			() -> competitionService.createCompetition(command)
+			() -> competitionServiceImpl.createCompetition(command)
 		);
 
 		// then
@@ -125,7 +125,7 @@ class CompetitionServiceTest {
 			.willReturn(new PageImpl<>(java.util.List.of(mockDto), pageRequest, 1));
 
 		// when
-		Page<CompetitionAppResponseDto> result = competitionService.getCompetitions(pageRequest);
+		Page<CompetitionAppResponseDto> result = competitionServiceImpl.getCompetitions(pageRequest);
 
 		// then
 		assertThat(result.getContent()).hasSize(1);
@@ -144,7 +144,7 @@ class CompetitionServiceTest {
 		given(competitionMapper.toAppResponseDto(mockCompetition)).willReturn(mockDto);
 
 		// when
-		CompetitionAppResponseDto result = competitionService.getCompetition(competitionId);
+		CompetitionAppResponseDto result = competitionServiceImpl.getCompetition(competitionId);
 
 		// then
 		assertThat(result).isNotNull();
@@ -163,7 +163,7 @@ class CompetitionServiceTest {
 		// when
 		CustomBusinessException ex = assertThrows(
 			CustomBusinessException.class,
-			() -> competitionService.getCompetition(competitionId)
+			() -> competitionServiceImpl.getCompetition(competitionId)
 		);
 
 		// then
@@ -180,7 +180,7 @@ class CompetitionServiceTest {
 		given(competitionRepository.findById(competitionId)).willReturn(mockCompetition);
 
 		// when
-		competitionService.updateCompetition(competitionId, updateCommand);
+		competitionServiceImpl.updateCompetition(competitionId, updateCommand);
 
 		// then
 		assertThat(mockCompetition.getTitle()).isEqualTo("변경된 대회 제목");
@@ -203,7 +203,7 @@ class CompetitionServiceTest {
 		// when
 		CustomBusinessException ex = assertThrows(
 			CustomBusinessException.class,
-			() -> competitionService.updateCompetition(competitionId, updateCommand)
+			() -> competitionServiceImpl.updateCompetition(competitionId, updateCommand)
 		);
 
 		// then
@@ -235,7 +235,7 @@ class CompetitionServiceTest {
 		// when
 		CustomBusinessException ex = assertThrows(
 			CustomBusinessException.class,
-			() -> competitionService.deleteCompetition(competitionId)
+			() -> competitionServiceImpl.deleteCompetition(competitionId)
 		);
 
 		// then

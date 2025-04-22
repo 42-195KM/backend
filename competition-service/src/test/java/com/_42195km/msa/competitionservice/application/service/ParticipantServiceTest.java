@@ -38,7 +38,7 @@ import com._42195km.msa.competitionservice.presentation.dto.request.CancelPartic
 class ParticipantServiceTest {
 
 	@InjectMocks
-	private ParticipantService participantService;
+	private ParticipantServiceImpl participantService;
 
 	@Mock
 	private ParticipantRepositoryImpl participantRepository;

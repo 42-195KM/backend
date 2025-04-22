@@ -18,7 +18,7 @@ import com._42195km.msa.competitionservice.application.dto.response.ParticipantA
 import com._42195km.msa.competitionservice.application.dto.response.SearchParticipantAppResponseDto;
 import com._42195km.msa.competitionservice.application.exception.CompetitionServiceCode;
 import com._42195km.msa.competitionservice.application.mapper.ParticipantMapper;
-import com._42195km.msa.competitionservice.application.service.ParticipantService;
+import com._42195km.msa.competitionservice.application.service.ParticipantServiceImpl;
 import com._42195km.msa.competitionservice.presentation.dto.request.CancelParticipantRequestDto;
 import com._42195km.msa.competitionservice.presentation.dto.request.GetRequestDto;
 import com._42195km.msa.competitionservice.presentation.dto.request.SearchRequestDto;
@@ -33,7 +33,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ParticipantController {
 
-	private final ParticipantService participantService;
+	private final ParticipantServiceImpl participantService;
 	private final ParticipantMapper participantMapper;
 
 	@GetMapping("/{competitionId}")

@@ -10,7 +10,7 @@ import com._42195km.msa.competitionservice.application.event.ApplicationSagaEven
 import com._42195km.msa.competitionservice.application.event.CancellationSagaEvent;
 import com._42195km.msa.competitionservice.application.event.PaymentSagaEvent;
 import com._42195km.msa.competitionservice.application.event.SagaEvent;
-import com._42195km.msa.competitionservice.application.service.CompetitionService;
+import com._42195km.msa.competitionservice.application.service.CompetitionServiceImpl;
 import com._42195km.msa.competitionservice.domain.model.ParticipantDetail;
 import com._42195km.msa.competitionservice.domain.model.SagaState;
 import com._42195km.msa.competitionservice.domain.model.SagaStep;
@@ -26,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 public class SagaEventConsumer {
 
 	private final SagaStateRepository sagaStateRepository;
-	private final CompetitionService competitionService;
+	private final CompetitionServiceImpl competitionServiceImpl;
 	private final ParticipantDetailRepositoryImpl participantDetailRepository;
 	private final KafkaTemplate<String, SagaEvent> kafkaTemplate;
 	private final NotificationEventProducer notificationEventProducer;
@@ -156,7 +156,7 @@ public class SagaEventConsumer {
 			sagaStateRepository.saveSagaState(sagaState);
 
 			// 2. 중복 신청 확인
-			boolean isDuplicate = competitionService.checkDuplicateApplication(
+			boolean isDuplicate = competitionServiceImpl.checkDuplicateApplication(
 				sagaState.getCompetitionId(), sagaState.getParticipantId());
 
 			if (isDuplicate) {
@@ -168,7 +168,7 @@ public class SagaEventConsumer {
 			}
 
 			// 3. 대회 정원 확인
-			boolean isFull = competitionService.checkCompetitionCapacity(sagaState.getCompetitionId());
+			boolean isFull = competitionServiceImpl.checkCompetitionCapacity(sagaState.getCompetitionId());
 			if (isFull) {
 				sagaState.updateEligibilityStatus("FULL");
 				sagaState.updateEligibilityReason("Competition is full");
@@ -183,7 +183,7 @@ public class SagaEventConsumer {
 			sagaStateRepository.saveSagaState(sagaState);
 
 			// 5. 참가 확정 처리
-			competitionService.applyCompetition(sagaState.getCompetitionId(), sagaState.getParticipantId());
+			competitionServiceImpl.applyCompetition(sagaState.getCompetitionId(), sagaState.getParticipantId());
 
 			// 6. 참가 확정 완료 상태 업데이트
 			sagaState.markStepAsCompleted(SagaStep.PARTICIPATION_CONFIRMED);
@@ -209,7 +209,7 @@ public class SagaEventConsumer {
 	 */
 	private void sendNotification(SagaState sagaState) {
 		try {
-			CompetitionAppResponseDto competitionDto = competitionService.getCompetition(sagaState.getCompetitionId());
+			CompetitionAppResponseDto competitionDto = competitionServiceImpl.getCompetition(sagaState.getCompetitionId());
 
 			CompetitionApplyNotificationDto notificationEvent = CompetitionApplyNotificationDto.builder()
 				.userId(sagaState.getParticipantId())
