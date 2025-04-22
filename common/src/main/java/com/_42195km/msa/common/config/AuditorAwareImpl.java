@@ -54,7 +54,7 @@ public class AuditorAwareImpl implements AuditorAware<UUID> {
 
 	// 스레드 재사용 방지
 	public static void clear() {
-		currentAuditor.remove();  // ⭐ 중요
+		currentAuditor.remove();
 	}
 
 }
