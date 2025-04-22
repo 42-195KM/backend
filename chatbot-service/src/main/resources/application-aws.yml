@@ -6,8 +6,7 @@ spring:
     name: chatbot-service
   config:
     activate:
-      on-profile: dev
-    import: optional:file:.env[.properties]
+      on-profile: aws
 
   datasource:
     url: ${DB_CHATBOT_URL}
