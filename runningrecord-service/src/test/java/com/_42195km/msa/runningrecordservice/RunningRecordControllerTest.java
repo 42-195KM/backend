@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com._42195km.msa.runningrecordservice.application.dto.request.CreateRunningRecordCommandDto;
 import com._42195km.msa.runningrecordservice.application.service.RunningRecordService;
 import com._42195km.msa.runningrecordservice.domain.model.RunningRecord;
-import com._42195km.msa.runningrecordservice.infrastructure.config.RunningRecordServiceCode;
+import com._42195km.msa.runningrecordservice.infrastructure.code.RunningRecordServiceCode;
 import com._42195km.msa.runningrecordservice.presentation.controller.RunningRecordController;
 
 import java.time.Duration;

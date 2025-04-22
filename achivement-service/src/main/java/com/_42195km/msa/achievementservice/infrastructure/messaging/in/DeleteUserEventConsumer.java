@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com._42195km.msa.achievementservice.domain.model.AchievementUser;
 import com._42195km.msa.achievementservice.domain.repository.AchievementRepository;
@@ -31,6 +32,7 @@ public class DeleteUserEventConsumer {
 		this.achievementUserRepository = achievementUserRepository;
 	}
 
+	@Transactional
 	@KafkaListener(topics = "delete-user", groupId = "runningrecord-group")
 	public void handleDeleteUserEvent(Map<String, Object> eventMap) {
 		Logger logger = LoggerFactory.getLogger(DeleteUserEventConsumer.class);
