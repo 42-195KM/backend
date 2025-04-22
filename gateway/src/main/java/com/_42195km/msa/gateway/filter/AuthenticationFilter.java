@@ -50,6 +50,7 @@ public class AuthenticationFilter implements GlobalFilter {
 		return webClientBuilder.build()
 			.post()
 			.uri("lb://auth-service/api/v1/auth/validate-token")
+			.header("Authorization", token)  // Authorization 헤더를 명시적으로 추가
 			.bodyValue(TokenRequestDto.builder()
 				.token(token)
 				.build()
