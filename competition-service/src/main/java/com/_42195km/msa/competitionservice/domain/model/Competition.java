@@ -13,8 +13,10 @@ import com._42195km.msa.common.BaseEntity;
 import com._42195km.msa.common.exception.CustomBusinessException;
 import com._42195km.msa.competitionservice.application.dto.request.CreateCompetitionCommandDto;
 import com._42195km.msa.competitionservice.application.dto.request.UpdateCompetitionCommandDto;
+import com._42195km.msa.competitionservice.application.event.ApplicationSagaEvent;
+import com._42195km.msa.competitionservice.application.event.PaymentSagaEvent;
 import com._42195km.msa.competitionservice.application.exception.CompetitionServiceCode;
-import com._42195km.msa.competitionservice.infrastructure.messaging.SagaEventPublisher;
+import com._42195km.msa.competitionservice.infrastructure.messaging.EventPublisher;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -162,7 +164,7 @@ public class Competition extends BaseEntity {
 		Participant participant,
 		ApplicationStep targetStep,
 		Object stepData,
-		SagaEventPublisher eventPublisher) {
+		EventPublisher eventPublisher) {
 		// 1. 참가자 매핑 조회 또는 생성
 		CompetitionParticipantMapping mapping = findParticipantMapping(participantId)
 			.orElseGet(() -> {
@@ -184,29 +186,51 @@ public class Competition extends BaseEntity {
 		// 4. 단계별 처리
 		switch (targetStep) {
 			case TERMS_AGREEMENT:
-				Boolean termsAgreed = (Boolean) stepData;
+				Boolean termsAgreed = (Boolean)stepData;
 				mapping.updateTermsAgreement(termsAgreed);
 				// 이벤트 발행
 				if (eventPublisher != null) {
-					eventPublisher.publishTermsAgreementEvent(this.id, participantId, termsAgreed);
+					ApplicationSagaEvent event = ApplicationSagaEvent.createTermsEvent(
+						UUID.randomUUID().toString(), // 새 sagaId 생성 또는 파라미터로 받은 sagaId 사용
+						this.id,
+						participantId,
+						termsAgreed,
+						false // compensation 아님
+					);
+					eventPublisher.publishSagaEvent("competition_saga", event.getSagaId(), event);
 				}
 				break;
 
 			case SOUVENIR_SELECTION:
-				String souvenirSelection = (String) stepData;
+				String souvenirSelection = (String)stepData;
 				mapping.updateSouvenirSelection(souvenirSelection);
 				// 이벤트 발행
 				if (eventPublisher != null) {
-					eventPublisher.publishSouvenirSelectionEvent(this.id, participantId, souvenirSelection);
+					ApplicationSagaEvent event = ApplicationSagaEvent.createSouvenirEvent(
+						UUID.randomUUID().toString(), // 새 sagaId 생성 또는 파라미터로 받은 sagaId 사용
+						this.id,
+						participantId,
+						souvenirSelection,
+						false // compensation 아님
+					);
+					eventPublisher.publishSagaEvent("competition_saga", event.getSagaId(), event);
 				}
 				break;
 
 			case SHIPPING_ADDRESS:
-				String shippingAddress = (String) stepData;
+				String shippingAddress = (String)stepData;
 				mapping.updateShippingAddress(shippingAddress);
 				// 이벤트 발행
 				if (eventPublisher != null) {
-					eventPublisher.publishShippingAddressEvent(this.id, participantId, shippingAddress);
+					// ApplicationSagaEvent 생성 및 발행
+					ApplicationSagaEvent event = ApplicationSagaEvent.createShippingEvent(
+						UUID.randomUUID().toString(), // 새 sagaId 생성 또는 파라미터로 받은 sagaId 사용
+						this.id,
+						participantId,
+						shippingAddress,
+						false // compensation 아님
+					);
+					eventPublisher.publishSagaEvent("competition_saga", event.getSagaId(), event);
 				}
 				break;
 
@@ -216,7 +240,7 @@ public class Competition extends BaseEntity {
 					throw CustomBusinessException.from(CompetitionServiceCode.COMPETITION_APPLY_FIRST_FAIL);
 				}
 
-				PaymentInfo paymentInfo = (PaymentInfo) stepData;
+				PaymentInfo paymentInfo = (PaymentInfo)stepData;
 				mapping.updatePaymentInfo(
 					paymentInfo.getPaymentMethod(),
 					paymentInfo.getPaymentStatus(),
@@ -228,12 +252,17 @@ public class Competition extends BaseEntity {
 					mapping.confirmParticipation();
 					// 이벤트 발행
 					if (eventPublisher != null) {
-						eventPublisher.publishPaymentCompletedEvent(
-							this.id, participantId, this.price,
+						PaymentSagaEvent event = PaymentSagaEvent.createPaymentProcessedEvent(
+							UUID.randomUUID().toString(), // 새 sagaId 생성 또는 파라미터로 받은 sagaId 사용
+							this.id,
+							participantId,
+							this.price,
 							paymentInfo.getPaymentMethod(),
 							paymentInfo.getPaymentStatus(),
-							paymentInfo.getTransactionId()
+							paymentInfo.getTransactionId(),
+							false // compensation 아님
 						);
+						eventPublisher.publishSagaEvent("competition_saga", event.getSagaId(), event);
 					}
 				}
 				break;

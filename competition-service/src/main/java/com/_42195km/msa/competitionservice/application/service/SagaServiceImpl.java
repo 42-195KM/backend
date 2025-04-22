@@ -13,7 +13,9 @@ import com._42195km.msa.competitionservice.domain.model.CompetitionParticipantMa
 import com._42195km.msa.competitionservice.domain.model.Participant;
 import com._42195km.msa.competitionservice.domain.model.PaymentInfo;
 import com._42195km.msa.competitionservice.domain.model.SagaState;
-import com._42195km.msa.competitionservice.infrastructure.messaging.CompetitionSagaOrchestrator;
+import com._42195km.msa.competitionservice.domain.model.SagaStatus;
+import com._42195km.msa.competitionservice.infrastructure.messaging.EventPublisher;
+import com._42195km.msa.competitionservice.infrastructure.messaging.SagaOrchestratorImpl;
 import com._42195km.msa.competitionservice.infrastructure.messaging.SagaEventPublisher;
 import com._42195km.msa.competitionservice.infrastructure.persistence.CompetitionRepositoryImpl;
 import com._42195km.msa.competitionservice.infrastructure.persistence.ParticipantRepositoryImpl;
@@ -25,13 +27,15 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class SagaServiceImpl implements SagaEventPublisher {
+public class SagaServiceImpl implements SagaService {
+
 	private final SagaStateRepository sagaStateRepository;
-	private final CompetitionSagaOrchestrator sagaOrchestrator;
+	private final SagaOrchestratorImpl sagaOrchestrator;
 	private final CompetitionRepositoryImpl competitionRepository;
 	private final ParticipantRepositoryImpl participantRepository;
+	private final EventPublisher eventPublisher;
 
-
+	@Override
 	public String findOrCreateSagaId(UUID competitionId, UUID participantId) {
 
 		String sagaId = sagaStateRepository.findActiveSagaId(competitionId, participantId);
@@ -47,6 +51,7 @@ public class SagaServiceImpl implements SagaEventPublisher {
 	}
 
 	// 전체 프로세스 메서드
+	@Override
 	public String processCompleteApplication(CompleteAppDto requestDto) {
 		try {
 			// 1. 대회 조회
@@ -111,7 +116,7 @@ public class SagaServiceImpl implements SagaEventPublisher {
 				participant,
 				currentStep,
 				stepData,
-				this // 이벤트 발행자(publisher) 역할
+				eventPublisher // 이벤트 발행자(publisher) 역할
 			);
 
 			// 6. 변경사항 저장
@@ -132,6 +137,26 @@ public class SagaServiceImpl implements SagaEventPublisher {
 		}
 	}
 
+	private String getStatusMessage(SagaState state) {
+		if (state.getStatus() == SagaStatus.COMPLETED) {
+			return "이미 대회 신청이 완료되었습니다.";
+		} else if (state.getStatus() == SagaStatus.FAILED) {
+			return "대회 신청 처리 중 오류가 발생했습니다.";
+		} else {
+			return switch (state.getCurrentStep()) {
+				case TERMS_AGREEMENT -> "약관 동의가 필요합니다.";
+				case SOUVENIR_SELECTION -> "기념품 선택이 필요합니다.";
+				case SHIPPING_ADDRESS -> "배송지 입력이 필요합니다.";
+				case PAYMENT_INITIATED -> "결제 정보 입력이 필요합니다.";
+				case PAYMENT_PROCESSED -> "결제 완료 처리가 필요합니다.";
+				case ELIGIBILITY_CHECK -> "신청 자격 확인 중입니다.";
+				case PARTICIPATION_CONFIRMED -> "참가 확정 중입니다.";
+				case NOTIFICATION_SENT -> "알림 발송 중입니다.";
+				default -> "현재 처리 중인 단계: " + state.getCurrentStep();
+			};
+		}
+	}
+
 	public String findActiveSagaId(UUID competitionId, UUID participantId) {
 		String state = sagaStateRepository.findActiveSagaId(competitionId, participantId);
 		if (state == null) {
@@ -140,34 +165,40 @@ public class SagaServiceImpl implements SagaEventPublisher {
 		return state;
 	}
 
-	@Override
-	public void publishTermsAgreementEvent(UUID competitionId, UUID participantId, Boolean termsAgreed) {
-		String sagaId = findOrCreateSagaId(competitionId, participantId);
-		sagaOrchestrator.processTermsAgreement(sagaId, competitionId, participantId, termsAgreed);
-	}
 
-	@Override
-	public void publishSouvenirSelectionEvent(UUID competitionId, UUID participantId, String souvenirSelection) {
-		String sagaId = findOrCreateSagaId(competitionId, participantId);
-		sagaOrchestrator.processSouvenirSelection(sagaId, competitionId, participantId, souvenirSelection);
-	}
 
-	@Override
-	public void publishShippingAddressEvent(UUID competitionId, UUID participantId, String shippingAddress) {
-		String sagaId = findOrCreateSagaId(competitionId, participantId);
-		sagaOrchestrator.processShippingAddress(sagaId, competitionId, participantId, shippingAddress);
-	}
 
-	@Override
-	public void publishPaymentCompletedEvent(UUID competitionId, UUID participantId,
-		Integer amount, String paymentMethod,
-		String paymentStatus, String transactionId) {
-		String sagaId = findOrCreateSagaId(competitionId, participantId);
-		sagaOrchestrator.completePayment(
-			sagaId, competitionId, participantId, amount,
-			paymentMethod, paymentStatus, transactionId
-		);
-	}
+	//=========================================================================================================
+
+
+	//@Override
+	//public void publishTermsAgreementEvent(UUID competitionId, UUID participantId, Boolean termsAgreed) {
+	//	String sagaId = findOrCreateSagaId(competitionId, participantId);
+	//	sagaOrchestrator.processTermsAgreement(sagaId, competitionId, participantId, termsAgreed);
+	//}
+
+	//@Override
+	//public void publishSouvenirSelectionEvent(UUID competitionId, UUID participantId, String souvenirSelection) {
+	//	String sagaId = findOrCreateSagaId(competitionId, participantId);
+	//	sagaOrchestrator.processSouvenirSelection(sagaId, competitionId, participantId, souvenirSelection);
+	//}
+
+	//@Override
+	//public void publishShippingAddressEvent(UUID competitionId, UUID participantId, String shippingAddress) {
+	//	String sagaId = findOrCreateSagaId(competitionId, participantId);
+	//	sagaOrchestrator.processShippingAddress(sagaId, competitionId, participantId, shippingAddress);
+	//}
+
+	//@Override
+	//public void publishPaymentCompletedEvent(UUID competitionId, UUID participantId,
+	//	Integer amount, String paymentMethod,
+	//	String paymentStatus, String transactionId) {
+	//	String sagaId = findOrCreateSagaId(competitionId, participantId);
+	//	sagaOrchestrator.completePayment(
+	//		sagaId, competitionId, participantId, amount,
+	//		paymentMethod, paymentStatus, transactionId
+	//	);
+	//}
 
 	private String getNextStepMessage(ApplicationStep step) {
 		switch (step) {
