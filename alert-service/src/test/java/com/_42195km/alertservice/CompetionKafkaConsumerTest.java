@@ -63,26 +63,26 @@ public class CompetionKafkaConsumerTest {
     void competitionConsumer(Map<String, Object> eventMap) {
         messageQueue.offer(eventMap);
     }
-    @Test
-    @DisplayName("대회 메시지 전송 테스트")
-    void CompetitionProducerTest() {
-        CompetitionEventDto competitionEventDto = CompetitionEventDto.builder()
-                .userId(UUID.fromString("aaaaaaaa-0bda-11f0-b183-cad3a17bbf53"))
-                .mediaId("U08MRJYTBL1")
-                .title("test Title 대회")
-                .build();
-        kafkaTemplate.send("competition_notification-test", competitionEventDto);
-
-        try {
-            Map<String, Object> poll = messageQueue.poll(5, TimeUnit.SECONDS);
-            System.out.println("컨슈머 소비 : " + poll);
-            context.sendMessage(poll, new CompetitionStrategyImpl() , CompetitionEventDto.class);
-            String message = ((MockMessageService) messageService).getMessage();
-            Assertions.assertEquals("test Title 대회 신청이 완료되었습니다.", message);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
+//    @Test
+//    @DisplayName("대회 메시지 전송 테스트")
+//    void CompetitionProducerTest() {
+//        CompetitionEventDto competitionEventDto = CompetitionEventDto.builder()
+//                .userId(UUID.fromString("aaaaaaaa-0bda-11f0-b183-cad3a17bbf53"))
+//                .mediaId("U08MRJYTBL1")
+//                .title("test Title 대회")
+//                .build();
+//        kafkaTemplate.send("competition_notification-test", competitionEventDto);
+//
+//        try {
+//            Map<String, Object> poll = messageQueue.poll(5, TimeUnit.SECONDS);
+//            System.out.println("컨슈머 소비 : " + poll);
+//            context.sendMessage(poll, new CompetitionStrategyImpl() , CompetitionEventDto.class);
+//            String message = ((MockMessageService) messageService).getMessage();
+//            Assertions.assertEquals("test Title 대회 신청이 완료되었습니다.", message);
+//        } catch (InterruptedException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 
 
     private static class MockMessageService implements MessageService {

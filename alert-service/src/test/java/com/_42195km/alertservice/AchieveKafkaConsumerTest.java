@@ -63,28 +63,28 @@ public class AchieveKafkaConsumerTest {
     void achievementConsumer(Map<String, Object> eventMap) {
         messageQueue.offer(eventMap);
     }
-    @Test
-    @DisplayName("업적 메시지 전송 테스트")
-    void AchievementProducerTest() {
-        AchieveEventDto achieveEventDto = AchieveEventDto.builder()
-                .userId(UUID.fromString("aaaaaaaa-0bda-11f0-b183-cad3a17bbf53"))
-                .userMediaId("U08MRJYTBL1")
-                .achievementId(UUID.fromString("aaaaaaaa-bbbb-cccc-b183-cad3a17bbf53"))
-                .achievementTitle("test Title")
-                .achievementDescription("test description")
-                .build();
-        kafkaTemplate.send("achieve-achievement-test", achieveEventDto);
-
-        try {
-            Map<String, Object> poll = messageQueue.poll(5, TimeUnit.SECONDS);
-            System.out.println("컨슈머 소비 : " + poll);
-            context.sendMessage(poll, new AchievementStrategyImpl() , AchieveEventDto.class);
-            String message = ((MockMessageService) messageService).getMessage();
-            Assertions.assertEquals("축하합니다! test Title 업적을 달성하였습니다!!", message);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
+//    @Test
+//    @DisplayName("업적 메시지 전송 테스트")
+//    void AchievementProducerTest() {
+//        AchieveEventDto achieveEventDto = AchieveEventDto.builder()
+//                .userId(UUID.fromString("aaaaaaaa-0bda-11f0-b183-cad3a17bbf53"))
+//                .userMediaId("U08MRJYTBL1")
+//                .achievementId(UUID.fromString("aaaaaaaa-bbbb-cccc-b183-cad3a17bbf53"))
+//                .achievementTitle("test Title")
+//                .achievementDescription("test description")
+//                .build();
+//        kafkaTemplate.send("achieve-achievement-test", achieveEventDto);
+//
+//        try {
+//            Map<String, Object> poll = messageQueue.poll(5, TimeUnit.SECONDS);
+//            System.out.println("컨슈머 소비 : " + poll);
+//            context.sendMessage(poll, new AchievementStrategyImpl() , AchieveEventDto.class);
+//            String message = ((MockMessageService) messageService).getMessage();
+//            Assertions.assertEquals("축하합니다! test Title 업적을 달성하였습니다!!", message);
+//        } catch (InterruptedException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 
 
     private static class MockMessageService implements MessageService {

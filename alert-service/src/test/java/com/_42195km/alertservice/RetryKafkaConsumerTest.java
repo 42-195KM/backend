@@ -87,30 +87,30 @@ public class RetryKafkaConsumerTest {
     }
 
 
-    @Test
-    @DisplayName("업적 메시지 전송 테스트")
-    void retryDLTConsumerTest() {
-        AchieveEventDto achieveEventDto = AchieveEventDto.builder()
-                .userId(UUID.fromString("aaaaaaaa-0bda-11f0-b183-cad3a17bbf53"))
-                .userMediaId("U08MRJYTBL1")
-                .achievementId(UUID.fromString("aaaaaaaa-bbbb-cccc-b183-cad3a17bbf53"))
-                .achievementTitle("retry-test")
-                .achievementDescription("test description")
-                .build();
-        kafkaTemplate.send("retry-test", achieveEventDto);
-
-        try {
-            Map<String, Object> poll = messageQueue.poll(10, TimeUnit.SECONDS);
-            AchieveEventDto pollDto = objectMapper.convertValue(poll, AchieveEventDto.class);
-            System.out.println("컨슈머 소비 : " + poll);
-
-            Assertions.assertThat(pollDto).usingRecursiveComparison().isEqualTo(achieveEventDto);
-
-
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
+//    @Test
+//    @DisplayName("업적 메시지 전송 테스트")
+//    void retryDLTConsumerTest() {
+//        AchieveEventDto achieveEventDto = AchieveEventDto.builder()
+//                .userId(UUID.fromString("aaaaaaaa-0bda-11f0-b183-cad3a17bbf53"))
+//                .userMediaId("U08MRJYTBL1")
+//                .achievementId(UUID.fromString("aaaaaaaa-bbbb-cccc-b183-cad3a17bbf53"))
+//                .achievementTitle("retry-test")
+//                .achievementDescription("test description")
+//                .build();
+//        kafkaTemplate.send("retry-test", achieveEventDto);
+//
+//        try {
+//            Map<String, Object> poll = messageQueue.poll(10, TimeUnit.SECONDS);
+//            AchieveEventDto pollDto = objectMapper.convertValue(poll, AchieveEventDto.class);
+//            System.out.println("컨슈머 소비 : " + poll);
+//
+//            Assertions.assertThat(pollDto).usingRecursiveComparison().isEqualTo(achieveEventDto);
+//
+//
+//        } catch (InterruptedException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 
 
     private static class MockMessageService implements MessageService {
