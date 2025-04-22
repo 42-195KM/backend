@@ -3,6 +3,8 @@ package com._42195km.msa.competitionservice.domain.model;
 import java.util.UUID;
 
 import com._42195km.msa.common.BaseEntity;
+import com._42195km.msa.common.exception.CustomBusinessException;
+import com._42195km.msa.competitionservice.application.exception.CompetitionServiceCode;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -41,6 +43,10 @@ public class CompetitionParticipantMapping extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	private Status status = Status.APPLY;
 
+	@Column(name = "application_step")
+	@Enumerated(EnumType.STRING)
+	private ApplicationStep applicationStep = ApplicationStep.TERMS_AGREEMENT;
+
 	@Column(name = "terms_agreed")
 	private Boolean termsAgreed;
 
@@ -61,7 +67,6 @@ public class CompetitionParticipantMapping extends BaseEntity {
 
 	@Column(name = "cancellation_reason")
 	private String cancellationReason;
-
 
 	@Builder
 	public CompetitionParticipantMapping(Competition competition, Participant participant) {
@@ -87,21 +92,56 @@ public class CompetitionParticipantMapping extends BaseEntity {
 	}
 
 	public void updateTermsAgreement(Boolean termsAgreed) {
+		validateCurrentStep(ApplicationStep.TERMS_AGREEMENT);
 		this.termsAgreed = termsAgreed;
+		if (Boolean.TRUE.equals(termsAgreed)) {
+			this.applicationStep = ApplicationStep.SOUVENIR_SELECTION;
+		}
 	}
 
 	public void updateSouvenirSelection(String souvenirSelection) {
+		validateCurrentStep(ApplicationStep.SOUVENIR_SELECTION);
 		this.souvenirSelection = souvenirSelection;
+		this.applicationStep = ApplicationStep.SHIPPING_ADDRESS;
 	}
 
 	public void updateShippingAddress(String shippingAddress) {
+		validateCurrentStep(ApplicationStep.SHIPPING_ADDRESS);
 		this.shippingAddress = shippingAddress;
+		this.applicationStep = ApplicationStep.PAYMENT_PENDING;
 	}
 
 	public void updatePaymentInfo(String paymentMethod, String paymentStatus, String paymentTransactionId) {
+		validateCurrentStep(ApplicationStep.PAYMENT_PENDING);
 		this.paymentMethod = paymentMethod;
 		this.paymentStatus = paymentStatus;
 		this.paymentTransactionId = paymentTransactionId;
+
+		if ("SUCCESS".equals(paymentStatus)) {
+			this.applicationStep = ApplicationStep.PAYMENT_COMPLETED;
+		}
+	}
+
+	public void confirmParticipation() {
+		validateCurrentStep(ApplicationStep.PAYMENT_COMPLETED);
+		this.status = Status.SELECTED;
+		this.applicationStep = ApplicationStep.PARTICIPATION_CONFIRMED;
+	}
+
+	// 현재 단계 유효성 검사
+	private void validateCurrentStep(ApplicationStep expectedStep) {
+		if (this.applicationStep != expectedStep) {
+			throw CustomBusinessException.from(
+				CompetitionServiceCode.COMPETITION_APPLY_FAIL);
+		}
+	}
+
+	// 신청 정보 검증
+	public boolean isRegistrationComplete() {
+		return Boolean.TRUE.equals(termsAgreed) &&
+			souvenirSelection != null && !souvenirSelection.isEmpty() &&
+			shippingAddress != null && !shippingAddress.isEmpty() &&
+			"SUCCESS".equals(paymentStatus);
 	}
 
 }

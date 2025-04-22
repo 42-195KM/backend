@@ -124,11 +124,11 @@ public class CompetitionService {
 		}
 	}
 
-	public boolean checkDuplicateApplication(UUID competitionId, UUID participantId){
+	public boolean checkDuplicateApplication(UUID competitionId, UUID participantId) {
 		return mappingRepository.checkIsParticipate(participantId, competitionId);
 	}
 
-	public boolean checkCompetitionCapacity(UUID competitionId){
+	public boolean checkCompetitionCapacity(UUID competitionId) {
 		Competition competition = competitionRepository.findById(competitionId);
 
 		if (competition.getReceptionType() == ReceptionType.FIRST) {
@@ -143,7 +143,6 @@ public class CompetitionService {
 		}
 		return false;
 	}
-
 
 	@Transactional
 	public void applyCompetition(UUID competitionId, UUID participantId) {
@@ -160,7 +159,7 @@ public class CompetitionService {
 			mappingRepository.save(apply);
 
 		} catch (CustomBusinessException e) {
-			throw e ;//CustomBusinessException.from(CompetitionServiceCode.COMPETITION_APPLY_EXIST);
+			throw e;//CustomBusinessException.from(CompetitionServiceCode.COMPETITION_APPLY_EXIST);
 		} catch (Exception e) {
 			log.error("대회 신청 실패", e);
 			throw CustomBusinessException.from(CompetitionServiceCode.COMPETITION_APPLY_FAIL);
@@ -171,48 +170,12 @@ public class CompetitionService {
 	public void drawCompetition(UUID competitionId) {
 		try {
 			Competition competition = competitionRepository.findById(competitionId);
-
-			// 접수 타입이 DRAW인지 확인
-			if (competition.getReceptionType() != ReceptionType.DRAW) {
-				throw CustomBusinessException.from(CompetitionServiceCode.COMPETITION_DRAW_INVALID_TYPE);
-			}
-
-			List<CompetitionParticipantMapping> allApplicants = mappingRepository.findAllByCompetition(competition);
-
-			// 인원보다 신청자가 적거나 같으면 그대로 확정
-			if (allApplicants.size() <= competition.getParticipantsNum()) {
-				allApplicants.forEach(mapping -> {
-					mapping.markAsSelected();
-				});
-				return;
-			}
-
-			// 랜덤 추첨
-			Collections.shuffle(allApplicants);
-			List<CompetitionParticipantMapping> selected = allApplicants.subList(0, competition.getParticipantsNum());
-			selected.forEach(mapping -> {
-				mapping.markAsSelected();
-			});
-
+			competition.performDraw();
+			competitionRepository.save(competition);
+			log.info("대회 추첨 완료: {}", competitionId);
 		} catch (Exception e) {
-			log.error("추첨 실패: {}", e.getMessage());
+			log.error("대회 추첨 중 오류 발생: {}", e.getMessage());
 			throw CustomBusinessException.from(CompetitionServiceCode.COMPETITION_DRAW_FAIL);
-		}
-	}
-
-	@Transactional
-	public void cancelParticipantWithReason(UUID competitionId, UUID participantId, String reason) {
-		try {
-			CompetitionParticipantMapping participant = mappingRepository.findByCompetitionIdAndParticipantId(
-				competitionId, participantId);
-			if (participant != null) {
-				participant.cancelWithReason(reason);
-				log.info("Canceled participant with reason: competitionId={}, participantId={}, reason={}",
-					competitionId, participantId, reason);
-			}
-		} catch (Exception e) {
-			log.error("Failed to cancel participant: {}", e.getMessage(), e);
-			throw CustomBusinessException.from(CompetitionServiceCode.PARTICIPANT_CANCEL_FAIL);
 		}
 	}
 

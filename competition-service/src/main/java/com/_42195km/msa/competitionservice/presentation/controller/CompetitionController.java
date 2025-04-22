@@ -140,15 +140,7 @@ public class CompetitionController {
 	@Operation(summary = "대회 신청 프로세스 - 분산 트랜젝션 도입 - 모든 단계 통합")
 	public ResponseEntity<?> completeApplication(@RequestBody CompleteAppDto requestDto) {
 
-		String response = sagaService.processCompleteApplication(
-			requestDto.getCompetitionId(),
-			requestDto.getParticipantId(),
-			requestDto.getTermsAgreed(),
-			requestDto.getSouvenirSelection(),
-			requestDto.getShippingAddress(),
-			requestDto.getPaymentMethod(),
-			requestDto.getPaymentStatus(),
-			requestDto.getTransactionId());
+		String response = sagaService.processCompleteApplication(requestDto);
 
 		return ResponseEntity.ok(new ApiResponse<>(
 			CompetitionServiceCode.COMPETITION_APPLY_SUCCESS.getCode(),
