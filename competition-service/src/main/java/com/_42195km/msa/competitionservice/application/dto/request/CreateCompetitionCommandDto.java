@@ -6,11 +6,7 @@ import com._42195km.msa.competitionservice.domain.model.CompetitionType;
 import com._42195km.msa.competitionservice.domain.model.ReceptionType;
 import com._42195km.msa.competitionservice.presentation.dto.request.CreateCompetitionRequestDto;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
 @Getter
 public class CreateCompetitionCommandDto {
@@ -27,7 +23,8 @@ public class CreateCompetitionCommandDto {
 
 	private Integer price;
 
-	public CreateCompetitionCommandDto(UUID userId, String title, CompetitionType type, ReceptionType receptionType, Integer participantsNum, Integer price) {
+	public CreateCompetitionCommandDto(UUID userId, String title, CompetitionType type, ReceptionType receptionType,
+		Integer participantsNum, Integer price) {
 		this.userId = userId;
 		this.title = title;
 		this.type = type;

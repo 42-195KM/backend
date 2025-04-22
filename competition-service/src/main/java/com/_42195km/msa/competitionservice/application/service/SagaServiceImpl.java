@@ -16,7 +16,6 @@ import com._42195km.msa.competitionservice.domain.model.SagaState;
 import com._42195km.msa.competitionservice.domain.model.SagaStatus;
 import com._42195km.msa.competitionservice.infrastructure.messaging.EventPublisher;
 import com._42195km.msa.competitionservice.infrastructure.messaging.SagaOrchestratorImpl;
-import com._42195km.msa.competitionservice.infrastructure.messaging.SagaEventPublisher;
 import com._42195km.msa.competitionservice.infrastructure.persistence.CompetitionRepositoryImpl;
 import com._42195km.msa.competitionservice.infrastructure.persistence.ParticipantRepositoryImpl;
 import com._42195km.msa.competitionservice.infrastructure.persistence.SagaStateRepository;
@@ -165,50 +164,22 @@ public class SagaServiceImpl implements SagaService {
 		return state;
 	}
 
-
-
-
-	//=========================================================================================================
-
-
-	//@Override
-	//public void publishTermsAgreementEvent(UUID competitionId, UUID participantId, Boolean termsAgreed) {
-	//	String sagaId = findOrCreateSagaId(competitionId, participantId);
-	//	sagaOrchestrator.processTermsAgreement(sagaId, competitionId, participantId, termsAgreed);
-	//}
-
-	//@Override
-	//public void publishSouvenirSelectionEvent(UUID competitionId, UUID participantId, String souvenirSelection) {
-	//	String sagaId = findOrCreateSagaId(competitionId, participantId);
-	//	sagaOrchestrator.processSouvenirSelection(sagaId, competitionId, participantId, souvenirSelection);
-	//}
-
-	//@Override
-	//public void publishShippingAddressEvent(UUID competitionId, UUID participantId, String shippingAddress) {
-	//	String sagaId = findOrCreateSagaId(competitionId, participantId);
-	//	sagaOrchestrator.processShippingAddress(sagaId, competitionId, participantId, shippingAddress);
-	//}
-
-	//@Override
-	//public void publishPaymentCompletedEvent(UUID competitionId, UUID participantId,
-	//	Integer amount, String paymentMethod,
-	//	String paymentStatus, String transactionId) {
-	//	String sagaId = findOrCreateSagaId(competitionId, participantId);
-	//	sagaOrchestrator.completePayment(
-	//		sagaId, competitionId, participantId, amount,
-	//		paymentMethod, paymentStatus, transactionId
-	//	);
-	//}
-
 	private String getNextStepMessage(ApplicationStep step) {
 		switch (step) {
-			case TERMS_AGREEMENT: return "약관 동의가 필요합니다.";
-			case SOUVENIR_SELECTION: return "기념품 선택이 필요합니다.";
-			case SHIPPING_ADDRESS: return "배송지 입력이 필요합니다.";
-			case PAYMENT_PENDING: return "결제 진행이 필요합니다.";
-			case PAYMENT_COMPLETED: return "결제가 완료되었습니다. 신청 자격 확인 중입니다.";
-			case PARTICIPATION_CONFIRMED: return "대회 참가가 확정되었습니다.";
-			default: return "알 수 없는 단계입니다.";
+			case TERMS_AGREEMENT:
+				return "약관 동의가 필요합니다.";
+			case SOUVENIR_SELECTION:
+				return "기념품 선택이 필요합니다.";
+			case SHIPPING_ADDRESS:
+				return "배송지 입력이 필요합니다.";
+			case PAYMENT_PENDING:
+				return "결제 진행이 필요합니다.";
+			case PAYMENT_COMPLETED:
+				return "결제가 완료되었습니다. 신청 자격 확인 중입니다.";
+			case PARTICIPATION_CONFIRMED:
+				return "대회 참가가 확정되었습니다.";
+			default:
+				return "알 수 없는 단계입니다.";
 		}
 	}
 }
