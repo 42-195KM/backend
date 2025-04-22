@@ -6,6 +6,8 @@ spring:
   application:
     name: alert-service
   config:
+    activate:
+      on-profile: dev
     import: optional:file:.env[.properties]
 
   datasource:
@@ -21,20 +23,48 @@ spring:
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
-#  kafka:
-#    url: ${KAFKA_URL}
-#    bootstrap-servers: ${KAFKA_URL}
-#    producer:
-#      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-#      value-serializer: org.apache.kafka.common.serialization.JsonDeserializer
-#      retries: 5 # 메시지 전송 실패시 재시도 횟수 5회.
-#    consumer:
-#      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-#      value-deserializer: org.apache.kafka.common.serialization.JsonDeserializer
-#      auto-offset-reset: earliest  # 컨슈머가 처음 시작할 때 어떤 오프셋부터 읽을지 설정 (earliest: 가장 오래된 메시지부터, latest: 최신 메시지부터)
   kafka:
     url: localhost:9092
     bootstrap-servers: localhost:9092
+    consumer:
+      auto-offset-reset: earliest
+
+
+slack:
+  token: ${SLACK_BOT_TOKEN}
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_SERVER}
+
+---
+server:
+  port: ${ALERT_SERVER}
+
+spring:
+  application:
+    name: alert-service
+  config:
+    activate:
+      on-profile: aws
+
+  datasource:
+    url: ${DB_ALERT_URL}
+    username: ${DB_ALERT_USERNAME}
+    password: ${DB_ALERT_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  kafka:
+    url: ${KAFKA_BOOTSTRAP_SERVERS}
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
     consumer:
       auto-offset-reset: earliest
 
