@@ -1,0 +1,56 @@
+spring:
+  application:
+    name: runningrecord-service
+
+  config:
+    import: optional:file:../.env[.properties]
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  datasource:
+    url: ${DB_RUNNING_RECORD_URL}
+    username: ${DB_RUNNING_RECORD_USERNAME}
+    password: ${DB_RUNNING_RECORD_PASSWORD}
+    hikari:
+      maximum-pool-size: 3
+      minimum-idle: 1
+      connection-timeout: 20000
+      auto-commit: false
+
+  kafka:
+    url: ${KAFKA_BOOTSTRAP_SERVERS}
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+    consumer:
+      group-id: running-record-group
+
+server:
+  port: ${RUNNING_RECORD_SERVER}
+
+logging:
+  level:
+    root: info
+    com_42195km:
+      msa: debug
+    org:
+      hibernate:
+        SQL: debug
+        type:
+          descriptor:
+            sql:
+              BasicBinder: debug
+      springframework:
+        transaction: debug
+        orm:
+          jpa: debug
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_SERVER}

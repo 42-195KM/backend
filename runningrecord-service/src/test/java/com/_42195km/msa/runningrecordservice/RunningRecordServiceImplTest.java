@@ -19,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.context.ActiveProfiles;
 
 import com._42195km.msa.runningrecordservice.application.dto.request.CreateRunningRecordCommandDto;
 import com._42195km.msa.runningrecordservice.application.service.RunningRecordServiceImpl;
@@ -27,6 +28,7 @@ import com._42195km.msa.runningrecordservice.domain.repository.RunningRecordRepo
 import com._42195km.msa.common.exception.CustomBusinessException;
 
 @ExtendWith(MockitoExtension.class)
+@ActiveProfiles("test")
 class RunningRecordServiceImplTest {
 
 	@InjectMocks
