@@ -38,7 +38,7 @@ public class AchievementController extends BaseController {
 	private final AchivementService achievementService;
 
 	// 업적 생성 (POST api/v1/app/achivements)
-	@PostMapping("/app/achivements")
+	@PostMapping("/app/achievements")
 	@CheckPermission(roles = {"MASTER"}, mode = CheckPermission.Mode.ALL)
 	public ResponseEntity<?> createAchievement(@RequestBody CreateAchievementRequestDto dto) {
 		CreateAchievementCommandDto createAchievementCommandDto = dto.toCommandDto();
@@ -49,7 +49,7 @@ public class AchievementController extends BaseController {
 	}
 
 	// 업적 조회 (GET api/vi/achivements/{achivementId})
-	@GetMapping("/achivements/{achievementId}")
+	@GetMapping("/achievements/{achievementId}")
 	public ResponseEntity<?> getAchievement(@PathVariable UUID achievementId) {
 		Achievement achievement = achievementService.getAchievementById(achievementId);
 		GetAchievementResponseDto responseDto = new GetAchievementResponseDto(achievement);
@@ -58,7 +58,7 @@ public class AchievementController extends BaseController {
 	}
 
 	// 업적 목록 보기 (GET api/v1/achivements)
-	@GetMapping("/achivements")
+	@GetMapping("/achievements")
 	public ResponseEntity<?> getAllAchievements(
 		@RequestParam(defaultValue = "0", required = false) int page,
 		@RequestParam(defaultValue = "10", required = false) int size)
@@ -71,7 +71,7 @@ public class AchievementController extends BaseController {
 	}
 
 	// 업적 검색 (GET api/v1/achivements/search?title={title})
-	@GetMapping("/achivements/search")
+	@GetMapping("/achievements/search")
 	public ResponseEntity<?> searchAchivements(
 		@RequestParam("title") String title,
 		@RequestParam(defaultValue = "0", required = false) int page,
@@ -85,7 +85,7 @@ public class AchievementController extends BaseController {
 	}
 
 	// 특정 사용자가 달성한 업적 검색 (GET api/v1/achivements/user/{userId})
-	@GetMapping("/achivements/user/{userId}")
+	@GetMapping("/achievements/user/{userId}")
 	public ResponseEntity<?> getAchievementsByUserId(
 		@PathVariable("userId") UUID userId,
 		@RequestParam(defaultValue = "0", required = false) int page,
@@ -99,7 +99,7 @@ public class AchievementController extends BaseController {
 	}
 
 	// 업적 삭제 (DELETE api/vi/achivements/{achivementId})
-	@DeleteMapping("/achivements/{achievementId}")
+	@DeleteMapping("/achievements/{achievementId}")
 	@CheckPermission(roles = {"MASTER"}, mode = CheckPermission.Mode.ALL)
 	public ResponseEntity<?> deleteAchievement(@PathVariable UUID achievementId){
 		Achievement achievement = achievementService.deleteAchievement(achievementId);
