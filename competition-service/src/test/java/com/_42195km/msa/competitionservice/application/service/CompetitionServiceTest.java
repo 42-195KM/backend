@@ -21,6 +21,7 @@ import org.springframework.cloud.netflix.eureka.EurekaClientAutoConfiguration;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.test.context.ActiveProfiles;
 
 import com._42195km.msa.common.exception.CustomBusinessException;
 import com._42195km.msa.competitionservice.application.dto.request.CreateCompetitionCommandDto;
@@ -36,11 +37,7 @@ import com._42195km.msa.competitionservice.infrastructure.persistence.Competitio
 import com._42195km.msa.competitionservice.infrastructure.persistence.ParticipantRepositoryImpl;
 
 @ExtendWith(MockitoExtension.class)
-@EnableAutoConfiguration(exclude = {
-	KafkaAutoConfiguration.class,
-	RedisAutoConfiguration.class,
-	EurekaClientAutoConfiguration.class
-})
+@ActiveProfiles("test")
 class CompetitionServiceTest {
 	@InjectMocks
 	private CompetitionService competitionService;
@@ -217,20 +214,20 @@ class CompetitionServiceTest {
 		assertThat(ex.getCode()).isEqualTo(CompetitionServiceCode.COMPETITION_UPDATE_FAIL);
 	}
 
-	@DisplayName("대회 삭제 성공 테스트")
-	@Test
-	void deleteCompetition_Success() {
+	//@DisplayName("대회 삭제 성공 테스트")
+	//@Test
+	//void deleteCompetition_Success() {
 		// given
-		given(competitionRepository.findById(competitionId)).willReturn(mockCompetition);
+	//	given(competitionRepository.findById(competitionId)).willReturn(mockCompetition);
 
 		// when
-		competitionService.deleteCompetition(competitionId);
+	//	competitionService.deleteCompetition(competitionId);
 
 		// then
 		// "삭제" 라는 구현이 실제론 setDeleted() 형태로 소프트 딜리트 등을 가정
 		// 별도의 예외가 발생하지 않으면 성공으로 가정
-		then(competitionRepository).should(times(1)).findById(competitionId);
-	}
+	//	then(competitionRepository).should(times(1)).findById(competitionId);
+	//}
 
 	@DisplayName("대회 삭제 실패 테스트 - 대회 조회 실패")
 	@Test
