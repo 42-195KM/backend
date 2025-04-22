@@ -14,6 +14,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
+import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration;
+import org.springframework.cloud.netflix.eureka.EurekaClientAutoConfiguration;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -32,6 +36,11 @@ import com._42195km.msa.competitionservice.infrastructure.persistence.Competitio
 import com._42195km.msa.competitionservice.infrastructure.persistence.ParticipantRepositoryImpl;
 
 @ExtendWith(MockitoExtension.class)
+@EnableAutoConfiguration(exclude = {
+	KafkaAutoConfiguration.class,
+	RedisAutoConfiguration.class,
+	EurekaClientAutoConfiguration.class
+})
 class CompetitionServiceTest {
 	@InjectMocks
 	private CompetitionService competitionService;
