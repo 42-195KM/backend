@@ -1,4 +1,3 @@
-## local 환경
 spring:
   datasource:
     url: ${DB_USER_URL}

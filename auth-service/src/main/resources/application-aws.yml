@@ -3,14 +3,11 @@ spring:
     name: auth-service
   config:
     import:
-      - optional:file:.env[.properties]
       - classpath:./properties/datasource.yml
       - classpath:./properties/jpa.yml
       - classpath:./properties/redis.yml
   profiles:
-    group:
-      local: local
-    active: local
+    active: aws
   kafka:
     url: ${KAFKA_BOOTSTRAP_SERVERS}
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
