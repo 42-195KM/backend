@@ -29,11 +29,13 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @WebMvcTest(controllers = RunningRecordController.class)
 @Import(RunningRecordControllerTest.MockConfig.class)
+@ActiveProfiles("test")
 public class RunningRecordControllerTest {
 
 	@TestConfiguration
@@ -178,7 +180,7 @@ public class RunningRecordControllerTest {
 
 		when(runningRecordService.deleteRecord(runningRecordId)).thenReturn(record);
 
-		mockMvc.perform(delete("/api/v1/running-records/{runningRecordId}", runningRecordId))
+		mockMvc.perform(delete("/api/v1/app/running-records/{runningRecordId}", runningRecordId))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.data.id", is(runningRecordId.toString())))
 			.andExpect(jsonPath("$.data.distance", is(10.0)))
