@@ -23,3 +23,20 @@ eureka:
     register-with-eureka: false
     fetch-registry: false
     should-unregister-on-shutdown: false
+
+logging:
+  level:
+    root: info
+    com_42195km:
+      msa: debug
+    org:
+      hibernate:
+        SQL: debug
+        type:
+          descriptor:
+            sql:
+              BasicBinder: debug
+      springframework:
+        transaction: debug
+        orm:
+          jpa: debug
