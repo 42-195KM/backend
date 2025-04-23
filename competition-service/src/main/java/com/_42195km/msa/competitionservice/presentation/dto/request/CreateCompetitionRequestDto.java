@@ -8,7 +8,6 @@ import com._42195km.msa.competitionservice.domain.model.ReceptionType;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
 public class CreateCompetitionRequestDto {

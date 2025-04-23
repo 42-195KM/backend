@@ -15,9 +15,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
+import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration;
+import org.springframework.cloud.netflix.eureka.EurekaClientAutoConfiguration;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.test.context.ActiveProfiles;
 
 import com._42195km.msa.common.exception.CustomBusinessException;
 import com._42195km.msa.competitionservice.application.dto.response.ParticipantAppResponseDto;
@@ -33,6 +38,7 @@ import com._42195km.msa.competitionservice.infrastructure.persistence.Participan
 import com._42195km.msa.competitionservice.presentation.dto.request.CancelParticipantRequestDto;
 
 @ExtendWith(MockitoExtension.class)
+@ActiveProfiles("test")
 class ParticipantServiceTest {
 
 
