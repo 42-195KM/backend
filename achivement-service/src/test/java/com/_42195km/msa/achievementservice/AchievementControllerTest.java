@@ -28,11 +28,14 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @WebMvcTest(controllers = AchievementController.class)
 @Import(AchievementControllerTest.MockConfig.class)
+@ActiveProfiles("test")
 public class AchievementControllerTest {
 
 	@TestConfiguration
@@ -58,7 +61,7 @@ public class AchievementControllerTest {
 		String jsonRequest = "{" +
 			"\"title\": \"New Achievement\"," +
 			"\"description\": \"Achievement Description\"," +
-			"\"criteria\": \"score\"," +
+			"\"criteria\": \"distance\"," +
 			"\"criteriaValue\": 200.0," +
 			"\"criteriaType\": \"EQUAL\"" +
 			"}";
@@ -68,7 +71,7 @@ public class AchievementControllerTest {
 			.id(UUID.randomUUID())
 			.title("New Achievement")
 			.description("Achievement Description")
-			.criteria("score")
+			.criteria("distance")
 			.criteriaValue(200.0)
 			.criteriaInequality(CriteriaInequality.EQUAL)
 			.build();
@@ -77,7 +80,7 @@ public class AchievementControllerTest {
 			.thenReturn(achievement);
 
 		// POST /api/v1/app/achivements 요청 및 응답 검증
-		mockMvc.perform(post("/api/v1/app/achivements")
+		mockMvc.perform(post("/api/v1/app/achievements")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(jsonRequest))
 			.andExpect(status().isOk())
@@ -88,7 +91,7 @@ public class AchievementControllerTest {
 			.andExpect(jsonPath("$.data.id", notNullValue()))
 			.andExpect(jsonPath("$.data.title", is("New Achievement")))
 			.andExpect(jsonPath("$.data.description", is("Achievement Description")))
-			.andExpect(jsonPath("$.data.criteria", is("score")))
+			.andExpect(jsonPath("$.data.criteria", is("distance")))
 			.andExpect(jsonPath("$.data.criteriaValue", is(200.0)))
 			.andExpect(jsonPath("$.data.criteriaType", is("EQUAL")));
 	}
@@ -100,22 +103,22 @@ public class AchievementControllerTest {
 			.id(achievementId)
 			.title("Test Achievement")
 			.description("Test Description")
-			.criteria("time")
+			.criteria("distance")
 			.criteriaValue(300.0)
 			.criteriaInequality(CriteriaInequality.MORE_THAN)
 			.build();
 
 		when(achievementService.getAchievementById(achievementId)).thenReturn(achievement);
 
-		mockMvc.perform(get("/api/v1/achivements/{achievementId}", achievementId))
+		mockMvc.perform(get("/api/v1/achievements/{achievementId}", achievementId))
 			.andExpect(status().isOk())
 			// 반환 데이터는 단일 DTO (GetAchievementResponseDto)로 매핑됨
-			.andExpect(jsonPath("$.id", is(achievementId.toString())))
-			.andExpect(jsonPath("$.title", is("Test Achievement")))
-			.andExpect(jsonPath("$.description", is("Test Description")))
-			.andExpect(jsonPath("$.criteria", is("time")))
-			.andExpect(jsonPath("$.criteriaValue", is(300.0)))
-			.andExpect(jsonPath("$.criteriaType", is("MORE_THAN")));
+			.andExpect(jsonPath("$.data.id", is(achievementId.toString())))
+			.andExpect(jsonPath("$.data.title", is("Test Achievement")))
+			.andExpect(jsonPath("$.data.description", is("Test Description")))
+			.andExpect(jsonPath("$.data.criteria", is("distance")))
+			.andExpect(jsonPath("$.data.criteriaValue", is(300.0)))
+			.andExpect(jsonPath("$.data.criteriaType", is("MORE_THAN")));
 	}
 
 	@Test
@@ -125,7 +128,7 @@ public class AchievementControllerTest {
 			.id(UUID.randomUUID())
 			.title("All Achievement")
 			.description("Description")
-			.criteria("score")
+			.criteria("distance")
 			.criteriaValue(150.0)
 			.criteriaInequality(CriteriaInequality.EQUAL)
 			.build();
@@ -133,7 +136,7 @@ public class AchievementControllerTest {
 
 		when(achievementService.getAchievements(any(Pageable.class))).thenReturn(page);
 
-		mockMvc.perform(get("/api/v1/achivements")
+		mockMvc.perform(get("/api/v1/achievements")
 				.param("page", "0")
 				.param("size", "10"))
 			.andExpect(status().isOk())
@@ -150,7 +153,7 @@ public class AchievementControllerTest {
 			.id(UUID.randomUUID())
 			.title("Sprint Champion")
 			.description("Winner in sprint")
-			.criteria("speed")
+			.criteria("pace")
 			.criteriaValue(9.5)
 			.criteriaInequality(CriteriaInequality.MORE_THAN)
 			.build();
@@ -158,7 +161,7 @@ public class AchievementControllerTest {
 
 		when(achievementService.searchAchievements(keyword, pageable)).thenReturn(page);
 
-		mockMvc.perform(get("/api/v1/achivements/search")
+		mockMvc.perform(get("/api/v1/achievements/search")
 				.param("title", keyword)
 				.param("page", "0")
 				.param("size", "10"))
@@ -176,7 +179,7 @@ public class AchievementControllerTest {
 			.id(UUID.randomUUID())
 			.title("User Achievement")
 			.description("User's achievement")
-			.criteria("time")
+			.criteria("pace")
 			.criteriaValue(250.0)
 			.criteriaInequality(CriteriaInequality.LESS_THAN)
 			.build();
@@ -184,7 +187,7 @@ public class AchievementControllerTest {
 
 		when(achievementService.getAchivementsByUser(userId, pageable)).thenReturn(page);
 
-		mockMvc.perform(get("/api/v1/achivements/user/{userId}", userId)
+		mockMvc.perform(get("/api/v1/achievements/user/{userId}", userId)
 				.param("page", "0")
 				.param("size", "10"))
 			.andExpect(status().isOk())
@@ -200,20 +203,20 @@ public class AchievementControllerTest {
 			.id(achievementId)
 			.title("To be deleted")
 			.description("Delete this achievement")
-			.criteria("score")
+			.criteria("pace")
 			.criteriaValue(180.0)
 			.criteriaInequality(CriteriaInequality.EQUAL)
 			.build();
 
 		when(achievementService.deleteAchievement(achievementId)).thenReturn(achievement);
 
-		mockMvc.perform(delete("/api/v1/achivements/{achievementId}", achievementId))
+		mockMvc.perform(delete("/api/v1/achievements/{achievementId}", achievementId))
 			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.id", is(achievementId.toString())))
-			.andExpect(jsonPath("$.title", is("To be deleted")))
-			.andExpect(jsonPath("$.description", is("Delete this achievement")))
-			.andExpect(jsonPath("$.criteria", is("score")))
-			.andExpect(jsonPath("$.criteriaValue", is(180.0)))
-			.andExpect(jsonPath("$.criteriaType", is("EQUAL")));
+			.andExpect(jsonPath("$.data.id", is(achievementId.toString())))
+			.andExpect(jsonPath("$.data.title", is("To be deleted")))
+			.andExpect(jsonPath("$.data.description", is("Delete this achievement")))
+			.andExpect(jsonPath("$.data.criteria", is("pace")))
+			.andExpect(jsonPath("$.data.criteriaValue", is(180.0)))
+			.andExpect(jsonPath("$.data.criteriaType", is("EQUAL")));
 	}
 }

@@ -18,13 +18,11 @@ import com._42195km.msa.user.application.dto.response.SearchUserResponseDto;
 import com._42195km.msa.user.application.dto.response.UpdateUserResponseDto;
 import com._42195km.msa.user.application.exception.UserException;
 import com._42195km.msa.user.domain.model.User;
-import com._42195km.msa.user.infrastructure.messaging.AuthServiceClient;
-import com._42195km.msa.user.infrastructure.messaging.out.DeleteUserEventProducer;
+import com._42195km.msa.user.infrastructure.messaging.out.UserEventDto;
+import com._42195km.msa.user.infrastructure.messaging.out.UserEventProducer;
+import com._42195km.msa.user.infrastructure.messaging.out.UserEventType;
 import com._42195km.msa.user.infrastructure.persistence.UserRepositoryImpl;
-import com._42195km.msa.user.presentation.dto.request.AuthUserCreateSyncRequestDto;
-import com._42195km.msa.user.presentation.dto.request.AuthUserUpdateSyncRequestDto;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,9 +35,7 @@ public class UserServiceImpl implements UserService {
 
 	private final PasswordEncoder passwordEncoder;
 	private final UserRepositoryImpl userRepositoryImpl;
-	private final AuthServiceClient authServiceClient;
-	private final HttpServletRequest request;
-	private final DeleteUserEventProducer deleteUserEventProducer;
+	private final UserEventProducer userEventProducer;
 
 	@Override
 	@Transactional
@@ -56,15 +52,14 @@ public class UserServiceImpl implements UserService {
 
 		User savedUser = userRepositoryImpl.save(user);
 
-		// Auth-Service 동기화
-		AuthUserCreateSyncRequestDto authUserCreateSyncRequestDto = AuthUserCreateSyncRequestDto.builder()
+		UserEventDto userEventDto = UserEventDto.builder()
 			.userId(savedUser.getId())
 			.username(savedUser.getUsername())
 			.password(encodedPassword)
 			.role(savedUser.getRole())
 			.build();
 
-		authServiceClient.syncCreateUser(authUserCreateSyncRequestDto);
+		userEventProducer.sendUserEvent(userEventDto, UserEventType.CREATE);
 
 		return CreateUserResponseDto.fromUser(savedUser);
 	}
@@ -128,15 +123,14 @@ public class UserServiceImpl implements UserService {
 		// 비밀번호 외의 필드 업데이트
 		targetUser.update(updateUserRequestDto);
 
-		AuthUserUpdateSyncRequestDto authUserUpdateSyncRequestDto = AuthUserUpdateSyncRequestDto.builder()
+		UserEventDto userEventDto = UserEventDto.builder()
 			.userId(targetUser.getId())
-			.password(targetUser.getPassword())
 			.username(targetUser.getUsername())
+			.password(targetUser.getPassword())
 			.role(targetUser.getRole())
 			.build();
 
-		String header = request.getHeader("Authorization");
-		authServiceClient.syncUpdateUser(header, authUserUpdateSyncRequestDto);
+		userEventProducer.sendUserEvent(userEventDto, UserEventType.UPDATE);
 
 		return UpdateUserResponseDto.fromUser(targetUser);
 	}
@@ -149,9 +143,7 @@ public class UserServiceImpl implements UserService {
 
 		targetUser.setDeleted();
 
-		String header = request.getHeader("Authorization");
-		authServiceClient.syncDeleteUser(header, userId);
-		deleteUserEventProducer.sendDeleteUserEvent(targetUser.getId());
+		userEventProducer.sendUserEvent(targetUser.getId(), UserEventType.DELETE);
 	}
 
 	@Transactional
@@ -162,9 +154,7 @@ public class UserServiceImpl implements UserService {
 
 		targetUser.setDeleted();
 
-		String header = request.getHeader("Authorization");
-		authServiceClient.syncDeleteUser(header, userId);
-		deleteUserEventProducer.sendDeleteUserEvent(targetUser.getId());
+		userEventProducer.sendUserEvent(targetUser.getId(), UserEventType.DELETE);
 	}
 
 	private User findUserById(UUID userId) {

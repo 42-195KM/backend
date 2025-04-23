@@ -9,9 +9,14 @@ spring:
   config:
     import:
       - file:.env[.properties]
+  profiles:
+    active: local
   cloud:
     gateway:
-      preserve-host-header: true  # 헤더에 정보 유지
+      # 헤더에 정보 유지
+      preserve-host-header: true
+      globalfilters:
+        - AddRequestHeader=Authorization, {Authorization}
       routes:
         # 유저 서비스
         - id: user-service
@@ -90,6 +95,15 @@ spring:
             allowedOriginPatterns:
               - "http://localhost:${GATEWAY_SERVER}"  # 게이트웨이 포트
               - "http://localhost:${USER_SERVER}"  # user-service 포트
+              - "http://localhost:${ACHIEVEMENT_SERVER}"  # achievement-service 포트
+              - "http://localhost:${ALERT_SERVER}"  # alert-service 포트
+              - "http://localhost:${AUTH_SERVER}"  # auth-service 포트
+              - "http://localhost:${CHATBOT_SERVER}"  # chatbot-service 포트
+              - "http://localhost:${COMPETITION_SERVER}"  # competition-service 포트
+              - "http://localhost:${CREW_SERVER}"  # crew-service 포트
+              - "http://localhost:${RANKING_SERVER}"  # ranking-service 포트
+              - "http://localhost:${RUNNING_RECORD_SERVER}"  # running-record-service 포트
+              - "http://localhost:${USER_RECAP_SERVER}"  # user-recap-service 포트
             allowedMethods:
               - GET
               - POST

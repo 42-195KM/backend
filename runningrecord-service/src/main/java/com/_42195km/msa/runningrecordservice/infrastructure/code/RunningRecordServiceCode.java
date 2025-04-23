@@ -1,4 +1,4 @@
-package com._42195km.msa.runningrecordservice.infrastructure.config;
+package com._42195km.msa.runningrecordservice.infrastructure.code;
 
 import org.springframework.http.HttpStatus;
 

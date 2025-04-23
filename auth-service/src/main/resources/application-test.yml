@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: auth-service
+  config:
+    import:
+      - optional:file:../.env[.properties]
+      - classpath:./properties/datasource.yml
+      - classpath:./properties/jpa.yml
+      - classpath:./properties/redis.yml
+  kafka:
+    url: ${KAFKA_BOOTSTRAP_SERVERS}
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+    consumer:
+      group-id: auth-group
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_SERVER}
+    register-with-eureka: false
+    fetch-registry: false
+    should-unregister-on-shutdown: false
+server:
+  port: ${AUTH_SERVER}
+
+service:
+  jwt:
+    access-expiration: ${JWT_ACCESS_EXPIRATION}
+    refresh-expiration: ${JWT_REFRESH_EXPIRATION}
+    secret-key: ${JWT_SECRET_KEY}

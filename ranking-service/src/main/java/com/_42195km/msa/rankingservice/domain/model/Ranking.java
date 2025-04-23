@@ -22,7 +22,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "p_ranking", schema = "rankingschema")
+@Table(name = "p_ranking")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class Ranking extends BaseEntity {

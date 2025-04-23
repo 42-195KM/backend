@@ -10,7 +10,7 @@ import java.util.Map;
 
 import com._42195km.msa.achievementservice.domain.model.Achievement;
 import com._42195km.msa.achievementservice.domain.model.AchievementUser;
-import com._42195km.msa.achievementservice.infrastructure.config.AchievementRunningRecordEvaluator;
+import com._42195km.msa.achievementservice.infrastructure.evaluator.AchievementRunningRecordEvaluator;
 import com._42195km.msa.achievementservice.infrastructure.messaging.out.AchieveEventProducer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

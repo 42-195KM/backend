@@ -9,85 +9,72 @@ import org.springframework.stereotype.Service;
 
 import com._42195km.msa.common.BaseEntity;
 import com._42195km.msa.common.exception.CustomBusinessException;
+import com._42195km.msa.common.service.BaseService;
 
 import com._42195km.msa.achievementservice.application.dto.request.CreateAchievementCommandDto;
 import com._42195km.msa.achievementservice.domain.model.Achievement;
 import com._42195km.msa.achievementservice.domain.repository.AchievementRepository;
 import com._42195km.msa.achievementservice.domain.repository.AchievementUserRepository;
 import com._42195km.msa.achievementservice.infrastructure.code.AchievementServiceCode;
+
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class AchievementServiceImpl implements AchivementService{
+public class AchievementServiceImpl extends BaseService implements AchivementService{
 
 	private final AchievementRepository achievementRepository;
 	private final AchievementUserRepository achievementUserRepository;
 
+	@Transactional
 	@Override
 	public Achievement createAchievement(CreateAchievementCommandDto createAchievementCommandDto) {
-		try{
+		return execute(() -> {
 			Achievement achievement = Achievement.createAchievement(createAchievementCommandDto);
 			achievement = achievementRepository.save(achievement);
 			return achievement;
-		}
-		catch (Exception e){
-			throw CustomBusinessException.from(AchievementServiceCode.ACHIEVEMENT_CREATE_FAIL);
-		}
+		}, AchievementServiceCode.ACHIEVEMENT_CREATE_FAIL);
 	}
 
 	@Override
 	public Achievement getAchievementById(UUID achievementId) {
-		try{
+		return execute(() -> {
 			Optional<Achievement> achievement = achievementRepository.findById(achievementId);
 			return achievement.orElseThrow(() ->
 				CustomBusinessException.from(AchievementServiceCode.ACHIEVEMENT_GET_FAIL));
-		}
-		catch (Exception e){
-			throw CustomBusinessException.from(AchievementServiceCode.ACHIEVEMENT_GET_FAIL);
-		}
+		}, AchievementServiceCode.ACHIEVEMENT_GET_FAIL);
 	}
 
 	@Override
 	public Page<Achievement> getAchievements(Pageable pageable) {
-		try{
-			return achievementRepository.findAll(pageable);
-		}
-		catch (Exception e) {
-			throw CustomBusinessException.from(AchievementServiceCode.ACHIEVEMENT_GET_ALL_FAIL);
-		}
+		return execute(() ->
+			achievementRepository.findAll(pageable),
+			AchievementServiceCode.ACHIEVEMENT_GET_ALL_FAIL);
 	}
 
 	@Override
 	public Page<Achievement> searchAchievements(String keyword, Pageable pageable) {
-		try{
-			return achievementRepository.search(keyword, pageable);
-		}
-		catch (Exception e) {
-			throw CustomBusinessException.from(AchievementServiceCode.ACHIEVEMENT_SEARCH_FAIL);
-		}
+		return execute(() ->
+			achievementRepository.search(keyword, pageable),
+			AchievementServiceCode.ACHIEVEMENT_SEARCH_FAIL);
 	}
 
 	@Override
 	public Page<Achievement> getAchivementsByUser(UUID userId, Pageable pageable) {
-		try{
-			return achievementUserRepository.search(userId, pageable);
-		}
-		catch (Exception e) {
-			throw CustomBusinessException.from(AchievementServiceCode.ACHIEVEMENT_GET_BY_USER_FAIL);
-		}
+		return execute(() ->
+			achievementUserRepository.search(userId, pageable),
+			AchievementServiceCode.ACHIEVEMENT_GET_BY_USER_FAIL);
 	}
 
+	@Transactional
 	@Override
 	public Achievement deleteAchievement(UUID achievementId) {
-		try{
+		return execute(() -> {
 			Optional<Achievement> achievement = achievementRepository.findById(achievementId);
 			achievement.ifPresent(BaseEntity::setDeleted);
 			return achievement.orElseThrow(() ->
 				CustomBusinessException.from(AchievementServiceCode.ACHIEVEMENT_DELETE_FAIL));
-		}
-		catch (Exception e) {
-			throw CustomBusinessException.from(AchievementServiceCode.ACHIEVEMENT_DELETE_FAIL);
-		}
+		}, AchievementServiceCode.ACHIEVEMENT_DELETE_FAIL);
 	}
 }

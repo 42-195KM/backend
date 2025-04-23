@@ -1,0 +1,22 @@
+# Prod - AWS
+spring:
+  application:
+    name: user-service
+  config:
+    import:
+      - classpath:./properties/datasource.yml
+      - classpath:./properties/jpa.yml
+  profiles:
+    active: aws
+  kafka:
+    url: ${KAFKA_BOOTSTRAP_SERVERS}
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+    consumer:
+      auto-offset-reset: earliest
+      group-id: user-group
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_SERVER}  # Eureka 서버 URL
+server:
+  port: ${USER_SERVER}

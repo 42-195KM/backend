@@ -1,13 +1,13 @@
 package com._42195km.alertservice.infrastructure.messaging.in;
 
-import com._42195km.alertservice.application.service.MessageService;
-import com._42195km.alertservice.code.AlertCode;
-import com._42195km.msa.common.exception.CustomBusinessException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com._42195km.alertservice.application.service.AlertContext;
+import com._42195km.alertservice.infrastructure.messaging.dto.AchieveEventDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.annotation.RetryableTopic;
+import org.springframework.kafka.retrytopic.TopicSuffixingStrategy;
+import org.springframework.retry.annotation.Backoff;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -17,19 +17,25 @@ import java.util.Map;
 @Slf4j
 public class AchievementKafkaConsumer {
 
-    private final MessageService messageService;
-    private final ObjectMapper objectMapper;
+    private final AlertContext context;
+    private final AchievementStrategyImpl achievementStrategy;
+
     @KafkaListener(topics = "achieve-achievement", groupId = "achieve-group")
+    @RetryableTopic(
+            attempts = "5",
+            backoff = @Backoff(delay = 1000, multiplier = 2.0), // 초기 간격은 1초로 재시도 간격이 2배씩 증가
+            topicSuffixingStrategy = TopicSuffixingStrategy.SUFFIX_WITH_INDEX_VALUE,
+            dltTopicSuffix = "-dead-t" // 기존 토픽 이름에서 -dead-t 접미사가 추가된 이름으로 Dead Letter Topic 생성
+    )
     public void alertAchievement(Map<String, Object> eventMap) {
-        try {
-            AchieveEventDto achieveEventDto = objectMapper.convertValue(eventMap, AchieveEventDto.class);
-
-            String message = "축하합니다! " + achieveEventDto.getAchievementTitle() +" 업적을 달성하였습니다!!";
-
-            messageService.sendMessage(message,achieveEventDto.getUserMediaId());
-        } catch (Exception e) {
-            log.error("업적 이벤트 처리 중 오류 발생: {}", e.getMessage(), e);
-            throw CustomBusinessException.from(AlertCode.ACHIEVEMENT_CONSUMER_ERROR);
-        }
+        context.sendMessage(eventMap, achievementStrategy, AchieveEventDto.class);
     }
+
+    @KafkaListener(topics = "achieve-achievement-dead-t", groupId = "achieve-group-retry")
+    void achievementConsumerDead(Map<String, Object> eventMap) {
+        log.error("[DLT] 메시지 수신 - 재처리 필요, payload: {}", eventMap);
+    }
+
+
+
 }
