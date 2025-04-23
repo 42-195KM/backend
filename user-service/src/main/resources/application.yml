@@ -3,16 +3,14 @@ spring:
     name: user-service
   config:
     import:
-      - file:.env[.properties]
+      - optional:file:.env[.properties]
       - classpath:./properties/datasource.yml
       - classpath:./properties/jpa.yml
   profiles:
-    group:
-      local: local, key
-    active: ${ACTIVE_VAL}
+    active: local
   kafka:
-    url: localhost:9092
-    bootstrap-servers: localhost:9092
+    url: ${KAFKA_BOOTSTRAP_SERVERS}
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
     consumer:
       auto-offset-reset: earliest
       group-id: user-group

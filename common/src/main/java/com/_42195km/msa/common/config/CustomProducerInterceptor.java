@@ -16,14 +16,14 @@ public class CustomProducerInterceptor implements ProducerInterceptor<String, St
 		Headers headers = producerRecord.headers();
 
 		if (headers.lastHeader("X-User-Id") != null) {
-			String token = new String(headers.lastHeader("X-User-Id").value(), StandardCharsets.UTF_8);
+			String header = new String(headers.lastHeader("X-User-Id").value(), StandardCharsets.UTF_8);
 
-			System.out.println("[ProducerInterceptor] Valid Authorization token: " + token);
+			System.out.println("[ProducerInterceptor] Valid Authorization header: " + header);
 
 		} else {
 			System.err.println("[ProducerInterceptor] Missing Authorization header!");
 		}
-		
+
 		return producerRecord;
 	}
 

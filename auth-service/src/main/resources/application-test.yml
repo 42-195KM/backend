@@ -3,14 +3,10 @@ spring:
     name: auth-service
   config:
     import:
-      - optional:file:.env[.properties]
+      - optional:file:../.env[.properties]
       - classpath:./properties/datasource.yml
       - classpath:./properties/jpa.yml
       - classpath:./properties/redis.yml
-  profiles:
-    group:
-      local: local
-    active: local
   kafka:
     url: ${KAFKA_BOOTSTRAP_SERVERS}
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
@@ -19,7 +15,10 @@ spring:
 eureka:
   client:
     service-url:
-      defaultZone: ${EUREKA_SERVER}  # Eureka 서버 URL
+      defaultZone: ${EUREKA_SERVER}
+    register-with-eureka: false
+    fetch-registry: false
+    should-unregister-on-shutdown: false
 server:
   port: ${AUTH_SERVER}
 

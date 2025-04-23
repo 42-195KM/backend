@@ -6,11 +6,8 @@ spring:
     web-application-type: reactive
   application:
     name: gateway
-  config:
-    import:
-      - file:.env[.properties]
   profiles:
-    active: local
+    active: aws
   cloud:
     gateway:
       # 헤더에 정보 유지
