@@ -2,7 +2,7 @@ package com._42195km.msa.auth.domain.model;
 
 import java.util.UUID;
 
-import com._42195km.msa.auth.presentation.dto.request.UpdateAuthRequestDto;
+import com._42195km.msa.auth.infrastructure.messaging.in.UpdateUserEventDto;
 import com._42195km.msa.common.BaseEntity;
 
 import jakarta.persistence.Column;
@@ -54,11 +54,11 @@ public class Auth extends BaseEntity {
 		this.role = role;
 	}
 
-	public void update(UpdateAuthRequestDto updateAuthRequestDto) {
+	public void update(UpdateUserEventDto updateUserEventDto) {
 
-		this.userUuid = updateAuthRequestDto.getUserId();
-		this.username = updateAuthRequestDto.getUsername();
-		this.password = updateAuthRequestDto.getPassword();
-		this.role = updateAuthRequestDto.getRole();
+		this.userUuid = updateUserEventDto.getUserId();
+		this.username = updateUserEventDto.getUsername();
+		this.password = updateUserEventDto.getPassword();
+		this.role = updateUserEventDto.getRole();
 	}
 }

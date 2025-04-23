@@ -1,30 +1,22 @@
+# Prod - AWS
 spring:
   application:
-    name: auth-service
+    name: user-service
   config:
     import:
-      - optional:file:.env[.properties]
       - classpath:./properties/datasource.yml
       - classpath:./properties/jpa.yml
-      - classpath:./properties/redis.yml
   profiles:
-    group:
-      local: local
-    active: local
+    active: aws
   kafka:
     url: ${KAFKA_BOOTSTRAP_SERVERS}
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
     consumer:
-      group-id: auth-group
+      auto-offset-reset: earliest
+      group-id: user-group
 eureka:
   client:
     service-url:
       defaultZone: ${EUREKA_SERVER}  # Eureka 서버 URL
 server:
-  port: ${AUTH_SERVER}
-
-service:
-  jwt:
-    access-expiration: ${JWT_ACCESS_EXPIRATION}
-    refresh-expiration: ${JWT_REFRESH_EXPIRATION}
-    secret-key: ${JWT_SECRET_KEY}
+  port: ${USER_SERVER}
