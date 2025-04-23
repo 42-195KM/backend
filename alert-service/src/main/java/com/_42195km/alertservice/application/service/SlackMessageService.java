@@ -1,21 +1,17 @@
 package com._42195km.alertservice.application.service;
 
-import com._42195km.alertservice.code.AlertCode;
+import com._42195km.alertservice.exception.AlertCode;
 import com._42195km.msa.common.exception.CustomBusinessException;
 import com.slack.api.Slack;
 import com.slack.api.methods.MethodsClient;
 import com.slack.api.methods.SlackApiException;
 import com.slack.api.methods.request.chat.ChatPostMessageRequest;
-import com.slack.api.methods.request.conversations.ConversationsOpenRequest;
 import com.slack.api.methods.response.chat.ChatPostMessageResponse;
-import com.slack.api.methods.response.conversations.ConversationsOpenResponse;
-import com.slack.api.model.Message;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.Collections;
 
 @Slf4j
 @Service

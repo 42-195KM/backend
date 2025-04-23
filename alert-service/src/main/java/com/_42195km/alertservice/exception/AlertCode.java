@@ -1,4 +1,4 @@
-package com._42195km.alertservice.code;
+package com._42195km.alertservice.exception;
 
 import com._42195km.msa.common.code.ServiceCode;
 import lombok.Getter;

@@ -29,5 +29,10 @@ public interface AchievementJpaRepository extends AchievementRepository, JpaRepo
 	Page<Achievement> search(@Param("keyWord") String keyWord, Pageable pageable);
 
 	@Override
+	@Query("SELECT a FROM Achievement a WHERE a.isDeleted = false")
 	List<Achievement> findAll();
+
+	@Override
+	@Query("SELECT a FROM Achievement a WHERE a.isDeleted = false")
+	Page<Achievement> findAll(Pageable pageable);
 }
