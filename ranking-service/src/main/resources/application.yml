@@ -8,7 +8,7 @@ spring:
       - classpath:./properties/jpa.yml
   profiles:
     group:
-      local: local, key
+      local: local
     active: local
 eureka:
   client:
