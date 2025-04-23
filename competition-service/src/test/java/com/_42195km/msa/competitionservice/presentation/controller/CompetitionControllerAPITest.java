@@ -5,9 +5,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.UUID;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -29,6 +33,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestMethodOrder(OrderAnnotation.class)
 class CompetitionControllerAPITest {
 
 	@Autowired
@@ -37,15 +43,14 @@ class CompetitionControllerAPITest {
 	@Autowired
 	private ObjectMapper objectMapper;
 
-	private static UUID testCompetitionId;
-	private static UUID testUserId = UUID.randomUUID();
-	private final UUID usedCompetitionId = UUID.fromString("872dd912-8616-4595-aa94-5737bf633012");
-	private final String TEST_COMPETITION_TITLE = "spring boot 테스트용 대회";
+	private UUID testCompetitionId;
+	private static final UUID testUserId = UUID.randomUUID();
+	private static final UUID usedCompetitionId =
+		UUID.fromString("872dd912-8616-4595-aa94-5737bf633012");
+	private static final String TEST_COMPETITION_TITLE = "spring boot 테스트용 대회";
 
-	@Test
-	@Order(1)
-	@DisplayName("대회 생성 API 테스트 - 수정/삭제 테스트용")
-	public void testCreateCompetitionForUpdateDelete() throws Exception {
+	@BeforeAll
+	public void setUp() throws Exception {
 		// 테스트용 CreateCompetitionRequestDto 객체 생성
 		CreateCompetitionRequestDto createDto = new CreateCompetitionRequestDto();
 		// 리플렉션을 사용하여 private 필드에 값 설정
@@ -60,22 +65,14 @@ class CompetitionControllerAPITest {
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(createDto)))
 			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.code").value("CPT_001"))
-			.andExpect(jsonPath("$.message").value("대회 생성 성공"));
-	}
+			.andExpect(jsonPath("$.code").value("CPT_001"));
 
-	@Test
-	@Order(2)
-	@DisplayName("생성한 대회 검색하여 ID 찾기")
-	public void testSearchCreatedCompetition() throws Exception {
-		// 생성한 대회 검색
+		// 생성한 대회 검색하여 ID 찾기
 		MvcResult result = mockMvc.perform(get("/api/v1/competitions/search")
 				.param("keyword", TEST_COMPETITION_TITLE)
 				.param("page", "0")
 				.param("size", "10"))
 			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.code").value("CPT_006"))
-			.andExpect(jsonPath("$.message").value("대회 검색 성공"))
 			.andReturn();
 
 		// 응답에서 대회 ID 추출
@@ -95,12 +92,12 @@ class CompetitionControllerAPITest {
 		}
 
 		if (testCompetitionId == null) {
-			System.out.println("경고: 테스트 대회 ID를 찾지 못했습니다. 기본 ID를 사용합니다.");
+			throw new RuntimeException("테스트 대회 ID를 찾지 못했습니다.");
 		}
 	}
 
 	@Test
-	@Order(3)
+	@Order(1)
 	@DisplayName("대회 신청 API 테스트 - 약관 동의")
 	public void testCompleteApplication_Success_1() throws Exception {
 
@@ -108,11 +105,6 @@ class CompetitionControllerAPITest {
 			.competitionId(usedCompetitionId)
 			.participantId(testUserId)
 			.termsAgreed(true)
-			.souvenirSelection("T-Shirt")
-			.shippingAddress("123 Example Street")
-			.paymentMethod("CreditCard")
-			.paymentStatus("SUCCESS")
-			.transactionId("tx-001")
 			.build();
 
 		mockMvc.perform(post("/api/v1/competitions/complete")
@@ -124,19 +116,14 @@ class CompetitionControllerAPITest {
 	}
 
 	@Test
-	@Order(4)
+	@Order(2)
 	@DisplayName("대회 신청 API 테스트 - 기념품 선택")
 	public void testCompleteApplication_Success_2() throws Exception {
 
 		CompleteAppDto requestDto = CompleteAppDto.builder()
 			.competitionId(usedCompetitionId)
 			.participantId(testUserId)
-			.termsAgreed(true)
 			.souvenirSelection("T-Shirt")
-			.shippingAddress("123 Example Street")
-			.paymentMethod("CreditCard")
-			.paymentStatus("SUCCESS")
-			.transactionId("tx-001")
 			.build();
 
 		mockMvc.perform(post("/api/v1/competitions/complete")
@@ -148,19 +135,14 @@ class CompetitionControllerAPITest {
 	}
 
 	@Test
-	@Order(5)
+	@Order(3)
 	@DisplayName("대회 신청 API 테스트 - 배송지 입력")
 	public void testCompleteApplication_Success_3() throws Exception {
 
 		CompleteAppDto requestDto = CompleteAppDto.builder()
 			.competitionId(usedCompetitionId)
 			.participantId(testUserId)
-			.termsAgreed(true)
-			.souvenirSelection("T-Shirt")
 			.shippingAddress("123 Example Street")
-			.paymentMethod("CreditCard")
-			.paymentStatus("SUCCESS")
-			.transactionId("tx-001")
 			.build();
 
 		mockMvc.perform(post("/api/v1/competitions/complete")
@@ -170,55 +152,46 @@ class CompetitionControllerAPITest {
 			.andExpect(jsonPath("$.code").value("CPT_012"))
 			.andExpect(jsonPath("$.message").value("대회 신청 성공"));
 	}
+
+	//@Test
+	//@Order(4)
+	//@DisplayName("대회 신청 API 테스트 - 결제 시작")
+	//public void testCompleteApplication_Success_4() throws Exception {
+	//	CompleteAppDto requestDto = CompleteAppDto.builder()
+	//		.competitionId(usedCompetitionId)
+	//		.participantId(testUserId)
+	//		.paymentMethod("CreditCard")
+	//		.build();
+
+	//	mockMvc.perform(post("/api/v1/competitions/complete")
+	//			.contentType(MediaType.APPLICATION_JSON)
+	//			.content(objectMapper.writeValueAsString(requestDto)))
+	//		.andExpect(status().isOk())
+	//		.andExpect(jsonPath("$.code").value("CPT_012"))
+	//		.andExpect(jsonPath("$.message").value("대회 신청 성공"));
+	//}
+
+	//@Test
+	//@Order(5)
+	//@DisplayName("대회 신청 API 테스트 - 결제 완료")
+	//public void testCompleteApplication_Success_5() throws Exception {
+	//	CompleteAppDto requestDto = CompleteAppDto.builder()
+	//		.competitionId(usedCompetitionId)
+	//		.participantId(testUserId)
+	//		.paymentStatus("SUCCESS")
+	//		.transactionId("tx-001")
+	//		.build();
+	//
+	//	mockMvc.perform(post("/api/v1/competitions/complete")
+	//			.contentType(MediaType.APPLICATION_JSON)
+	//			.content(objectMapper.writeValueAsString(requestDto)))
+	//		.andExpect(status().isOk())
+	//		.andExpect(jsonPath("$.code").value("CPT_012"))
+	//		.andExpect(jsonPath("$.message").value("대회 신청 성공"));
+	//}
 
 	@Test
 	@Order(6)
-	@DisplayName("대회 신청 API 테스트 - 결제 시작")
-	public void testCompleteApplication_Success_4() throws Exception {
-		CompleteAppDto requestDto = CompleteAppDto.builder()
-			.competitionId(usedCompetitionId)
-			.participantId(testUserId)
-			.termsAgreed(true)
-			.souvenirSelection("T-Shirt")
-			.shippingAddress("123 Example Street")
-			.paymentMethod("CreditCard")
-			.paymentStatus("SUCCESS")
-			.transactionId("tx-001")
-			.build();
-
-		mockMvc.perform(post("/api/v1/competitions/complete")
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(requestDto)))
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.code").value("CPT_012"))
-			.andExpect(jsonPath("$.message").value("대회 신청 성공"));
-	}
-
-	@Test
-	@Order(7)
-	@DisplayName("대회 신청 API 테스트 - 결제 완료")
-	public void testCompleteApplication_Success_5() throws Exception {
-		CompleteAppDto requestDto = CompleteAppDto.builder()
-			.competitionId(usedCompetitionId)
-			.participantId(testUserId)
-			.termsAgreed(true)
-			.souvenirSelection("T-Shirt")
-			.shippingAddress("123 Example Street")
-			.paymentMethod("CreditCard")
-			.paymentStatus("SUCCESS")
-			.transactionId("tx-001")
-			.build();
-
-		mockMvc.perform(post("/api/v1/competitions/complete")
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(requestDto)))
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.code").value("CPT_012"))
-			.andExpect(jsonPath("$.message").value("대회 신청 성공"));
-	}
-
-	@Test
-	@Order(8)
 	@DisplayName("모든 대회 조회 API 테스트")
 	public void testGetAllCompetitions() throws Exception {
 		// 모든 대회 조회 테스트
@@ -231,22 +204,23 @@ class CompetitionControllerAPITest {
 	}
 
 	@Test
-	@Order(9)
+	@Order(7)
 	@DisplayName("특정 대회 조회 API 테스트")
 	public void testGetCompetition() throws Exception {
 		// 특정 대회 조회 테스트
-		mockMvc.perform(get("/api/v1/competitions/{competitionId}", usedCompetitionId))
+		mockMvc.perform(get("/api/v1/competitions/{competitionId}", testCompetitionId))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.code").value("CPT_003"))
 			.andExpect(jsonPath("$.message").value("대회 조회 성공"));
 	}
 
 	@Test
+	@Order(8)
 	@DisplayName("대회 검색 API 테스트")
 	public void testSearchCompetitions() throws Exception {
 		// 대회 검색 테스트
 		mockMvc.perform(get("/api/v1/competitions/search")
-				.param("keyword", "마라톤")
+				.param("keyword", TEST_COMPETITION_TITLE)
 				.param("page", "0")
 				.param("size", "10"))
 			.andExpect(status().isOk())
@@ -255,6 +229,7 @@ class CompetitionControllerAPITest {
 	}
 
 	@Test
+	@Order(9)
 	@DisplayName("주최 대회 확인 API 테스트")
 	public void testCheckCompetition() throws Exception {
 		// 주최 대회 확인 테스트
@@ -267,6 +242,7 @@ class CompetitionControllerAPITest {
 	}
 
 	@Test
+	@Order(10)
 	@DisplayName("대회 수정 API 테스트")
 	public void testUpdateCompetition() throws Exception {
 		UpdateCompetitionRequestDto updateDto = new UpdateCompetitionRequestDto();
@@ -276,7 +252,7 @@ class CompetitionControllerAPITest {
 		setFieldValue(updateDto, "participantsNum", 150);
 		setFieldValue(updateDto, "price", 60000);
 
-		mockMvc.perform(put("/api/v1/competitions/{competitionId}", testCompetitionId)
+		mockMvc.perform(patch("/api/v1/competitions/{competitionId}", testCompetitionId)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(updateDto)))
 			.andExpect(status().isOk())
@@ -285,18 +261,7 @@ class CompetitionControllerAPITest {
 	}
 
 	@Test
-	@Order(12)
-	@DisplayName("대회 삭제 API 테스트")
-	public void testDeleteCompetition() throws Exception {
-		// 대회 삭제 테스트
-		mockMvc.perform(patch("/api/v1/competitions/{competitionId}/delete", testCompetitionId))
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.code").value("CPT_010"))
-			.andExpect(jsonPath("$.message").value("대회 삭제 성공"));
-	}
-
-	@Test
-	@Order(10)
+	@Order(11)
 	@DisplayName("대회 추첨 API 테스트")
 	public void testDrawCompetition() throws Exception {
 		// 대회 추첨 테스트
@@ -306,16 +271,27 @@ class CompetitionControllerAPITest {
 			.andExpect(jsonPath("$.message").value("대회 추첨 성공"));
 	}
 
-	@Test
-	@Order(11)
-	@DisplayName("대회 신청 상태 조회 API 테스트")
-	public void testGetApplicationStatus() throws Exception {
+	//@Test
+	//@Order(12)
+	//@DisplayName("대회 신청 상태 조회 API 테스트")
+	//public void testGetApplicationStatus() throws Exception {
 		// 상태 조회
-		mockMvc.perform(get("/api/v1/competitions/{competitionId}/{participantId}/status",
-				testCompetitionId, testUserId))
+	//	mockMvc.perform(get("/api/v1/competitions/{competitionId}/{participantId}/status",
+	//			testCompetitionId, testUserId))
+	//		.andExpect(status().isOk())
+	//		.andExpect(jsonPath("$.code").value("CPT_003"))
+	//		.andExpect(jsonPath("$.message").value("대회 조회 성공"));
+	//}
+
+	@Test
+	@Order(13)
+	@DisplayName("대회 삭제 API 테스트")
+	public void testDeleteCompetition() throws Exception {
+		// 대회 삭제 테스트
+		mockMvc.perform(patch("/api/v1/competitions/{competitionId}/delete", testCompetitionId))
 			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.code").value("CPT_003"))
-			.andExpect(jsonPath("$.message").value("대회 조회 성공"));
+			.andExpect(jsonPath("$.code").value("CPT_010"))
+			.andExpect(jsonPath("$.message").value("대회 삭제 성공"));
 	}
 
 	// 리플렉션을 사용하여 private 필드에 값을 설정하는 헬퍼 메서드

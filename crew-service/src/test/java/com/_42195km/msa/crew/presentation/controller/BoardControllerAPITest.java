@@ -91,6 +91,13 @@ class BoardControllerAPITest {
 	@Test
 	@DisplayName("게시글 단건 조회 API 테스트")
 	void testGetBoard() throws Exception {
+		String createBoardJson = "{\"title\": \"Spring boot API 테스트 코드\", \"content\": \"테스트 코드 게시글\", \"hashtag\": \"Test\"}";
+		mockMvc.perform(post("/api/v1/crews/posts")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(createBoardJson.getBytes(StandardCharsets.UTF_8)))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.message").value("게시글 생성에 성공했습니다."));
+
 		// 게시글 목록 조회 후 id 추출
 		MvcResult listResult = mockMvc.perform(get("/api/v1/crews/posts")
 				.param("page", "0")
@@ -108,6 +115,7 @@ class BoardControllerAPITest {
 	@Test
 	@DisplayName("게시글 삭제 API 테스트")
 	void testDeleteBoard() throws Exception {
+
 		// 게시글 생성
 		String createBoardJson = "{\"title\": \"삭제용 게시글\", \"content\": \"삭제용\", \"hashtag\": \"delete\"}";
 		mockMvc.perform(post("/api/v1/crews/posts")
@@ -134,6 +142,13 @@ class BoardControllerAPITest {
 	@DisplayName("댓글 생성 API 테스트")
 	void testCreateComment() throws Exception {
 
+		String createBoardJson = "{\"title\": \"Spring boot API 테스트 코드\", \"content\": \"테스트 코드 게시글\", \"hashtag\": \"Test\"}";
+		mockMvc.perform(post("/api/v1/crews/posts")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(createBoardJson.getBytes(StandardCharsets.UTF_8)))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.message").value("게시글 생성에 성공했습니다."));
+
 		// 게시글 목록 조회 후 id 추출
 		MvcResult listResult = mockMvc.perform(get("/api/v1/crews/posts")
 				.param("page", "0")
@@ -155,6 +170,14 @@ class BoardControllerAPITest {
 	@Test
 	@DisplayName("댓글 수정 API 테스트")
 	void testUpdateComment() throws Exception {
+
+		String createBoardJson = "{\"title\": \"Spring boot API 테스트 코드\", \"content\": \"테스트 코드 게시글\", \"hashtag\": \"Test\"}";
+		mockMvc.perform(post("/api/v1/crews/posts")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(createBoardJson.getBytes(StandardCharsets.UTF_8)))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.message").value("게시글 생성에 성공했습니다."));
+
 		// 게시글 목록 조회 후 id 추출
 		MvcResult listResult = mockMvc.perform(get("/api/v1/crews/posts")
 				.param("page", "0")
@@ -190,6 +213,13 @@ class BoardControllerAPITest {
 	@Test
 	@DisplayName("댓글 삭제 API 테스트")
 	void testDeleteComment() throws Exception {
+		String createBoardJson = "{\"title\": \"Spring boot API 테스트 코드\", \"content\": \"테스트 코드 게시글\", \"hashtag\": \"Test\"}";
+		mockMvc.perform(post("/api/v1/crews/posts")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(createBoardJson.getBytes(StandardCharsets.UTF_8)))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.message").value("게시글 생성에 성공했습니다."));
+
 		// 게시글 목록 조회 후 id 추출
 		MvcResult listResult = mockMvc.perform(get("/api/v1/crews/posts")
 				.param("page", "0")
