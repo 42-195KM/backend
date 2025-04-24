@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- 기본 Spring Boot 로깅 설정을 포함 -->
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+
+    <!-- 애플리케이션 이름 설정 (환경 변수나 속성에서 가져옴) -->
+    <springProperty scope="context" name="appName" source="spring.application.name" defaultValue="competition-service"/>
+
+    <!-- 로그 패턴 설정 (트레이스 ID와 스팬 ID 포함) -->
+    <property name="CONSOLE_LOG_PATTERN"
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight(%-5level) [${appName},%X{traceId:-},%X{spanId:-}] %logger{36} - %msg%n"/>
+
+    <!-- Loki 어펜더 설정 -->
+    <appender name="LOKI" class="com.github.loki4j.logback.Loki4jAppender">
+        <!-- Loki 서버 URL 설정 -->
+        <http>
+            <url>http://loki:3100/loki/api/v1/push</url>
+        </http>
+        <!-- 로그 포맷 설정 -->
+        <format>
+            <label>
+                <pattern>
+                    app=${appName},host=${HOSTNAME},level=%level,trace_id=%X{traceId:-unknown},span_id=%X{spanId:-unknown}
+                </pattern>
+            </label>
+            <message>
+                <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+            </message>
+            <sortByTime>true</sortByTime>
+        </format>
+        <!-- 배치 설정: 로그를 얼마나 자주 Loki로 전송할지 결정 -->
+        <batchProcessing>
+            <batchSize>100</batchSize>
+            <batchTimeoutMs>1000</batchTimeoutMs>
+        </batchProcessing>
+    </appender>
+
+    <!-- 로컬 개발 환경을 위한 파일 로깅 설정 (선택 사항) -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/competition-service.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/competition-service.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+            <charset>utf8</charset>
+        </encoder>
+    </appender>
+
+    <!-- 로그 레벨 설정 -->
+    <logger name="com._42195km.msa" level="DEBUG"/>
+    <logger name="org.hibernate.SQL" level="DEBUG"/>
+    <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="TRACE"/>
+    <logger name="org.springframework.transaction" level="DEBUG"/>
+    <logger name="org.springframework.orm.jpa" level="DEBUG"/>
+
+    <!-- 루트 로거 설정 -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="LOKI"/>
+        <appender-ref ref="FILE"/>
+    </root>
+</configuration>

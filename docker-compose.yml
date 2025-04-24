@@ -105,6 +105,17 @@ services:
     networks:
       - app_network
 
+  loki:
+    container_name: loki
+    image: grafana/loki:2.9.2
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./loki/config.yaml:/etc/loki/config.yaml
+    command: -config.file=/etc/loki/config.yaml
+    networks:
+      - app_network
+
 networks:
   app_network:
     driver: bridge
