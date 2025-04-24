@@ -12,8 +12,8 @@ import com._42195km.msa.competitionservice.application.event.ApplicationSagaEven
 import com._42195km.msa.competitionservice.application.event.PaymentSagaEvent;
 import com._42195km.msa.competitionservice.application.event.SagaEvent;
 import com._42195km.msa.competitionservice.application.exception.CompetitionServiceCode;
-import com._42195km.msa.competitionservice.application.service.CompetitionService;
-import com._42195km.msa.competitionservice.application.service.ParticipantService;
+import com._42195km.msa.competitionservice.application.service.CompetitionServiceImpl;
+import com._42195km.msa.competitionservice.application.service.ParticipantServiceImpl;
 import com._42195km.msa.competitionservice.domain.model.SagaState;
 import com._42195km.msa.competitionservice.domain.model.SagaStep;
 import com._42195km.msa.competitionservice.infrastructure.persistence.SagaStateRepository;
@@ -25,15 +25,16 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class CompetitionSagaOrchestrator {
+public class SagaOrchestratorImpl implements SagaOrchestrator{
 
 	private static final String SAGA_TOPIC = "competition_saga";
 
 	private final KafkaTemplate<String, SagaEvent> kafkaTemplate;
 	private final SagaStateRepository sagaStateRepository;
-	private final CompetitionService competitionService;
-	private final ParticipantService participantService;
+	private final CompetitionServiceImpl competitionServiceImpl;
+	private final ParticipantServiceImpl participantService;
 
+	@Override
 	public String startApplicationSaga(UUID competitionId, UUID participantId) {
 		SagaState sagaState = new SagaState("APPLICATION", competitionId, participantId);
 		sagaState.setNextStep(SagaStep.TERMS_AGREEMENT);
@@ -45,6 +46,7 @@ public class CompetitionSagaOrchestrator {
 	}
 
 	// 약관 동의 단계 처리
+	@Override
 	public void processTermsAgreement(String sagaId, UUID competitionId, UUID participantId, Boolean termsAgreed) {
 		SagaState sagaState = sagaStateRepository.getSagaState(sagaId);
 		if (sagaState == null) {
@@ -79,6 +81,7 @@ public class CompetitionSagaOrchestrator {
 	}
 
 	// 기념품 선택 단계 처리
+	@Override
 	public void processSouvenirSelection(String sagaId, UUID competitionId, UUID participantId,
 		String souvenirSelection) {
 		SagaState sagaState = sagaStateRepository.getSagaState(sagaId);
@@ -112,6 +115,7 @@ public class CompetitionSagaOrchestrator {
 	}
 
 	// 배송지 입력 단계 처리
+	@Override
 	public void processShippingAddress(String sagaId, UUID competitionId, UUID participantId, String shippingAddress) {
 		SagaState sagaState = sagaStateRepository.getSagaState(sagaId);
 		if (sagaState == null) {
@@ -145,10 +149,11 @@ public class CompetitionSagaOrchestrator {
 	}
 
 	// 결제 시작 단계 처리
+	@Override
 	public void initiatePayment(String sagaId, UUID competitionId, UUID participantId,
 		String paymentMethod) {
 
-		CompetitionAppResponseDto competition = competitionService.getCompetition(competitionId);
+		CompetitionAppResponseDto competition = competitionServiceImpl.getCompetition(competitionId);
 		Integer amount = competition.getPrice();
 
 		SagaState sagaState = sagaStateRepository.getSagaState(sagaId);
@@ -182,6 +187,7 @@ public class CompetitionSagaOrchestrator {
 	}
 
 	// 결제 완료 단계 처리
+	@Override
 	public void completePayment(String sagaId, UUID competitionId, UUID participantId,
 		Integer amount, String paymentMethod, String paymentStatus, String transactionId) {
 		SagaState sagaState = sagaStateRepository.getSagaState(sagaId);
