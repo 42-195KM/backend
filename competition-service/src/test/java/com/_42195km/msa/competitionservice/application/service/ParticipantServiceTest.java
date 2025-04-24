@@ -1,7 +1,7 @@
 package com._42195km.msa.competitionservice.application.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
 import java.util.Collections;
@@ -18,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.test.context.ActiveProfiles;
 
 import com._42195km.msa.common.exception.CustomBusinessException;
 import com._42195km.msa.competitionservice.application.dto.response.ParticipantAppResponseDto;
@@ -33,11 +34,11 @@ import com._42195km.msa.competitionservice.infrastructure.persistence.Participan
 import com._42195km.msa.competitionservice.presentation.dto.request.CancelParticipantRequestDto;
 
 @ExtendWith(MockitoExtension.class)
+@ActiveProfiles("test")
 class ParticipantServiceTest {
 
-
 	@InjectMocks
-	private ParticipantService participantService;
+	private ParticipantServiceImpl participantService;
 
 	@Mock
 	private ParticipantRepositoryImpl participantRepository;
@@ -152,7 +153,8 @@ class ParticipantServiceTest {
 		given(participantMapper.toSearchParticipantAppResponseDto(any())).willReturn(mappedDto);
 
 		// when
-		Page<SearchParticipantAppResponseDto> result = participantService.searchParticipants(keyword, searchType, pageable);
+		Page<SearchParticipantAppResponseDto> result = participantService.searchParticipants(keyword, searchType,
+			pageable);
 
 		// then
 		assertThat(result.getContent()).hasSize(1);

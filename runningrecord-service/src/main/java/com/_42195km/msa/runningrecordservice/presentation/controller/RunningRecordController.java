@@ -16,12 +16,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com._42195km.msa.common.api.ApiResponse;
+import com._42195km.msa.common.aop.CheckPermission;
 
+import com._42195km.msa.common.controller.BaseController;
 import com._42195km.msa.runningrecordservice.application.dto.request.CreateRunningRecordCommandDto;
 import com._42195km.msa.runningrecordservice.application.service.RunningRecordService;
 import com._42195km.msa.runningrecordservice.domain.model.RunningRecord;
-import com._42195km.msa.runningrecordservice.infrastructure.config.RunningRecordServiceCode;
+import com._42195km.msa.runningrecordservice.infrastructure.code.RunningRecordServiceCode;
 import com._42195km.msa.runningrecordservice.presentation.dto.request.CreateRunningRecordRequestDto;
 import com._42195km.msa.runningrecordservice.presentation.dto.response.CreateRunningRecordResponseDto;
 import com._42195km.msa.runningrecordservice.presentation.dto.response.DeleteRunningRecordResponseDto;
@@ -29,50 +30,32 @@ import com._42195km.msa.runningrecordservice.presentation.dto.response.GetRunnin
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/v1/running-records")
+@RequestMapping("/api/v1")
 @RequiredArgsConstructor
-public class RunningRecordController {
+public class RunningRecordController extends BaseController {
 	private final RunningRecordService runningRecordService;
 
 	// 러닝 기록 생성 (POST api/v1/running-records)
-	@PostMapping
+	@PostMapping("/running-records")
 	public ResponseEntity<?> createRunningRecord(@RequestBody CreateRunningRecordRequestDto dto) {
 		CreateRunningRecordCommandDto createRunningRecordCommandDto = dto.toCommandDto();
 		RunningRecord runningRecord = runningRecordService.createRunningRecord(createRunningRecordCommandDto);
 		CreateRunningRecordResponseDto responseDto = new CreateRunningRecordResponseDto(runningRecord);
 
-		RunningRecordServiceCode runningRecordCreateSuccess = RunningRecordServiceCode.RUNNING_RECORD_CREATE_SUCCESS;
-
-		ApiResponse<CreateRunningRecordResponseDto> response = ApiResponse.<CreateRunningRecordResponseDto>builder()
-			.code(runningRecordCreateSuccess.getCode())
-			.message(runningRecordCreateSuccess.getMessage())
-			.status(runningRecordCreateSuccess.getStatus())
-			.data(responseDto)
-			.build();
-
-		return ResponseEntity.ok(response);
+		return createOkResponseEntity(responseDto, RunningRecordServiceCode.RUNNING_RECORD_CREATE_SUCCESS);
 	}
 
 	// 러닝 기록 조회 (GET api/v1/running-records/{runningRecordId})
-	@GetMapping("/{runningRecordId}")
+	@GetMapping("/running-records/{runningRecordId}")
 	public ResponseEntity<?> getRunningRecord(@PathVariable UUID runningRecordId) {
 		RunningRecord runningRecord = runningRecordService.getRecordById(runningRecordId);
 		GetRunningRecordResponseDto responseDto = new GetRunningRecordResponseDto(runningRecord);
 
-		RunningRecordServiceCode runningRecordGetSuccess = RunningRecordServiceCode.RUNNING_RECORD_GET_SUCCESS;
-
-		ApiResponse<GetRunningRecordResponseDto> response = ApiResponse.<GetRunningRecordResponseDto>builder()
-			.code(runningRecordGetSuccess.getCode())
-			.message(runningRecordGetSuccess.getMessage())
-			.status(runningRecordGetSuccess.getStatus())
-			.data(responseDto)
-			.build();
-
-		return ResponseEntity.ok(response);
+		return createOkResponseEntity(responseDto, RunningRecordServiceCode.RUNNING_RECORD_GET_SUCCESS);
 	}
 
 	// 러닝 기록 목록 (GET api/v1/running-records)
-	@GetMapping
+	@GetMapping("/running-records")
 	public ResponseEntity<?> getAllRunningRecords(
 		@RequestParam(defaultValue = "0", required = false) int page,
 		@RequestParam(defaultValue = "10", required = false) int size)
@@ -81,20 +64,11 @@ public class RunningRecordController {
 		Page<GetRunningRecordResponseDto> responseDtos = runningRecordService.getAllRecords(pageRequest)
 			.map(GetRunningRecordResponseDto::new);
 
-		RunningRecordServiceCode runningRecordGetAllSuccess = RunningRecordServiceCode.RUNNING_RECORD_GET_ALL_SUCCESS;
-
-		ApiResponse<Page<GetRunningRecordResponseDto>> response = ApiResponse.<Page<GetRunningRecordResponseDto>>builder()
-			.code(runningRecordGetAllSuccess.getCode())
-			.message(runningRecordGetAllSuccess.getMessage())
-			.status(runningRecordGetAllSuccess.getStatus())
-			.data(responseDtos)
-			.build();
-
-		return ResponseEntity.ok(response);
+		return createOkResponseEntity(responseDtos, RunningRecordServiceCode.RUNNING_RECORD_GET_ALL_SUCCESS);
 	}
 
 	// 러닝 기록 검색 (GET api/v1/running-records/search)
-	@GetMapping("/search")
+	@GetMapping("/running-records/search")
 	public ResponseEntity<?> searchRecords(
 		@RequestParam(name = "userId", required = true) UUID userId,
 		@RequestParam(name = "createdAt", required = false)
@@ -103,6 +77,7 @@ public class RunningRecordController {
 		@RequestParam(defaultValue = "10", required = false) int size
 	) {
 		PageRequest pageRequest = PageRequest.of(page, size);
+
 		// createdAt이 전달되지 않은 경우: 전체 기간 검색을 위해 매우 이전 시점을 기본값으로 사용
 		LocalDateTime searchStart = (createdAt != null) ? createdAt :
 			LocalDateTime.of(1970, 1, 1, 0, 0);
@@ -110,33 +85,15 @@ public class RunningRecordController {
 		Page<GetRunningRecordResponseDto> responseDtos = runningRecordService.searchRecords(userId, searchStart, pageRequest)
 			.map(GetRunningRecordResponseDto::new);
 
-		RunningRecordServiceCode runningRecordSearchSuccess = RunningRecordServiceCode.RUNNING_RECORD_SEARCH_SUCCESS;
-
-		ApiResponse<Page<GetRunningRecordResponseDto>> response = ApiResponse.<Page<GetRunningRecordResponseDto>>builder()
-			.code(runningRecordSearchSuccess.getCode())
-			.message(runningRecordSearchSuccess.getMessage())
-			.status(runningRecordSearchSuccess.getStatus())
-			.data(responseDtos)
-			.build();
-
-		return ResponseEntity.ok(response);
+		return createOkResponseEntity(responseDtos, RunningRecordServiceCode.RUNNING_RECORD_SEARCH_SUCCESS);
 	}
 
-	// 러닝 기록 삭제 (DELETE api/v1/running-records/{runningRecordId})
-	@DeleteMapping("/{runningRecordId}")
+	// 러닝 기록 삭제 (DELETE api/v1/app/running-records/{runningRecordId})
+	@DeleteMapping("app/running-records/{runningRecordId}")
+	@CheckPermission(roles = {"MASTER"}, mode = CheckPermission.Mode.ALL)
 	public ResponseEntity<?> deleteRunningRecord(@PathVariable UUID runningRecordId) {
 		RunningRecord runningRecord = runningRecordService.deleteRecord(runningRecordId);
 		DeleteRunningRecordResponseDto responseDto = new DeleteRunningRecordResponseDto(runningRecord);
-
-		RunningRecordServiceCode runningRecordDeleteSuccess = RunningRecordServiceCode.RUNNING_RECORD_DELETE_SUCCESS;
-
-		ApiResponse<DeleteRunningRecordResponseDto> response = ApiResponse.<DeleteRunningRecordResponseDto>builder()
-			.code(runningRecordDeleteSuccess.getCode())
-			.message(runningRecordDeleteSuccess.getMessage())
-			.status(runningRecordDeleteSuccess.getStatus())
-			.data(responseDto)
-			.build();
-
-		return ResponseEntity.ok(response);
+		return createOkResponseEntity(responseDto, RunningRecordServiceCode.RUNNING_RECORD_DELETE_SUCCESS);
 	}
 }

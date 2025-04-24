@@ -26,7 +26,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import com._42195km.msa.common.exception.CustomBusinessException;
-import com._42195km.msa.crew.application.exception.BoardServiceCode;
 import com._42195km.msa.crew.application.dto.request.CreateCommentCommandDto;
 import com._42195km.msa.crew.application.dto.request.CreatePostCommandDto;
 import com._42195km.msa.crew.application.dto.request.UpdateCommentCommandDto;
@@ -34,6 +33,7 @@ import com._42195km.msa.crew.application.dto.request.UpdatePostCommandDto;
 import com._42195km.msa.crew.application.dto.response.CommentAppResponseDto;
 import com._42195km.msa.crew.application.dto.response.PostAppResponseDto;
 import com._42195km.msa.crew.application.dto.response.PostWithCommentsAppResponseDto;
+import com._42195km.msa.crew.application.exception.BoardServiceCode;
 import com._42195km.msa.crew.application.mapper.PostMapper;
 import com._42195km.msa.crew.domain.model.Comment;
 import com._42195km.msa.crew.domain.model.Post;

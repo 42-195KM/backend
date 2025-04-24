@@ -3,14 +3,19 @@ spring:
     name: auth-service
   config:
     import:
-      - file:.env[.properties]
+      - optional:file:.env[.properties]
       - classpath:./properties/datasource.yml
       - classpath:./properties/jpa.yml
       - classpath:./properties/redis.yml
   profiles:
     group:
-      local: local, key
-    active: ${ACTIVE_VAL}
+      local: local
+    active: local
+  kafka:
+    url: ${KAFKA_BOOTSTRAP_SERVERS}
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+    consumer:
+      group-id: auth-group
 eureka:
   client:
     service-url:

@@ -24,15 +24,23 @@ public class SseServiceImpl implements SseService {
             sseEmitterMap.put(userId, sseEmitter);
         }
 
-        sseEmitter.onCompletion(() -> sseEmitterMap.remove(userId));
+        sseEmitter.onCompletion(() -> removeSse(userId));
         sseEmitter.onTimeout(() -> {
-            sseEmitterMap.get(userId).complete();
+            sseComplete(userId);
         });
         sseEmitter.onError(throwable -> {
-            sseEmitterMap.get(userId).complete();
+            sseComplete(userId);
         });
         sendToClient(userId, "First subscribe",  "userId: " + userId + " sse 연결");
         return sseEmitter;
+    }
+
+    public SseEmitter removeSse(UUID userId) {
+        return sseEmitterMap.remove(userId);
+    }
+
+    public void sseComplete(UUID userId) {
+        sseEmitterMap.get(userId).complete();
     }
 
     public void broadcast(UUID userId, String eventName, Object eventData){
@@ -50,12 +58,12 @@ public class SseServiceImpl implements SseService {
                             .data(eventData)
                     );
         } catch (IOException | IllegalStateException e) {
-            sseEmitterMap.remove(userId);
-            sseEmitterMap.get(userId).complete();
+            removeSse(userId);
             throw CustomBusinessException.from(ChatbotCode.SSE_ERROR);
         }
 
     }
+
 
 
 

@@ -5,8 +5,9 @@ spring:
   application:
     name: chatbot-service
   config:
+    activate:
+      on-profile: dev
     import: optional:file:.env[.properties]
-
 
   datasource:
     url: ${DB_CHATBOT_URL}
@@ -47,23 +48,7 @@ spring:
             options:
               model: text-embedding-004
 
-
-  kafka:
-    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
-    consumer:
-      group-id: ai-group
-      auto-offset-reset: latest
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.apache.kafka.common.serialization.StringSerializer
-
-
 eureka:
   client:
     service-url:
       defaultZone: ${EUREKA_SERVER}
-
-
-

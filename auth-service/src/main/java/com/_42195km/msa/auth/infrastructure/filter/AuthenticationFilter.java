@@ -44,6 +44,8 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 		// Authorization 헤더에서 토큰 추출
 		String authHeader = request.getHeader("Authorization");
 
+		log.info("Authorization header: {}", authHeader);
+
 		if (authHeader != null) {
 			jwtUtil.validateToken(authHeader);
 			Claims claims = jwtUtil.parseClaims(authHeader);

@@ -9,7 +9,6 @@ import com._42195km.msa.competitionservice.application.dto.response.ParticipantA
 import com._42195km.msa.competitionservice.application.dto.response.SearchParticipantAppResponseDto;
 import com._42195km.msa.competitionservice.domain.model.CompetitionParticipantMapping;
 import com._42195km.msa.competitionservice.domain.model.CompetitionType;
-import com._42195km.msa.competitionservice.domain.model.Participant;
 import com._42195km.msa.competitionservice.domain.model.ReceptionType;
 import com._42195km.msa.competitionservice.domain.model.Status;
 import com._42195km.msa.competitionservice.presentation.dto.response.ParticipantResponseDto;
@@ -22,10 +21,14 @@ import lombok.RequiredArgsConstructor;
 public class ParticipantMapper {
 
 	public ParticipantAppResponseDto toParticipantAppResponseDto(CompetitionParticipantMapping participant) {
-		return ParticipantAppResponseDto.builder().participantId(participant.getParticipant().getParticipantId()).status(participant.getStatus()).build();
+		return ParticipantAppResponseDto.builder()
+			.participantId(participant.getParticipant().getParticipantId())
+			.status(participant.getStatus())
+			.build();
 	}
 
-	public Page<ParticipantAppResponseDto> toParticipantAppResponseDtoPage(Page<CompetitionParticipantMapping> participants) {
+	public Page<ParticipantAppResponseDto> toParticipantAppResponseDtoPage(
+		Page<CompetitionParticipantMapping> participants) {
 		return participants.map(participant -> toParticipantAppResponseDto(participant));
 	}
 
@@ -40,14 +43,14 @@ public class ParticipantMapper {
 	}
 
 	public SearchParticipantAppResponseDto toSearchParticipantAppResponseDto(Object object) {
-		Object[] arr = (Object[]) object;
+		Object[] arr = (Object[])object;
 		return SearchParticipantAppResponseDto.builder()
 			.competitionID(arr[0] != null ? UUID.fromString(arr[0].toString()) : null)
-			.title(arr[1] != null ? (String) arr[1] : null)
-			.competitionType(arr[2] != null ? (CompetitionType) arr[2] : null)
-			.receptionType(arr[3] != null ? (ReceptionType) arr[3] : null)
-			.participantID(arr[4] != null ? (UUID) arr[4] : null)
-			.status(arr[5] != null ? (Status) arr[5] : null)
+			.title(arr[1] != null ? (String)arr[1] : null)
+			.competitionType(arr[2] != null ? (CompetitionType)arr[2] : null)
+			.receptionType(arr[3] != null ? (ReceptionType)arr[3] : null)
+			.participantID(arr[4] != null ? (UUID)arr[4] : null)
+			.status(arr[5] != null ? (Status)arr[5] : null)
 			.build();
 	}
 

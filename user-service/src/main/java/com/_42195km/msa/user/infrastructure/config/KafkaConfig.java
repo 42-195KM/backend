@@ -12,8 +12,9 @@ import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
+import org.springframework.kafka.support.serializer.JsonSerializer;
 
-import com.fasterxml.jackson.databind.JsonSerializer;
+// import com.fasterxml.jackson.databind.JsonSerializer;
 
 @Configuration
 @EnableKafka
@@ -30,6 +31,10 @@ public class KafkaConfig {
 		props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaBootstrapServers);
 		props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
 		props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+
+		// 인터셉터 등록
+		props.put(ProducerConfig.INTERCEPTOR_CLASSES_CONFIG,
+			"com._42195km.msa.common.config.CustomProducerInterceptor");
 
 		return new DefaultKafkaProducerFactory<>(props);
 	}

@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: ranking-service
+  config:
+    import:
+      - optional:file:../.env[.properties]
+      - classpath:./properties/datasource.yml
+      - classpath:./properties/jpa.yml
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_SERVER}
+    register-with-eureka: false
+    fetch-registry: false
+    should-unregister-on-shutdown: false
+server:
+  port: ${RANKING_SERVER}

@@ -42,7 +42,6 @@ public class AchieveEventProducer {
 			throw new RuntimeException("Error sending achievement event");
 		}
 
-
 		logger.info("AchieveEventDto: {}", achieveEventDto);
 
 		kafkaTemplate.send("achieve-achievement", achieveEventDto);

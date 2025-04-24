@@ -3,13 +3,13 @@ spring:
     name: ranking-service
   config:
     import:
-      - file:.env[.properties]
+      - optional:file:.env[.properties]
       - classpath:./properties/datasource.yml
       - classpath:./properties/jpa.yml
   profiles:
     group:
-      local: local, key
-    active: ${ACTIVE_VAL}
+      local: local
+    active: local
 eureka:
   client:
     service-url:
