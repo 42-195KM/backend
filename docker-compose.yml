@@ -87,6 +87,35 @@ services:
     networks:
       - app_network
 
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - app_network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    networks:
+      - app_network
+
+  loki:
+    container_name: loki
+    image: grafana/loki:2.9.2
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./loki/config.yaml:/etc/loki/config.yaml
+    command: -config.file=/etc/loki/config.yaml
+    networks:
+      - app_network
+
 networks:
   app_network:
     driver: bridge
