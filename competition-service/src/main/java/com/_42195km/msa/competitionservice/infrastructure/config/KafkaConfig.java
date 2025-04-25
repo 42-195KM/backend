@@ -43,7 +43,7 @@ public class KafkaConfig {
 		return new DefaultKafkaProducerFactory<>(configProps);
 	}
 
-	@Bean
+	@Bean("sagaEventKafkaTemplate")
 	public KafkaTemplate<String, SagaEvent> sagaEventKafkaTemplate() {
 		return new KafkaTemplate<>(sagaEventProducerFactory());
 	}
@@ -83,7 +83,7 @@ public class KafkaConfig {
 		return new DefaultKafkaProducerFactory<>(configProps);
 	}
 
-	@Bean
+	@Bean("competitionApplicationKafkaTemplate")
 	public KafkaTemplate<String, CompetitionApplicationEvent> competitionApplicationKafkaTemplate() {
 		KafkaTemplate<String, CompetitionApplicationEvent> template = new KafkaTemplate<>(competitionApplicationProducerFactory());
 		log.info("Created KafkaTemplate for CompetitionApplicationEvent");
@@ -99,8 +99,22 @@ public class KafkaConfig {
 		return new DefaultKafkaProducerFactory<>(configProps);
 	}
 
-	@Bean
+	@Bean("notificationKafkaTemplate")
 	public KafkaTemplate<String, CompetitionApplyNotificationDto> notificationKafkaTemplate() {
 		return new KafkaTemplate<>(notificationProducerFactory());
+	}
+
+	@Bean
+	public ProducerFactory<String, Object> genericProducerFactory() {
+		Map<String, Object> configProps = new HashMap<>();
+		configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+		configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+		configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+		return new DefaultKafkaProducerFactory<>(configProps);
+	}
+
+	@Bean
+	public KafkaTemplate<String, Object> kafkaTemplate() {
+		return new KafkaTemplate<>(genericProducerFactory());
 	}
 }
