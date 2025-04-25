@@ -41,3 +41,4 @@ out/
 crew-service/src/main/resources/properties/env.properties
 competition-service/src/main/resources/properties/env.properties
 logs/competition-service.log
+logs/competition-service.*
