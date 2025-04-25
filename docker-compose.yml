@@ -116,6 +116,16 @@ services:
     networks:
       - app_network
 
+  kafka-exporter:
+    image: danielqsj/kafka-exporter:latest
+    ports:
+      - "9308:9308"
+    command: [ "--kafka.server=kafka:29092" ]
+    depends_on:
+      - kafka
+    restart: unless-stopped
+    networks:
+      - app_network
 networks:
   app_network:
     driver: bridge
