@@ -48,6 +48,10 @@ public class kafkaConfig {
 		configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
 		configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
 
+		// 인터셉터 등록
+		configProps.put(ProducerConfig.INTERCEPTOR_CLASSES_CONFIG,
+			"com._42195km.msa.common.config.CustomProducerInterceptor");
+
 		// 추가 튜닝
 		configProps.put(ProducerConfig.ACKS_CONFIG, "all");                      // 모든 ISR ACK 대기
 		configProps.put(ProducerConfig.RETRIES_CONFIG, 5);                      // 재시도 5회

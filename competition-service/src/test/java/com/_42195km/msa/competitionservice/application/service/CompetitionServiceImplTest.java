@@ -14,10 +14,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
-import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration;
-import org.springframework.cloud.netflix.eureka.EurekaClientAutoConfiguration;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -38,9 +34,9 @@ import com._42195km.msa.competitionservice.infrastructure.persistence.Participan
 
 @ExtendWith(MockitoExtension.class)
 @ActiveProfiles("test")
-class CompetitionServiceTest {
+class CompetitionServiceImplTest {
 	@InjectMocks
-	private CompetitionService competitionService;
+	private CompetitionServiceImpl competitionServiceImpl;
 
 	@Mock
 	private CompetitionRepositoryImpl competitionRepository;
@@ -85,7 +81,7 @@ class CompetitionServiceTest {
 		// 예외 없이 성공적으로 동작한다고 가정하므로, 특별히 when-stub 설정하지 않음
 
 		// when
-		competitionService.createCompetition(command);
+		competitionServiceImpl.createCompetition(command);
 
 		// then
 		then(competitionRepository)
@@ -107,7 +103,7 @@ class CompetitionServiceTest {
 		// when
 		CustomBusinessException ex = assertThrows(
 			CustomBusinessException.class,
-			() -> competitionService.createCompetition(command)
+			() -> competitionServiceImpl.createCompetition(command)
 		);
 
 		// then
@@ -129,7 +125,7 @@ class CompetitionServiceTest {
 			.willReturn(new PageImpl<>(java.util.List.of(mockDto), pageRequest, 1));
 
 		// when
-		Page<CompetitionAppResponseDto> result = competitionService.getCompetitions(pageRequest);
+		Page<CompetitionAppResponseDto> result = competitionServiceImpl.getCompetitions(pageRequest);
 
 		// then
 		assertThat(result.getContent()).hasSize(1);
@@ -148,7 +144,7 @@ class CompetitionServiceTest {
 		given(competitionMapper.toAppResponseDto(mockCompetition)).willReturn(mockDto);
 
 		// when
-		CompetitionAppResponseDto result = competitionService.getCompetition(competitionId);
+		CompetitionAppResponseDto result = competitionServiceImpl.getCompetition(competitionId);
 
 		// then
 		assertThat(result).isNotNull();
@@ -167,7 +163,7 @@ class CompetitionServiceTest {
 		// when
 		CustomBusinessException ex = assertThrows(
 			CustomBusinessException.class,
-			() -> competitionService.getCompetition(competitionId)
+			() -> competitionServiceImpl.getCompetition(competitionId)
 		);
 
 		// then
@@ -184,7 +180,7 @@ class CompetitionServiceTest {
 		given(competitionRepository.findById(competitionId)).willReturn(mockCompetition);
 
 		// when
-		competitionService.updateCompetition(competitionId, updateCommand);
+		competitionServiceImpl.updateCompetition(competitionId, updateCommand);
 
 		// then
 		assertThat(mockCompetition.getTitle()).isEqualTo("변경된 대회 제목");
@@ -207,7 +203,7 @@ class CompetitionServiceTest {
 		// when
 		CustomBusinessException ex = assertThrows(
 			CustomBusinessException.class,
-			() -> competitionService.updateCompetition(competitionId, updateCommand)
+			() -> competitionServiceImpl.updateCompetition(competitionId, updateCommand)
 		);
 
 		// then
@@ -217,15 +213,15 @@ class CompetitionServiceTest {
 	//@DisplayName("대회 삭제 성공 테스트")
 	//@Test
 	//void deleteCompetition_Success() {
-		// given
+	// given
 	//	given(competitionRepository.findById(competitionId)).willReturn(mockCompetition);
 
-		// when
+	// when
 	//	competitionService.deleteCompetition(competitionId);
 
-		// then
-		// "삭제" 라는 구현이 실제론 setDeleted() 형태로 소프트 딜리트 등을 가정
-		// 별도의 예외가 발생하지 않으면 성공으로 가정
+	// then
+	// "삭제" 라는 구현이 실제론 setDeleted() 형태로 소프트 딜리트 등을 가정
+	// 별도의 예외가 발생하지 않으면 성공으로 가정
 	//	then(competitionRepository).should(times(1)).findById(competitionId);
 	//}
 
@@ -239,7 +235,7 @@ class CompetitionServiceTest {
 		// when
 		CustomBusinessException ex = assertThrows(
 			CustomBusinessException.class,
-			() -> competitionService.deleteCompetition(competitionId)
+			() -> competitionServiceImpl.deleteCompetition(competitionId)
 		);
 
 		// then

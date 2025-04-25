@@ -32,6 +32,9 @@ public class KafkaConfig {
 		props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
 		props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
 
+		// 인터셉터 등록
+		props.put(ProducerConfig.INTERCEPTOR_CLASSES_CONFIG,
+			"com._42195km.msa.common.config.CustomProducerInterceptor");
 		// 추가 튜닝
 		props.put(ProducerConfig.ACKS_CONFIG, "all");                     // 모든 ISR ACK 대기
 		props.put(ProducerConfig.RETRIES_CONFIG, 5);                      // 재시도 5회

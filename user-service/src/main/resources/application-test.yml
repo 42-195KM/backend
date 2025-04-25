@@ -1,0 +1,42 @@
+spring:
+  application:
+    name: user-service
+  config:
+    import:
+      - optional:file:../.env[.properties]
+      - classpath:./properties/datasource.yml
+      - classpath:./properties/jpa.yml
+  kafka:
+    url: ${KAFKA_BOOTSTRAP_SERVERS}
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+    consumer:
+      auto-offset-reset: earliest
+      group-id: user-group
+
+server:
+  port: ${USER_SERVER}
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_SERVER}
+    register-with-eureka: false
+    fetch-registry: false
+    should-unregister-on-shutdown: false
+
+logging:
+  level:
+    root: info
+    com_42195km:
+      msa: debug
+    org:
+      hibernate:
+        SQL: debug
+        type:
+          descriptor:
+            sql:
+              BasicBinder: debug
+      springframework:
+        transaction: debug
+        orm:
+          jpa: debug

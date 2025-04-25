@@ -1,7 +1,7 @@
 package com._42195km.msa.competitionservice.application.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
 import java.util.Collections;
@@ -15,10 +15,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
-import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration;
-import org.springframework.cloud.netflix.eureka.EurekaClientAutoConfiguration;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -41,9 +37,8 @@ import com._42195km.msa.competitionservice.presentation.dto.request.CancelPartic
 @ActiveProfiles("test")
 class ParticipantServiceTest {
 
-
 	@InjectMocks
-	private ParticipantService participantService;
+	private ParticipantServiceImpl participantService;
 
 	@Mock
 	private ParticipantRepositoryImpl participantRepository;
@@ -158,7 +153,8 @@ class ParticipantServiceTest {
 		given(participantMapper.toSearchParticipantAppResponseDto(any())).willReturn(mappedDto);
 
 		// when
-		Page<SearchParticipantAppResponseDto> result = participantService.searchParticipants(keyword, searchType, pageable);
+		Page<SearchParticipantAppResponseDto> result = participantService.searchParticipants(keyword, searchType,
+			pageable);
 
 		// then
 		assertThat(result.getContent()).hasSize(1);
