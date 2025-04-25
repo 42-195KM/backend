@@ -69,7 +69,7 @@ public class KafkaConfig {
 	 * @return
 	 */
 	@Bean
-	public NewTopic RunningRecordTopic() {
+	public NewTopic runningRecordTopic() {
 		return TopicBuilder.name("create-running-record")
 			.partitions(3)
 			.replicas(3)
