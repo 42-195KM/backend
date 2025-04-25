@@ -14,6 +14,7 @@ import com._42195km.msa.competitionservice.application.service.CompetitionServic
 import com._42195km.msa.competitionservice.domain.model.ParticipantDetail;
 import com._42195km.msa.competitionservice.domain.model.SagaState;
 import com._42195km.msa.competitionservice.domain.model.SagaStep;
+import com._42195km.msa.competitionservice.domain.model.SagaStatus;
 import com._42195km.msa.competitionservice.infrastructure.persistence.ParticipantDetailRepositoryImpl;
 import com._42195km.msa.competitionservice.infrastructure.persistence.SagaStateRepository;
 
@@ -70,16 +71,28 @@ public class SagaEventConsumer {
 			case TERMS_AGREEMENT:
 				// 약관 동의 이벤트 처리
 				log.info("Terms agreement processed for saga: {}", event.getSagaId());
+				sagaState.updateTermsAgreed(event.getTermsAgreed());
+				sagaState.markStepAsCompleted(SagaStep.TERMS_AGREEMENT);
+				sagaState.setNextStep(SagaStep.SOUVENIR_SELECTION);
+				sagaStateRepository.saveSagaState(sagaState);
 				saveOrUpdateParticipantDetail(sagaState);
 				break;
 			case SOUVENIR_SELECTION:
 				// 기념품 선택 이벤트 처리
 				log.info("Souvenir selection processed for saga: {}", event.getSagaId());
+				sagaState.updateSouvenirSelection(event.getSouvenirSelection());
+				sagaState.markStepAsCompleted(SagaStep.SOUVENIR_SELECTION);
+				sagaState.setNextStep(SagaStep.SHIPPING_ADDRESS);
+				sagaStateRepository.saveSagaState(sagaState);
 				saveOrUpdateParticipantDetail(sagaState);
 				break;
 			case SHIPPING_ADDRESS:
 				// 배송지 입력 이벤트 처리
 				log.info("Shipping address processed for saga: {}", event.getSagaId());
+				sagaState.updateShippingAddress(event.getShippingAddress());
+				sagaState.markStepAsCompleted(SagaStep.SHIPPING_ADDRESS);
+				sagaState.setNextStep(SagaStep.PAYMENT_INITIATED);
+				sagaStateRepository.saveSagaState(sagaState);
 				saveOrUpdateParticipantDetail(sagaState);
 				break;
 			default:
@@ -100,6 +113,18 @@ public class SagaEventConsumer {
 			case PAYMENT_INITIATED:
 				// 결제 시작 이벤트 처리
 				log.info("Payment initiated for saga: {}", event.getSagaId());
+				// Saga State 업데이트
+				SagaState initiatedState = sagaStateRepository.getSagaState(event.getSagaId());
+				if (initiatedState != null) {
+					initiatedState.updateAmount(event.getAmount());
+					initiatedState.updatePaymentMethod(event.getPaymentMethod());
+					initiatedState.updatePaymentStatus("INITIATED");
+					initiatedState.markStepAsCompleted(SagaStep.PAYMENT_INITIATED);
+					initiatedState.setNextStep(SagaStep.PAYMENT_PROCESSED);
+					sagaStateRepository.saveSagaState(initiatedState);
+				} else {
+					log.error("Saga state not found for payment initiated event: {}", event.getSagaId());
+				}
 				break;
 
 			case PAYMENT_PROCESSED:
@@ -125,18 +150,28 @@ public class SagaEventConsumer {
 				return;
 			}
 
-			// 2. 결제 상태 확인
+			// 2. 결제 정보 업데이트
+			sagaState.updatePaymentStatus(event.getPaymentStatus());
+			sagaState.updatePaymentTransactionId(event.getPaymentTransactionId());
+			sagaState.markStepAsCompleted(SagaStep.PAYMENT_PROCESSED);
+			sagaStateRepository.saveSagaState(sagaState);
+
+			// 3. 결제 상태 확인
 			if (!"SUCCESS".equals(event.getPaymentStatus())) {
 				log.error("Payment not successful for saga: {}", event.getSagaId());
+				sagaState.markAsFailed();
+				sagaStateRepository.saveSagaState(sagaState);
 				return;
 			}
 
-			// 3. 참가 자격 검사 실행
+			// 4. 참가 자격 검사 실행
 			try {
 				// 참가 자격 검사 로직 수행
 				checkEligibilityAndConfirm(sagaState);
 			} catch (Exception e) {
 				log.error("Error during eligibility check: {}", e.getMessage());
+				sagaState.markAsFailed();
+				sagaStateRepository.saveSagaState(sagaState);
 				// 실패 시 보상 트랜잭션 시작 이벤트 발행
 				sendCompensationEvent(event);
 			}
@@ -356,5 +391,4 @@ public class SagaEventConsumer {
 			log.error("Failed to persist ParticipantDetail for saga {}: {}", state.getSagaId(), e.getMessage(), e);
 		}
 	}
-
 }

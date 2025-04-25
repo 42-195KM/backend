@@ -5,6 +5,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 import com._42195km.msa.common.exception.CustomBusinessException;
+import com._42195km.msa.competitionservice.application.context.SagaContextHolder;
 import com._42195km.msa.competitionservice.application.dto.CompleteAppDto;
 import com._42195km.msa.competitionservice.application.exception.CompetitionServiceCode;
 import com._42195km.msa.competitionservice.domain.model.ApplicationStep;
@@ -36,7 +37,6 @@ public class SagaServiceImpl implements SagaService {
 
 	@Override
 	public String findOrCreateSagaId(UUID competitionId, UUID participantId) {
-
 		String sagaId = sagaStateRepository.findActiveSagaId(competitionId, participantId);
 
 		if (sagaId == null) {
@@ -58,75 +58,88 @@ public class SagaServiceImpl implements SagaService {
 
 			// 2. 현재 사가 상태 조회 또는 생성
 			String sagaId = findOrCreateSagaId(requestDto.getCompetitionId(), requestDto.getParticipantId());
-			SagaState sagaState = sagaStateRepository.getSagaState(sagaId);
 
-			// 3. 참가자 조회 또는 생성
-			Participant participant = participantRepository.findByParticipantId(requestDto.getParticipantId());
-			if (participant == null) {
-				participant = new Participant(requestDto.getParticipantId());
-				participantRepository.save(participant);
-			}
+			// 스레드 로컬에 현재 Saga ID 설정
+			SagaContextHolder.setCurrentSagaId(sagaId);
 
-			// 4. 현재 단계 결정 및 데이터 준비
-			ApplicationStep currentStep;
-			Object stepData = null;
-
-			CompetitionParticipantMapping mapping = competition.findParticipantMapping(requestDto.getParticipantId())
-				.orElse(null);
-
-			if (mapping == null) {
-				currentStep = ApplicationStep.TERMS_AGREEMENT;
-				stepData = requestDto.getTermsAgreed();
-			} else {
-				currentStep = mapping.getApplicationStep();
-
-				// 단계별 데이터 설정
-				switch (currentStep) {
-					case TERMS_AGREEMENT:
-						stepData = requestDto.getTermsAgreed();
-						break;
-					case SOUVENIR_SELECTION:
-						stepData = requestDto.getSouvenirSelection();
-						break;
-					case SHIPPING_ADDRESS:
-						stepData = requestDto.getShippingAddress();
-						break;
-					case PAYMENT_PENDING:
-						if (requestDto.getPaymentMethod() != null && requestDto.getPaymentStatus() != null) {
-							stepData = new PaymentInfo(
-								requestDto.getPaymentMethod(),
-								requestDto.getPaymentStatus(),
-								requestDto.getTransactionId()
-							);
-						}
-						break;
+			try {
+				SagaState sagaState = sagaStateRepository.getSagaState(sagaId);
+				if (sagaState == null) {
+					log.error("Saga state not found for ID: {}", sagaId);
+					throw new RuntimeException("Saga state not found");
 				}
+
+				// 3. 참가자 조회 또는 생성
+				Participant participant = participantRepository.findByParticipantId(requestDto.getParticipantId());
+				if (participant == null) {
+					participant = new Participant(requestDto.getParticipantId());
+					participantRepository.save(participant);
+				}
+
+				// 4. 현재 단계 결정 및 데이터 준비
+				ApplicationStep currentStep;
+				Object stepData = null;
+
+				CompetitionParticipantMapping mapping = competition.findParticipantMapping(
+						requestDto.getParticipantId())
+					.orElse(null);
+
+				if (mapping == null) {
+					currentStep = ApplicationStep.TERMS_AGREEMENT;
+					stepData = requestDto.getTermsAgreed();
+				} else {
+					currentStep = mapping.getApplicationStep();
+
+					// 단계별 데이터 설정
+					switch (currentStep) {
+						case TERMS_AGREEMENT:
+							stepData = requestDto.getTermsAgreed();
+							break;
+						case SOUVENIR_SELECTION:
+							stepData = requestDto.getSouvenirSelection();
+							break;
+						case SHIPPING_ADDRESS:
+							stepData = requestDto.getShippingAddress();
+							break;
+						case PAYMENT_PENDING:
+							if (requestDto.getPaymentMethod() != null && requestDto.getPaymentStatus() != null) {
+								stepData = new PaymentInfo(
+									requestDto.getPaymentMethod(),
+									requestDto.getPaymentStatus(),
+									requestDto.getTransactionId()
+								);
+							}
+							break;
+					}
+				}
+
+				// 해당 단계 데이터가 없으면 현재 단계 메시지만 반환
+				if (stepData == null) {
+					// 현재 상태에 따른 메시지 생성
+					return getNextStepMessage(currentStep);
+				}
+
+				// 5. 도메인 모델에서 단계 처리 (이벤트도 발행)
+				competition.processApplicationStep(
+					requestDto.getParticipantId(),
+					participant,
+					currentStep,
+					stepData,
+					eventPublisher // 이벤트 발행자(publisher) 역할
+				);
+
+				// 6. 변경사항 저장
+				competitionRepository.save(competition);
+
+				// 7. 업데이트된 매핑 조회 및 다음 단계 메시지 반환
+				mapping = competition.findParticipantMapping(requestDto.getParticipantId())
+					.orElseThrow(() -> new RuntimeException("매핑을 찾을 수 없습니다"));
+
+				return getNextStepMessage(mapping.getApplicationStep());
+			} finally {
+				// 스레드 로컬 정리
+				SagaContextHolder.clear();
 			}
-
-			// 해당 단계 데이터가 없으면 현재 단계 메시지만 반환
-			if (stepData == null) {
-				// 현재 상태에 따른 메시지 생성
-				return getNextStepMessage(currentStep);
-			}
-
-			// 5. 도메인 모델에서 단계 처리 (이벤트도 발행)
-			competition.processApplicationStep(
-				requestDto.getParticipantId(),
-				participant,
-				currentStep,
-				stepData,
-				eventPublisher // 이벤트 발행자(publisher) 역할
-			);
-
-			// 6. 변경사항 저장
-			competitionRepository.save(competition);
-
-			// 7. 업데이트된 매핑 조회 및 다음 단계 메시지 반환
-			mapping = competition.findParticipantMapping(requestDto.getParticipantId())
-				.orElseThrow(() -> new RuntimeException("매핑을 찾을 수 없습니다"));
-
-			return getNextStepMessage(mapping.getApplicationStep());
-
 		} catch (CustomBusinessException e) {
 			log.error("대회 신청 처리 중 비즈니스 오류 발생: {}", e.getMessage());
 			throw e;
@@ -156,12 +169,13 @@ public class SagaServiceImpl implements SagaService {
 		}
 	}
 
+	@Override
 	public String findActiveSagaId(UUID competitionId, UUID participantId) {
-		String state = sagaStateRepository.findActiveSagaId(competitionId, participantId);
-		if (state == null) {
+		String sagaId = sagaStateRepository.findActiveSagaId(competitionId, participantId);
+		if (sagaId == null) {
 			throw CustomBusinessException.from(CompetitionServiceCode.PARTICIPANT_GET_FAIL);
 		}
-		return state;
+		return sagaId;
 	}
 
 	private String getNextStepMessage(ApplicationStep step) {

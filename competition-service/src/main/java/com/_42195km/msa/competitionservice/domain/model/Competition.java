@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com._42195km.msa.common.BaseEntity;
 import com._42195km.msa.common.exception.CustomBusinessException;
+import com._42195km.msa.competitionservice.application.context.SagaContextHolder;
 import com._42195km.msa.competitionservice.application.dto.request.CreateCompetitionCommandDto;
 import com._42195km.msa.competitionservice.application.dto.request.UpdateCompetitionCommandDto;
 import com._42195km.msa.competitionservice.application.event.ApplicationSagaEvent;
@@ -165,6 +166,7 @@ public class Competition extends BaseEntity {
 		ApplicationStep targetStep,
 		Object stepData,
 		EventPublisher eventPublisher) {
+
 		// 1. 참가자 매핑 조회 또는 생성
 		CompetitionParticipantMapping mapping = findParticipantMapping(participantId)
 			.orElseGet(() -> {
@@ -183,15 +185,18 @@ public class Competition extends BaseEntity {
 			throw CustomBusinessException.from(CompetitionServiceCode.COMPETITION_APPLY_FAIL);
 		}
 
-		// 4. 단계별 처리
+		// 4. ThreadLocal 또는 파라미터를 통해 현재 Saga ID 가져오기
+		String sagaId = SagaContextHolder.getCurrentSagaId();
+
+		// 5. 단계별 처리
 		switch (targetStep) {
 			case TERMS_AGREEMENT:
 				Boolean termsAgreed = (Boolean)stepData;
 				mapping.updateTermsAgreement(termsAgreed);
 				// 이벤트 발행
-				if (eventPublisher != null) {
+				if (eventPublisher != null && sagaId != null) {
 					ApplicationSagaEvent event = ApplicationSagaEvent.createTermsEvent(
-						UUID.randomUUID().toString(), // 새 sagaId 생성 또는 파라미터로 받은 sagaId 사용
+						sagaId, // 기존 sagaId 사용
 						this.id,
 						participantId,
 						termsAgreed,
@@ -205,9 +210,9 @@ public class Competition extends BaseEntity {
 				String souvenirSelection = (String)stepData;
 				mapping.updateSouvenirSelection(souvenirSelection);
 				// 이벤트 발행
-				if (eventPublisher != null) {
+				if (eventPublisher != null && sagaId != null) {
 					ApplicationSagaEvent event = ApplicationSagaEvent.createSouvenirEvent(
-						UUID.randomUUID().toString(), // 새 sagaId 생성 또는 파라미터로 받은 sagaId 사용
+						sagaId, // 기존 sagaId 사용
 						this.id,
 						participantId,
 						souvenirSelection,
@@ -221,10 +226,10 @@ public class Competition extends BaseEntity {
 				String shippingAddress = (String)stepData;
 				mapping.updateShippingAddress(shippingAddress);
 				// 이벤트 발행
-				if (eventPublisher != null) {
+				if (eventPublisher != null && sagaId != null) {
 					// ApplicationSagaEvent 생성 및 발행
 					ApplicationSagaEvent event = ApplicationSagaEvent.createShippingEvent(
-						UUID.randomUUID().toString(), // 새 sagaId 생성 또는 파라미터로 받은 sagaId 사용
+						sagaId, // 기존 sagaId 사용
 						this.id,
 						participantId,
 						shippingAddress,
@@ -251,9 +256,9 @@ public class Competition extends BaseEntity {
 				if ("SUCCESS".equals(paymentInfo.getPaymentStatus())) {
 					mapping.confirmParticipation();
 					// 이벤트 발행
-					if (eventPublisher != null) {
+					if (eventPublisher != null && sagaId != null) {
 						PaymentSagaEvent event = PaymentSagaEvent.createPaymentProcessedEvent(
-							UUID.randomUUID().toString(), // 새 sagaId 생성 또는 파라미터로 받은 sagaId 사용
+							sagaId, // 기존 sagaId 사용
 							this.id,
 							participantId,
 							this.price,

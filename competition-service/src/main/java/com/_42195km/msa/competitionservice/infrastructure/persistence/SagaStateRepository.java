@@ -1,9 +1,9 @@
 package com._42195km.msa.competitionservice.infrastructure.persistence;
 
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -15,17 +15,33 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Repository
-@RequiredArgsConstructor
 public class SagaStateRepository {
 	private final RedisTemplate<String, SagaState> sagaRedisTemplate;
+	private final RedisTemplate<String, String> sagaStringRedisTemplate;
 	private static final String SAGA_KEY_PREFIX = "saga:";
 	private static final long SAGA_TTL_HOURS = 24;
+
+	public SagaStateRepository(
+		RedisTemplate<String, SagaState> sagaRedisTemplate,
+		@Qualifier("sagaStringRedisTemplate") RedisTemplate<String, String> stringRedisTemplate) {
+		this.sagaRedisTemplate = sagaRedisTemplate;
+		this.sagaStringRedisTemplate = stringRedisTemplate;
+	}
 
 	public void saveSagaState(SagaState state) {
 		String key = SAGA_KEY_PREFIX + state.getSagaId();
 		try {
+			// 메인 Saga 상태 저장
 			sagaRedisTemplate.opsForValue().set(key, state);
 			sagaRedisTemplate.expire(key, SAGA_TTL_HOURS, TimeUnit.HOURS);
+
+			// 활성 상태인 경우 인덱스 저장 (문자열 템플릿 사용)
+			if (state.getStatus() == SagaStatus.STARTED || state.getStatus() == SagaStatus.IN_PROGRESS) {
+				String indexKey = "sagaIndex:" + state.getCompetitionId() + ":" + state.getParticipantId();
+				sagaStringRedisTemplate.opsForValue().set(indexKey, state.getSagaId());
+				sagaStringRedisTemplate.expire(indexKey, SAGA_TTL_HOURS, TimeUnit.HOURS);
+			}
+
 			log.info("Saved saga state with ID: {}", state.getSagaId());
 		} catch (Exception e) {
 			log.error("Error saving saga state: {}", e.getMessage(), e);
@@ -65,22 +81,19 @@ public class SagaStateRepository {
 	 * @return
 	 */
 	public String findActiveSagaId(UUID competitionId, UUID participantId) {
-		// Redis에서 일치하는 모든 키 조회
-		Set<String> keys = sagaRedisTemplate.keys(SAGA_KEY_PREFIX + "*");
+		String lookupKey = "sagaIndex:" + competitionId + ":" + participantId;
+		String sagaId = sagaStringRedisTemplate.opsForValue().get(lookupKey);
 
-		if (keys == null || keys.isEmpty()) {
-			return null;
-		}
-
-		// 각 키에 대해 SagaState 조회 및 비교
-		for (String key : keys) {
-			SagaState state = sagaRedisTemplate.opsForValue().get(key);
+		if (sagaId != null) {
+			// Saga 상태 유효성 검증
+			SagaState state = getSagaState(sagaId);
 			if (state != null &&
-				competitionId.equals(state.getCompetitionId()) &&
-				participantId.equals(state.getParticipantId()) &&
 				(state.getStatus() == SagaStatus.STARTED || state.getStatus() == SagaStatus.IN_PROGRESS)) {
-				return state.getSagaId();
+				return sagaId;
 			}
+
+			// 인덱스는 있지만 상태가 활성이 아니거나 없는 경우, 인덱스 제거
+			sagaStringRedisTemplate.delete(lookupKey);
 		}
 
 		return null;
