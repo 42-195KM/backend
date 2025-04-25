@@ -24,7 +24,6 @@ import com._42195km.msa.competitionservice.presentation.dto.request.CancelPartic
 
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.Timer;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -144,6 +143,13 @@ public class CompetitionApplicationFacade {
 			// 세션 저장
 			sessionRepository.saveSession(session);
 
+			log.debug("Session state after processing: termsAgreedTime={}, souvenirSelectedTime={}, shippingEnteredTime={}, paymentCompletedTime={}, completedTime={}",
+				session.getTermsAgreedTime(),
+				session.getSouvenirSelectedTime(),
+				session.getShippingEnteredTime(),
+				session.getPaymentCompletedTime(),
+				session.getCompletedTime());
+
 			return response;
 		} catch (Exception e) {
 			// 실패 처리
@@ -175,7 +181,8 @@ public class CompetitionApplicationFacade {
 		return participantService.getParticipants(pageable, competitionId);
 	}
 
-	public Page<SearchParticipantAppResponseDto> searchParticipants(String keyword, String searchType, Pageable pageable) {
+	public Page<SearchParticipantAppResponseDto> searchParticipants(String keyword, String searchType,
+		Pageable pageable) {
 		return participantService.searchParticipants(keyword, searchType, pageable);
 	}
 
@@ -193,10 +200,14 @@ public class CompetitionApplicationFacade {
 
 	// 현재 단계 결정 메서드
 	private ApplicationStep determineCurrentStep(CompleteAppDto appDto) {
-		if (appDto.getTermsAgreed() != null) return ApplicationStep.TERMS_AGREEMENT;
-		if (appDto.getSouvenirSelection() != null) return ApplicationStep.SOUVENIR_SELECTION;
-		if (appDto.getShippingAddress() != null) return ApplicationStep.SHIPPING_ADDRESS;
-		if (appDto.getPaymentMethod() != null) return ApplicationStep.PAYMENT_PENDING;
+		if (appDto.getTermsAgreed() != null)
+			return ApplicationStep.TERMS_AGREEMENT;
+		if (appDto.getSouvenirSelection() != null)
+			return ApplicationStep.SOUVENIR_SELECTION;
+		if (appDto.getShippingAddress() != null)
+			return ApplicationStep.SHIPPING_ADDRESS;
+		if (appDto.getPaymentMethod() != null)
+			return ApplicationStep.PAYMENT_PENDING;
 		if (appDto.getPaymentStatus() != null && appDto.getTransactionId() != null)
 			return ApplicationStep.PAYMENT_COMPLETED;
 		return ApplicationStep.TERMS_AGREEMENT;
@@ -205,55 +216,67 @@ public class CompetitionApplicationFacade {
 	// 세션 업데이트 및 메트릭 기록 메서드
 	private void updateSessionAndMetrics(ApplicationSession session, ApplicationStep currentStep,
 		CompleteAppDto appDto, String response) {
-		switch (currentStep) {
-			case TERMS_AGREEMENT:
-				if (appDto.getTermsAgreed() != null && appDto.getTermsAgreed()) {
-					session.completeTermsAgreement();
-					termsAgreementCounter.increment();
-					termsStepTimeTimer.record(session.getTermsStepTimeMillis(), TimeUnit.MILLISECONDS);
-					log.info("약관 동의 단계 완료: sessionId={}, 소요시간={}ms",
-						session.getSessionId(), session.getTermsStepTimeMillis());
-				}
-				break;
 
-			case SOUVENIR_SELECTION:
-				if (appDto.getSouvenirSelection() != null) {
+		// 세션에 단계별 데이터 확인 및 업데이트를 순차적으로 진행
+
+		// 1. 약관 동의 단계 (항상 처음부터 확인)
+		if (appDto.getTermsAgreed() != null && appDto.getTermsAgreed()) {
+			if (session.getTermsAgreedTime() == null) {
+				session.completeTermsAgreement();
+				termsAgreementCounter.increment();
+				termsStepTimeTimer.record(session.getTermsStepTimeMillis(), TimeUnit.MILLISECONDS);
+				log.info("약관 동의 단계 완료: sessionId={}, 소요시간={}ms",
+					session.getSessionId(), session.getTermsStepTimeMillis());
+			}
+
+			// 2. 약관 동의가 완료된 후에만 기념품 선택 단계 처리
+			if (appDto.getSouvenirSelection() != null && session.getTermsAgreedTime() != null) {
+				if (session.getSouvenirSelectedTime() == null) {
 					session.completeSouvenirSelection();
 					souvenirSelectionCounter.increment();
 					souvenirStepTimeTimer.record(session.getSouvenirStepTimeMillis(), TimeUnit.MILLISECONDS);
 					log.info("기념품 선택 단계 완료: sessionId={}, 소요시간={}ms",
 						session.getSessionId(), session.getSouvenirStepTimeMillis());
 				}
-				break;
 
-			case SHIPPING_ADDRESS:
-				if (appDto.getShippingAddress() != null) {
-					session.completeShippingAddress();
-					shippingAddressCounter.increment();
-					shippingStepTimeTimer.record(session.getShippingStepTimeMillis(), TimeUnit.MILLISECONDS);
-					log.info("배송지 입력 단계 완료: sessionId={}, 소요시간={}ms",
-						session.getSessionId(), session.getShippingStepTimeMillis());
+				// 3. 기념품 선택이 완료된 후에만 배송지 입력 단계 처리
+				if (appDto.getShippingAddress() != null && session.getSouvenirSelectedTime() != null) {
+					if (session.getShippingEnteredTime() == null) {
+						session.completeShippingAddress();
+						shippingAddressCounter.increment();
+						shippingStepTimeTimer.record(session.getShippingStepTimeMillis(), TimeUnit.MILLISECONDS);
+						log.info("배송지 입력 단계 완료: sessionId={}, 소요시간={}ms",
+							session.getSessionId(), session.getShippingStepTimeMillis());
+					}
+
+					// 4. 배송지 입력이 완료된 후에만 결제 완료 단계 처리
+					if (appDto.getPaymentStatus() != null && "SUCCESS".equals(appDto.getPaymentStatus())
+						&& session.getShippingEnteredTime() != null) {
+						if (session.getPaymentCompletedTime() == null) {
+							session.completePayment();
+							paymentCounter.increment();
+							paymentStepTimeTimer.record(session.getPaymentStepTimeMillis(), TimeUnit.MILLISECONDS);
+
+							// 모든 단계가 완료되었는지 확인하여 신청 완료 처리
+							if (isAllStepsCompleted(session)) {
+								session.complete();
+								applicationCompleteCounter.increment();
+								applicationTotalTimeTimer.record(session.getTotalTimeMillis(), TimeUnit.MILLISECONDS);
+								log.info("대회 신청 프로세스 완료: sessionId={}, 총 소요시간={}ms",
+									session.getSessionId(), session.getTotalTimeMillis());
+							}
+						}
+					}
 				}
-				break;
-
-			case PAYMENT_COMPLETED:
-				if (appDto.getPaymentStatus() != null && "SUCCESS".equals(appDto.getPaymentStatus())) {
-					session.completePayment();
-					paymentCounter.increment();
-					paymentStepTimeTimer.record(session.getPaymentStepTimeMillis(), TimeUnit.MILLISECONDS);
-
-					// 신청 완료 처리 - 결제 성공 시 전체 프로세스가 완료됨
-					session.complete();
-					applicationCompleteCounter.increment();
-					applicationTotalTimeTimer.record(session.getTotalTimeMillis(), TimeUnit.MILLISECONDS);
-
-					log.info("대회 신청 프로세스 완료: sessionId={}, 총 소요시간={}ms",
-						session.getSessionId(), session.getTotalTimeMillis());
-				}
-				break;
-
-			default:
-				break;
+			}
 		}
+	}
+
+	// 모든 필수 단계가 완료되었는지 확인하는 헬퍼 메서드
+	private boolean isAllStepsCompleted(ApplicationSession session) {
+		return session.getTermsAgreedTime() != null &&
+			session.getSouvenirSelectedTime() != null &&
+			session.getShippingEnteredTime() != null &&
+			session.getPaymentCompletedTime() != null;
 	}
 }
