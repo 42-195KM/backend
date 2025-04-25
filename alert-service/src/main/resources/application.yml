@@ -33,6 +33,22 @@ spring:
 slack:
   token: ${SLACK_BOT_TOKEN}
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+    prometheus:
+      enabled: true
+  metrics:
+    tags:
+      application: alert-service
+
+
+
 eureka:
   client:
     service-url:
