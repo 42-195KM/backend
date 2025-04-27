@@ -49,6 +49,17 @@ dependencies {
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 
     implementation project(':common')
+
+    // monitoring
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'com.github.loki4j:loki-logback-appender:1.5.1'
+    implementation 'io.micrometer:micrometer-observation'
+    implementation 'io.micrometer:micrometer-tracing'
+    implementation 'io.micrometer:micrometer-tracing-bridge-brave'
+    implementation 'io.micrometer:micrometer-registry-prometheus'
+    implementation 'io.zipkin.reporter2:zipkin-sender-urlconnection'
+    implementation 'io.zipkin.reporter2:zipkin-reporter-brave'
+    runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
 }
 
 dependencyManagement {
