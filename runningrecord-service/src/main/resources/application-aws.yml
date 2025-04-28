@@ -51,3 +51,15 @@ eureka:
   client:
     service-url:
       defaultZone: ${EUREKA_SERVER}
+
+management:
+  endpoint:
+    health:
+      show-details: always
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  metrics:
+    tags:
+      application: runningrecord-service

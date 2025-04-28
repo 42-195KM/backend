@@ -101,7 +101,7 @@ services:
     image: grafana/grafana:latest
     container_name: grafana
     ports:
-      - "3000:3000"
+      - "7770:3000"
     networks:
       - app_network
 
@@ -109,13 +109,23 @@ services:
     container_name: loki
     image: grafana/loki:2.9.2
     ports:
-      - "3100:3100"
+      - "7771:3100"
     volumes:
       - ./loki/config.yaml:/etc/loki/config.yaml
     command: -config.file=/etc/loki/config.yaml
     networks:
       - app_network
 
+  kafka-exporter:
+    image: danielqsj/kafka-exporter:latest
+    ports:
+      - "9308:9308"
+    command: [ "--kafka.server=kafka:29092" ]
+    depends_on:
+      - kafka
+    restart: unless-stopped
+    networks:
+      - app_network
 networks:
   app_network:
     driver: bridge

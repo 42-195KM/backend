@@ -13,6 +13,30 @@ scrape_configs:
     static_configs:
       - targets: ['host.docker.internal:19006']
 
+  - job_name: 'chatbot-service'
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 5s
+    static_configs:
+      - targets: [ 'host.docker.internal:19012' ]
+
+  - job_name: 'alert-service'
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 5s
+    static_configs:
+      - targets: [ 'host.docker.internal:19015' ]
+
+  - job_name: 'achievement-service'
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 5s
+    static_configs:
+      - targets: [ 'host.docker.internal:19018' ]
+
+  - job_name: 'runningrecord-service'
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 5s
+    static_configs:
+      - targets: [ 'host.docker.internal:19021' ]
+
   - job_name: 'zipkin'
     scrape_interval: 5s
     metrics_path: '/prometheus'
@@ -22,3 +46,10 @@ scrape_configs:
   - job_name: 'redis'
     static_configs:
       - targets: ['redis:6379']
+
+  - job_name: 'kafka'
+    static_configs:
+      - targets: [ 'kafka-exporter:9308' ]
+
+
+
