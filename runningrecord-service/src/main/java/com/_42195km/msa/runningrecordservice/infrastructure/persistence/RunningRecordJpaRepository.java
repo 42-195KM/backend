@@ -13,6 +13,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com._42195km.msa.runningrecordservice.domain.model.RunningRecord;
+import com._42195km.msa.runningrecordservice.domain.model.RunningRecordStats;
 import com._42195km.msa.runningrecordservice.domain.repository.RunningRecordRepository;
 
 @Repository
@@ -36,5 +37,14 @@ public interface RunningRecordJpaRepository extends RunningRecordRepository, Jpa
 		Pageable pageable);
 
 	@Override
-	List<RunningRecord> findByUserId(UUID userId);
+	@Query(value = """
+      SELECT
+        COALESCE(SUM(distance),0)	AS totalDistance,
+        COALESCE(SUM(timer),0)		AS totalTimerSeconds,
+        COALESCE(AVG(pace),0)		AS avgPace
+      FROM p_running_record
+      WHERE user_id   = :userId
+        AND is_deleted = false
+      """, nativeQuery = true)
+	RunningRecordStats findUserStatsByUserId(UUID userId);
 }
