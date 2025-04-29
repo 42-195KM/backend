@@ -5,15 +5,19 @@ WORKDIR /workspace/app
 COPY settings.gradle .
 COPY gradlew .
 COPY gradle gradle
-COPY gateway/build.gradle gateway/
-COPY gateway/src gateway/src
+COPY alert-service/build.gradle alert-service/
+COPY alert-service/src alert-service/src
+COPY common/build.gradle common/
+COPY common/src common/src
 
-RUN chmod +x gradlew
-RUN ./gradlew :gateway:bootJar
+RUN chmod +x ./gradlew
+RUN ./gradlew :alert-service:bootJar -x test
 
 FROM eclipse-temurin:17-jre
 WORKDIR /app
-COPY --from=build /workspace/app/gateway/build/libs/*.jar app.jar
+COPY --from=build /workspace/app/alert-service/build/libs/*.jar app.jar
 
 RUN apt-get update && apt-get install -y curl
 ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=aws" ,"app.jar"]
+
+
