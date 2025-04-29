@@ -51,6 +51,9 @@ eureka:
   client:
     service-url:
       defaultZone: ${EUREKA_SERVER}
+  instance:
+    non-secure-port: ${RUNNING_RECORD_SERVER}
+<<<<<<< Updated upstream
 
 management:
   endpoint:
@@ -63,3 +66,5 @@ management:
   metrics:
     tags:
       application: runningrecord-service
+=======
+>>>>>>> Stashed changes

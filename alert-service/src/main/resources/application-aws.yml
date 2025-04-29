@@ -4,9 +4,6 @@ server:
 spring:
   application:
     name: alert-service
-  config:
-    activate:
-      on-profile: aws
 
   datasource:
     url: ${DB_ALERT_URL}
@@ -35,3 +32,5 @@ eureka:
   client:
     service-url:
       defaultZone: ${EUREKA_SERVER}
+  instance:
+    non-secure-port: ${ALERT_SERVER}

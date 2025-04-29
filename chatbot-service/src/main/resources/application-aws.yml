@@ -4,9 +4,6 @@ server:
 spring:
   application:
     name: chatbot-service
-  config:
-    activate:
-      on-profile: aws
 
   datasource:
     url: ${DB_CHATBOT_URL}
@@ -51,3 +48,5 @@ eureka:
   client:
     service-url:
       defaultZone: ${EUREKA_SERVER}
+  instance:
+    non-secure-port: ${CHATBOT_SERVER}

@@ -57,3 +57,5 @@ eureka:
   client:
     service-url:
       defaultZone: ${EUREKA_SERVER}
+  instance:
+      non-secure-port: ${ACHIEVEMENT_SERVER}
