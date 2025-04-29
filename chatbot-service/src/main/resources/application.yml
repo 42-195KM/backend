@@ -48,6 +48,22 @@ spring:
             options:
               model: text-embedding-004
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+    prometheus:
+      enabled: true
+  metrics:
+    tags:
+      application: chatbot-service
+
+
+
 eureka:
   client:
     service-url:

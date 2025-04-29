@@ -1,19 +1,18 @@
 
-server:
-  port: ${ALERT_SERVER}
 
 spring:
   application:
     name: alert-service
   config:
     activate:
-      on-profile: dev
+      on-profile: test
     import: optional:file:.env[.properties]
 
   datasource:
-    url: ${DB_ALERT_URL}
-    username: ${DB_ALERT_USERNAME}
-    password: ${DB_ALERT_PASSWORD}
+    url: jdbc:h2:mem:testdb  # 임시 메모리 DB
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
   jpa:
     hibernate:
       ddl-auto: update
@@ -32,22 +31,6 @@ spring:
 
 slack:
   token: ${SLACK_BOT_TOKEN}
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
-  endpoint:
-    health:
-      show-details: always
-    prometheus:
-      enabled: true
-  metrics:
-    tags:
-      application: alert-service
-
-
 
 eureka:
   client:

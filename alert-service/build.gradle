@@ -34,6 +34,11 @@ dependencies {
 	implementation("org.glassfish.tyrus.bundles:tyrus-standalone-client:1.20")
 	implementation("org.slf4j:slf4j-simple:1.7.36")
 
+	// Prometheus
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'io.micrometer:micrometer-registry-prometheus'
+	runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
+
 	implementation project(':common')
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -47,6 +52,8 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.kafka:spring-kafka-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	testImplementation 'com.h2database:h2'
+	runtimeOnly 'com.h2database:h2'
 }
 
 dependencyManagement {

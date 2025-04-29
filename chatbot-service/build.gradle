@@ -40,9 +40,15 @@ dependencies {
     implementation platform("org.springframework.ai:spring-ai-bom:1.0.0-SNAPSHOT")
     implementation 'org.springframework.ai:spring-ai-starter-vector-store-pgvector'
 
+    // Prometheus
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'io.micrometer:micrometer-registry-prometheus'
+    runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
 
+    // Eureka
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 
+    //swagger
     implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5"
 
     //QueryDSL
