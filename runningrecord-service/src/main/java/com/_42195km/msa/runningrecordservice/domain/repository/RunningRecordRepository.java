@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com._42195km.msa.runningrecordservice.domain.model.RunningRecord;
+import com._42195km.msa.runningrecordservice.domain.model.RunningRecordStats;
 
 public interface RunningRecordRepository {
 	RunningRecord save(RunningRecord runningRecord);
@@ -16,4 +17,5 @@ public interface RunningRecordRepository {
 	Page<RunningRecord> findAll(Pageable pageable);
 	Page<RunningRecord> searchByUserId(UUID userId, LocalDateTime createdAt, Pageable pageable);
 	List<RunningRecord> findByUserId(UUID userId);
+	RunningRecordStats findUserStatsByUserId(UUID userId);
 }

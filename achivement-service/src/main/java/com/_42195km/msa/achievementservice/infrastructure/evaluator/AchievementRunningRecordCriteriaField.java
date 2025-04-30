@@ -13,10 +13,10 @@ import lombok.Getter;
 public enum AchievementRunningRecordCriteriaField {
 	DISTANCE("distance", RunningRecordEventDto::getDistance),
 	PACE("pace", RunningRecordEventDto::getPace),
-	TOTAL_DISTANCE("totalDistance", RunningRecordEventDto::getTotalDistance),
+	TOTAL_DISTANCE("total_distance", RunningRecordEventDto::getTotalDistance),
 	AVG_PACE("avgPace", RunningRecordEventDto::getAvgPace),
 	TIMER("timer", dto -> toSeconds(dto.getTimer())),
-	TOTAL_DURATION("totalTimer", dto -> toSeconds(dto.getTotalTimer()));
+	TOTAL_DURATION("total_timer", dto -> toSeconds(dto.getTotalTimer()));
 
 	@Getter
 	private final String key;
