@@ -90,7 +90,7 @@ jobs:
     if: ${{ needs.changes.outputs.changed_service_matrix != '{"service":[]}' }}
     strategy:
       matrix:
-        service: ${{ fromJSON(needs.changes.outputs.changed_service_matrix.service) }}
+        service: ${{ fromJSON(needs.changes.outputs.changed_service_matrix).service }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
