@@ -80,16 +80,17 @@ jobs:
           EOF
           )
           # 콤마 정리 및 빈 라인 제거
-          services=$(echo "$changes" | jq -c 'del(.[] | select(. == null or . == "")) | {"include": .}')
+          services=$(echo "$changes" | jq -c 'del(.[] | select(. == null or . == ""service": .}')
           echo "matrix=$services" >> $GITHUB_OUTPUT
   
 
   deploy:
     needs: changes
     runs-on: ubuntu-latest
-    if: ${{ needs.changes.outputs.changed_service_matrix != '{"include":[]}' }}
+    if: ${{ needs.changes.outputs.changed_service_matrixservice":[]}' }}
     strategy:
-      matrix: ${{ fromJSON(needs.changes.outputs.changed_service_matrix) }}
+      matrix:
+        service: ${{ fromJSON(needs.changes.outputs.changed_service_service) }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -110,10 +111,10 @@ jobs:
         id: build-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: ${{ env.ECR_REPO_PREFIX }}/${{ matrix.include }}
+          ECR_REPOSITORY: ${{ env.ECR_REPO_PREFIX }}/${{ service }}
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f ./{{matrix.include}}/Dockerfile .
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f ./{{service}}/Dockerfile .
           docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:$latest
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
@@ -121,23 +122,23 @@ jobs:
 
       - name: Download Task Definition
         run: |
-          aws ecs describe-task-definition --task-definition ${{ matrix.include }}-task-definition \
-          --query taskDefinition > ${{ matrix.include }}-task-definition.json 
+          aws ecs describe-task-definition --task-definition ${{ service }}-task-definition \
+          --query taskDefinition > ${{ service }}-task-definition.json 
 
       - name: Fill in the new image ID in the Amazon ECS task definition
         id: task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          task-definition: ${{ matrix.include }}-task-definition.json
-          container-name: ${{ matrix.include }}
+          task-definition: ${{ service }}-task-definition.json
+          container-name: ${{ service }}
           image: ${{ steps.build-image.outputs.image }}
 
       - name: Deploy to Amazon ECS
         uses: aws-actions/amazon-ecs-deploy-task-definition@v2
-        if: ${{ matrix.include != 'gateway' }}
+        if: ${{ service != 'gateway' }}
         with:
           task-definition: ${{ steps.task-def.outputs.task-definition }}
-          service: ${{ matrix.include }}
+          service: ${{ service }}
           cluster: ${{ env.ECS_CLUSTER }}
           wait-for-service-stability: true
 
