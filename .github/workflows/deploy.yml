@@ -81,6 +81,7 @@ jobs:
           )
           # 콤마 정리 및 빈 라인 제거
           services=$(echo "$changes" | jq -c 'del(.[] | select(. == null or . == "")) | {"service": .}')
+          echo "변경된 서비스 감지 : $services"
           echo "matrix=$services" >> $GITHUB_OUTPUT
   
 
@@ -121,15 +122,21 @@ jobs:
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
       - name: Download Task Definition
+        id: download-task-def
         run: |
-          aws ecs describe-task-definition --task-definition ${{ matrix.service }}-task-definition \
-          --query taskDefinition > ${{ matrix.service }}-task-definition.json 
+          TASK_DEF_ARN=$(aws ecs describe-services \ 
+          --cluster $ECS_CLUSTER \
+          --services ${{ matrix.service }} \ 
+          --query 'services[0].taskDefinition' \ 
+          --output text --no-paginate)
+          aws ecs describe-task-definition --task-definition $TASK_DEF_ARN --query 'taskDefinition' > ${{ matrix.service }}-task-definition.json  
+          echo "task_def_file=${{ matrix.service }}-task-definition.json" >> $GITHUB_OUTPUT
 
       - name: Fill in the new image ID in the Amazon ECS task definition
         id: task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          task-definition: ${{ matrix.service }}-task-definition.json
+          task-definition: ${{ steps.download-task-def.outputs.task_def_file }}
           container-name: ${{ matrix.service }}
           image: ${{ steps.build-image.outputs.image }}
 
