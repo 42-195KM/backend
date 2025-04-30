@@ -24,7 +24,7 @@ jobs:
         id: filter
         uses: dorny/paths-filter@v3
         with:
-          base:
+          base: 'release'
           filters: |
             achivement-service:
               - 'achivement-service/**'
