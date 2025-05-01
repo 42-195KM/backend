@@ -5,6 +5,11 @@ on:
     branches:
       - release
   workflow_dispatch:
+    inputs:
+      service_to_deploy_manually:
+        description: 'Service to deploy manually'
+        required: true
+        type: string
 
 env:
   AWS_REGION: ap-northeast-2
@@ -14,6 +19,7 @@ env:
 jobs:
   changes:
     runs-on: ubuntu-latest
+    if: github.event_name == 'push'
     outputs:
       changed_service_matrix: ${{ steps.services.outputs.matrix }}
     steps:
@@ -88,10 +94,10 @@ jobs:
   deploy:
     needs: changes
     runs-on: ubuntu-latest
-    if: ${{ needs.changes.outputs.changed_service_matrix != '{"service":[]}' }}
+    if: ${{ github.event_name == 'push' && needs.changes.outputs.changed_service_matrix != '{"service":[]}' || github.event_name == 'workflow_dispatch'}}
     strategy:
       matrix:
-        service: ${{ fromJSON(needs.changes.outputs.changed_service_matrix).service }}
+        service: ${{github.event_name == 'push' && fromJson(needs.changes.outputs.changed_service_matrix).service || fromJson(format('{{"service":[{0}]}}', github.event_name == 'workflow_dispatch' && github.event.inputs))}}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
