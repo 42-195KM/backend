@@ -34,16 +34,13 @@
 
 
 # 🛠 설계도
+
+* DDD 설계
+![DDD구조](https://github.com/user-attachments/assets/2ca4e242-c2e6-4a07-a9f8-868c565d4ec6)
+
+
 * 프로젝트 인프라 구조
-</aside>
-
 ![시스템 아키텍쳐](https://github.com/user-attachments/assets/5b14e9ef-1d2e-4763-b020-c9f2236c7415)
-
-<aside>
-
-* 카프카 사용 흐름도
-
-![42195-kafka](https://github.com/user-attachments/assets/aba4ea67-bde4-44fa-bbcb-549dfcd6d239)
 
 
 # 🔍 주요 기능
@@ -107,8 +104,6 @@
 
 </aside>
 
-`기술과 함께, 해당 기술을 선택한 근거/목적을 함께 작성해주세요.`
-
 | 카테고리 | 기술 | 버전 | 근거/ 목적 |
 | --- | --- | --- | --- |
 | 언어 | Java | 17 | LTS 지원 최신 언어 |
@@ -136,22 +131,25 @@
 
 # 👥 기술적 의사결정
 
-</aside>
-
-- ## Kafka 도입
+> 👥 [이벤트 기반 처리 적용](https://github.com/42-195KM/backend/wiki/%5B%EA%B8%B0%EC%88%A0%EC%A0%81-%EC%9D%98%EC%82%AC%EA%B2%B0%EC%A0%95%5D-%EC%9D%B4%EB%B2%A4%ED%8A%B8-%EA%B8%B0%EB%B0%98-%EC%B2%98%EB%A6%AC-%EC%A0%81%EC%9A%A9)  
+> Kafka를 선택한 이유
   
-- ## Redis 도입
-
-<aside>
+> 👥 [중간 상태 저장](https://github.com/42-195KM/backend/wiki/%5B%EA%B8%B0%EC%88%A0%EC%A0%81-%EC%9D%98%EC%82%AC%EA%B2%B0%EC%A0%95%5D-%EC%A4%91%EA%B0%84-%EC%83%81%ED%83%9C-%EC%A0%80%EC%9E%A5)  
+> Redis 를 선택한 이유
 
 
 # 🔬 트러블슈팅
 
 </aside>
 
-- ## Running-Record 생성 API 처리량 개선
-- ## AWS 환경에 배포 후 Spring Cloud Gateway 가 Eureka Client 를 찾지 못하는 문제
-- ## 사용자 / 인증인가 서버분리와 게이트웨이 순환참조 오류
+> 🔬 [Running-Record 생성 API 처리량 개선](https://github.com/42-195KM/backend/wiki/%5BTroubleshooting%5D-Running%E2%80%90Record-%EC%B2%98%EB%A6%AC%EB%9F%89-%EA%B0%9C%EC%84%A0)  
+> RunningRecord 생성 API의 성능 병목 원인 분석 및 처리량 개선 과정
+
+> 🔬 [AWS 환경에 배포 후 Spring Cloud Gateway 가 Eureka Client 를 찾지 못하는 문제](https://github.com/42-195KM/backend/wiki/%5BTroubleshooting%5D-AWS-ECS%EC%97%90%EC%84%9C-Eureka-%EB%93%B1%EB%A1%9D-%EC%8B%9C-IP-%EC%84%A4%EC%A0%95-%EB%AC%B8%EC%A0%9C)  
+> ECS에서 컨테이너가 잘못된 IP로 Eureka에 등록되는 문제 분석 및 해결
+
+> 🔬 [사용자 인증인가 서버분리와 게이트웨이 순환참조 오류](https://github.com/42-195KM/backend/wiki/%5BTroubleshooting%5D-%EC%82%AC%EC%9A%A9%EC%9E%90---%EC%9D%B8%EC%A6%9D%EC%9D%B8%EA%B0%80-%EC%84%9C%EB%B2%84%EB%B6%84%EB%A6%AC%EC%99%80-%EA%B2%8C%EC%9D%B4%ED%8A%B8%EC%9B%A8%EC%9D%B4-%EC%88%9C%ED%99%98%EC%B0%B8%EC%A1%B0-%EC%98%A4%EB%A5%98)
+>  FeignClient 빈 생성 전에 GatewayFilter가 먼저 주입을 요구하면서 서로 참조하는 구조 개선
 
 <aside>
 
