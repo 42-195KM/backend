@@ -65,30 +65,36 @@ jobs:
             user-service:
               - 'user-service/**'
               - 'common/**'
+            userrecapt-service:
+              - 'userrecap-service/**'
+              - 'common/**'
 
       - name: set changed services
         id: services
         run: |
-          changes=$(cat << EOF
-          [
-            $([ "${{ steps.filter.outputs.achivement-service }}" == 'true' ] && echo '"achivement-service",' || echo '')
-            $([ "${{ steps.filter.outputs.alert-service }}" == 'true' ] && echo '"alert-service",' || echo '')
-            $([ "${{ steps.filter.outputs.auth-service }}" == 'true' ] && echo '"auth-service",' || echo '')
-            $([ "${{ steps.filter.outputs.chatbot-service }}" == 'true' ] && echo '"chatbot-service",' || echo '')
-            $([ "${{ steps.filter.outputs.competition-service }}" == 'true' ] && echo '"competition-service",' || echo '')
-            $([ "${{ steps.filter.outputs.crew-service }}" == 'true' ] && echo '"crew-service",' || echo '')
-            $([ "${{ steps.filter.outputs.gateway }}" == 'true' ] && echo '"gateway",' || echo '')
-            $([ "${{ steps.filter.outputs.ranking-service }}" == 'true' ] && echo '"ranking-service",' || echo '')
-            $([ "${{ steps.filter.outputs.runningrecord-service }}" == 'true' ] && echo '"runningrecord-service",' || echo '')
-            $([ "${{ steps.filter.outputs.server }}" == 'true' ] && echo '"server",' || echo '')
-            $([ "${{ steps.filter.outputs.user-service }}" == 'true' ] && echo '"user-service"' || echo '')
-          ]
-          EOF
-          )
-          # 콤마 정리 및 빈 라인 제거
-          services=$(echo "$changes" | jq -c 'del(.[] | select(. == null or . == "")) | {"service": .}')
-          echo "변경된 서비스 감지 : $services"
-          echo "matrix=$services" >> $GITHUB_OUTPUT
+              services=()
+
+              [[ "${{ steps.filter.outputs.achivement-service }}" == 'true' ]] && services+=("achivement-service")
+              [[ "${{ steps.filter.outputs.alert-service }}" == 'true' ]] && services+=("alert-service")
+              [[ "${{ steps.filter.outputs.auth-service }}" == 'true' ]] && services+=("auth-service")
+              [[ "${{ steps.filter.outputs.chatbot-service }}" == 'true' ]] && services+=("chatbot-service")
+              [[ "${{ steps.filter.outputs.competition-service }}" == 'true' ]] && services+=("competition-service")
+              [[ "${{ steps.filter.outputs.crew-service }}" == 'true' ]] && services+=("crew-service")
+              [[ "${{ steps.filter.outputs.gateway }}" == 'true' ]] && services+=("gateway")
+              [[ "${{ steps.filter.outputs.ranking-service }}" == 'true' ]] && services+=("ranking-service")
+              [[ "${{ steps.filter.outputs.runningrecord-service }}" == 'true' ]] && services+=("runningrecord-service")
+              [[ "${{ steps.filter.outputs.server }}" == 'true' ]] && services+=("server")
+              [[ "${{ steps.filter.outputs.user-service }}" == 'true' ]] && services+=("user-service")
+              [[ "${{ steps.filter.outputs.userrecapt-service }}" == 'true' ]] && services+=("userrecap-service")
+
+              if [ ${#services[@]} -eq 0 ]; then
+                services_json='{"service":[]}'
+              else
+                services_json=$(printf '%s\n' "${services[@]}" | jq -R . | jq -sc '{"service": .}')
+              fi
+
+              echo "변경된 서비스 감지: $services_json"
+              echo "matrix=$services_json" >> $GITHUB_OUTPUT
   
 
   deploy:
