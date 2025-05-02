@@ -1,6 +1,7 @@
 package com._42195km.msa.userrecapservice.application.dto.client;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import lombok.Builder;
@@ -11,6 +12,7 @@ public record GetRunningRecordAppResponseDto(
 	UUID userId,
 	double distance,
 	double pace,
-	Duration duration
+	Duration duration,
+	LocalDateTime createdAt
 ) {
 }

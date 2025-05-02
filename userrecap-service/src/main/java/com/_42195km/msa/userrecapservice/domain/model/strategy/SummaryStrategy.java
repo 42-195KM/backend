@@ -1,11 +1,12 @@
 package com._42195km.msa.userrecapservice.domain.model.strategy;
 
 import java.util.List;
-import java.util.function.ToDoubleFunction;
 
-public interface SummaryStrategy {
-	Double summary(List<Double> data);
+import com._42195km.msa.userrecapservice.domain.model.DataFormat;
 
-	Double calculatePercentile(List<Double> data, Double userValue);
+public interface SummaryStrategy<T> {
+	Double summary(DataFormat<T> df);
+
+	Double calculatePercentile(List<T> distribution, T userValue);
 
 }

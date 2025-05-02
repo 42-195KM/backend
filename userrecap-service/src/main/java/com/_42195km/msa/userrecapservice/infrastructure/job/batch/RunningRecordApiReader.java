@@ -1,6 +1,7 @@
 package com._42195km.msa.userrecapservice.infrastructure.job.batch;
 
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
@@ -25,14 +26,16 @@ public class RunningRecordApiReader implements ItemReader<GetRunningRecordAppRes
 	private LocalDateTime startDate;
 	private LocalDateTime endDate;
 
-	public RunningRecordApiReader(String startDate, RunningRecordClient runningRecordClient) {
-		setDateCondition(startDate);
+	public RunningRecordApiReader(String targetMonth, RunningRecordClient runningRecordClient) {
+		setDateCondition(targetMonth);
 		this.runningRecordClient = runningRecordClient;
 	}
 
-	public void setDateCondition(String startDate) {
-		this.startDate = LocalDateTime.parse(startDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+	public void setDateCondition(String targetMonth) {
+		YearMonth yearMonth = YearMonth.parse(targetMonth, DateTimeFormatter.ofPattern("yyyy-MM"));
+		this.startDate = yearMonth.atDay(1).atStartOfDay();
 		this.endDate = this.startDate.with(TemporalAdjusters.lastDayOfMonth());
+		log.info("paramNme = targetMonth paramValue = {}", targetMonth);
 	}
 
 	@Override
@@ -41,11 +44,9 @@ public class RunningRecordApiReader implements ItemReader<GetRunningRecordAppRes
 		ParseException,
 		NonTransientResourceException {
 		if (runningRecordList.isEmpty()) {
-			for (int i = 0; i < endDate.getDayOfMonth() - startDate.getDayOfMonth() + 1; i++) {
-				runningRecordList.addAll(runningRecordClient.findAllRunningRecords(
-					startDate, startDate.plusDays(1))
-				);
-			}
+			runningRecordList.addAll(
+				runningRecordClient.findAllRunningRecords(startDate, endDate)
+			);
 		}
 
 		if (nextIndex < runningRecordList.size()) {
