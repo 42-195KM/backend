@@ -47,9 +47,15 @@ management:
     tags:
       application: alert-service
 
-
+  zipkin:
+    tracing:
+      endpoint: http://localhost:9411/api/v2/spans
+  tracing:
+    sampling:
+      probability: 1.0
 
 eureka:
   client:
     service-url:
       defaultZone: ${EUREKA_SERVER}
+
