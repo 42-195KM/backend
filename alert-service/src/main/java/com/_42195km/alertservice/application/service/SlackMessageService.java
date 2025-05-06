@@ -8,6 +8,7 @@ import com.slack.api.methods.SlackApiException;
 import com.slack.api.methods.request.chat.ChatPostMessageRequest;
 import com.slack.api.methods.response.chat.ChatPostMessageResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -32,12 +33,21 @@ public class SlackMessageService implements MessageService {
                     .text(message)
                     .build());
             log.info("ChatPostMessageResponse: {}", response);
-            if (!response.isOk()) {
+            if(response.isOk()) {
+                MDC.put("status", "success");
+                log.info("전송 완료: {}", response);
+            }
+            else {
+
                 throw CustomBusinessException.from(AlertCode.ALERT_ERROR);
             }
 
         } catch (IOException | SlackApiException e) {
+            MDC.put("status", "retry");
+            log.error("Slack 서버 메시지 전송 에러 {}",e.getMessage());
             throw CustomBusinessException.from(AlertCode.ALERT_ERROR);
+        }finally {
+            MDC.clear();
         }
 
     }

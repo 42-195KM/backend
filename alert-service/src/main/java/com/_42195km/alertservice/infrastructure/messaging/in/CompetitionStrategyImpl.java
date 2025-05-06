@@ -17,7 +17,7 @@ public class CompetitionStrategyImpl implements AlertStrategy<CompetitionEventDt
 
     @Override
     public void throwException(Exception e) {
-        log.error("대회 이벤트 처리 중 오류 발생: {}", e.getMessage(), e);
+        log.info("대회 이벤트 처리 중 에러 발생: {}", e.getMessage(), e);
         throw CustomBusinessException.from(AlertCode.COMPETITION_CONSUMER_ERROR);
     }
 

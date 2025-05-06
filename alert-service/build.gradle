@@ -28,6 +28,16 @@ ext {
 }
 
 dependencies {
+	// zipkin
+	implementation 'io.micrometer:micrometer-observation'
+	implementation 'io.micrometer:micrometer-tracing'
+	implementation 'io.micrometer:micrometer-tracing-bridge-brave'
+	implementation 'io.zipkin.reporter2:zipkin-sender-urlconnection'
+	implementation 'io.zipkin.reporter2:zipkin-reporter-brave'
+
+	//Loki
+	implementation 'com.github.loki4j:loki-logback-appender:1.5.1' //추가
+
 	//슬랙
 	implementation("com.slack.api:bolt-socket-mode:1.45.3")
 	implementation("javax.websocket:javax.websocket-api:1.1")
