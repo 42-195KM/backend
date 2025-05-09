@@ -5,11 +5,11 @@ spring:
     import:
       - classpath:./properties/datasource.yml
       - classpath:./properties/jpa.yml
-  profiles:
-    active: aws
 eureka:
   client:
     service-url:
       defaultZone: ${EUREKA_SERVER}  # Eureka 서버 URL
+  instance:
+    non-secure-port: ${RANKING_SERVER}
 server:
   port: ${RANKING_SERVER}

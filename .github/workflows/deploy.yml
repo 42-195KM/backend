@@ -1,0 +1,167 @@
+name: Deploy to AWS
+
+on:
+  push:
+    branches:
+      - release
+  workflow_dispatch:
+    inputs:
+      service_to_deploy_manually:
+        description: 'Service to deploy manually'
+        required: true
+        type: string
+
+env:
+  AWS_REGION: ap-northeast-2
+  ECS_CLUSTER: ecs-cluster-42195km
+  ECR_REPO_PREFIX: 42-195km
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    outputs:
+      changed_service_matrix: ${{ steps.services.outputs.matrix }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Filters changed sevices
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          base: 'release'
+          filters: |
+            achivement-service:
+              - 'achivement-service/**'
+              - 'common/**'
+            alert-service:
+              - 'alert-service/**'
+              - 'common/**'
+            auth-service:
+              - 'auth-service/**'
+              - 'common/**'
+            chatbot-service:
+              - 'chatbot-service/**'
+              - 'common/**'
+            competition-service:
+              - 'competition-service/**'
+              - 'common/**'
+            crew-service:
+              - 'crew-service/**'
+              - 'common/**'
+            gateway:
+              - 'gateway/**'
+              - 'common/**'
+            ranking-service:
+              - 'ranking-service/**'
+              - 'common/**'
+            runningrecord-service:
+              - 'runningrecord-service/**'
+              - 'common/**'
+            server:
+              - 'server/**'
+              - 'common/**'
+            user-service:
+              - 'user-service/**'
+              - 'common/**'
+            userrecap-service:
+              - 'userrecap-service/**'
+              - 'common/**'
+
+      - name: set changed services
+        id: services
+        run: |
+          services=()
+          
+          [[ "${{ steps.filter.outputs.achivement-service }}" == 'true' ]] && services+=("achivement-service")
+          [[ "${{ steps.filter.outputs.alert-service }}" == 'true' ]] && services+=("alert-service")
+          [[ "${{ steps.filter.outputs.auth-service }}" == 'true' ]] && services+=("auth-service")
+          [[ "${{ steps.filter.outputs.chatbot-service }}" == 'true' ]] && services+=("chatbot-service")
+          [[ "${{ steps.filter.outputs.competition-service }}" == 'true' ]] && services+=("competition-service")
+          [[ "${{ steps.filter.outputs.crew-service }}" == 'true' ]] && services+=("crew-service")
+          [[ "${{ steps.filter.outputs.gateway }}" == 'true' ]] && services+=("gateway")
+          [[ "${{ steps.filter.outputs.ranking-service }}" == 'true' ]] && services+=("ranking-service")
+          [[ "${{ steps.filter.outputs.runningrecord-service }}" == 'true' ]] && services+=("runningrecord-service")
+          [[ "${{ steps.filter.outputs.server }}" == 'true' ]] && services+=("server")
+          [[ "${{ steps.filter.outputs.user-service }}" == 'true' ]] && services+=("user-service")
+          [[ "${{ steps.filter.outputs.userrecap-service }}" == 'true' ]] && services+=("userrecap-service")
+          
+          if [ ${#services[@]} -eq 0 ]; then
+            services_json='{"service":[]}'
+          else
+            services_json=$(printf '%s\n' "${services[@]}" | jq -R . | jq -sc '{"service": .}')
+          fi
+          
+          echo "변경된 서비스 감지: $services_json"
+          echo "matrix=$services_json" >> $GITHUB_OUTPUT
+  
+
+  deploy:
+    needs: changes
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'push' && needs.changes.outputs.changed_service_matrix != '{"service":[]}' || github.event_name == 'workflow_dispatch'}}
+    strategy:
+      matrix:
+        service: ${{github.event_name == 'push' && fromJson(needs.changes.outputs.changed_service_matrix).service ||
+          github.event_name == 'workflow_dispatch' && fromJson(format('{{"service":["{0}"]}}', github.event.inputs.service_to_deploy_manually)).service}}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ env.ECR_REPO_PREFIX }}/${{ matrix.service }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f ./${{matrix.service}}/Dockerfile .
+          docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+      - name: Download Task Definition
+        id: download-task-def
+        run: |
+          TASK_DEF_ARN=$(aws ecs describe-services \
+                  --cluster ${{ env.ECS_CLUSTER }} \
+                  --services ${{ matrix.service }} \
+                  --query 'services[0].taskDefinition' \
+                  --output text)
+
+          aws ecs describe-task-definition --task-definition $TASK_DEF_ARN --query 'taskDefinition' > ${{ matrix.service }}-task-definition.json  
+          echo "task_def_file=${{ matrix.service }}-task-definition.json" >> $GITHUB_OUTPUT
+
+      - name: Fill in the new image ID in the Amazon ECS task definition
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ${{ steps.download-task-def.outputs.task_def_file }}
+          container-name: ${{ matrix.service }}
+          image: ${{ steps.build-image.outputs.image }}
+
+      - name: Deploy to Amazon ECS
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        if: ${{ matrix.service != 'gateway' }}
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: ${{ matrix.service }}
+          cluster: ${{ env.ECS_CLUSTER }}
+          wait-for-service-stability: true
+
+
+          

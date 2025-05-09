@@ -6,8 +6,6 @@ spring:
     import:
       - classpath:./properties/datasource.yml
       - classpath:./properties/jpa.yml
-  profiles:
-    active: aws
   kafka:
     url: ${KAFKA_BOOTSTRAP_SERVERS}
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
@@ -18,5 +16,7 @@ eureka:
   client:
     service-url:
       defaultZone: ${EUREKA_SERVER}  # Eureka 서버 URL
+  instance:
+    non-secure-port: ${USER_SERVER}
 server:
   port: ${USER_SERVER}

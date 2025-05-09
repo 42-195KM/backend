@@ -16,7 +16,11 @@ spring:
       group-id: user-group
 eureka:
   client:
+    register-with-eureka: true
+    fetch-registry: true
     service-url:
-      defaultZone: ${EUREKA_SERVER}  # Eureka 서버 URL
+      defaultZone: ${EUREKA_SERVER}
+  instance:
+    prefer-ip-address: true
 server:
   port: ${USER_SERVER}

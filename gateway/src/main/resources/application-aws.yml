@@ -6,8 +6,6 @@ spring:
     web-application-type: reactive
   application:
     name: gateway
-  profiles:
-    active: aws
   cloud:
     gateway:
       # 헤더에 정보 유지

@@ -1,0 +1,34 @@
+spring:
+  application:
+    name: userrecap-service
+  datasource:
+    url: ${DB_USERRECAP_URL}
+    username: ${DB_USERRECAP_USERNAME}
+    password: ${DB_USERRECAP_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+  batch:
+    job:
+      enabled: true
+      name: recapJob
+
+server:
+  port:
+    19024
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_SERVER}  # Eureka 서버 URL
+
+
+---
+spring:
+  config:
+    activate:
+      on-profile: test
+  jpa:
+    database: h2
