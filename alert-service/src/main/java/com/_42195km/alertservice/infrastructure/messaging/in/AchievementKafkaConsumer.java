@@ -5,6 +5,7 @@ import com._42195km.alertservice.infrastructure.messaging.dto.AchieveEventDto;
 import com._42195km.alertservice.infrastructure.messaging.dto.CompetitionEventDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.annotation.RetryableTopic;
 import org.springframework.kafka.retrytopic.TopicSuffixingStrategy;
@@ -14,12 +15,15 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class AchievementKafkaConsumer {
 
+    @Qualifier("slackApiExecutor")
+    private final ExecutorService executorService;
     private final AlertContext context;
     private final AchievementStrategyImpl achievementStrategy;
 
@@ -28,7 +32,7 @@ public class AchievementKafkaConsumer {
         List<CompletableFuture<Void>> futures = eventMaps.stream()
                 .map(eventMap -> CompletableFuture.runAsync(() -> {
                     context.sendMessage(eventMap, achievementStrategy, AchieveEventDto.class);
-                }))
+                }, executorService))
                 .toList();
 
         CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();

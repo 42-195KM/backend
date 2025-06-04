@@ -9,12 +9,15 @@ import com._42195km.msa.common.exception.CustomBusinessException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
@@ -22,6 +25,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Slf4j
 public class CompetitionKafkaConsumer {
 
+    @Qualifier("slackApiExecutor")
+    private final ExecutorService executorService;
     private final AlertContext context;
     private final CompetitionStrategyImpl competitionStrategy;
 
@@ -31,7 +36,7 @@ public class CompetitionKafkaConsumer {
         List<CompletableFuture<Void>> futures = eventMaps.stream()
                 .map(eventMap -> CompletableFuture.runAsync(() -> {
                     context.sendMessage(eventMap, competitionStrategy, CompetitionEventDto.class);
-                }))
+                }, executorService))
                 .toList();
 
         CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
